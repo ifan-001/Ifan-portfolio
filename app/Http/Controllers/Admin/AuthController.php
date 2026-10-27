@@ -81,7 +81,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Log out administrator securely.
+     * Log out administrator securely and return to public portfolio.
      */
     public function logout(Request $request)
     {
@@ -93,6 +93,6 @@ class AuthController extends Controller
 
         Log::info('Admin user logged out', ['user_id' => $userId]);
 
-        return redirect()->route('admin.login')->with('status', 'You have been securely signed out.');
+        return redirect()->route('home');
     }
 }

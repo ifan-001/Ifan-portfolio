@@ -74,7 +74,7 @@ class AdminPlatformTest extends TestCase
 
         // Logout
         $logoutResponse = $this->actingAs($admin)->post('/portal/logout');
-        $logoutResponse->assertRedirect('/portal/login');
+        $logoutResponse->assertRedirect('/');
         $this->assertGuest();
     }
 
