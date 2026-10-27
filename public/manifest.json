@@ -1,8 +1,8 @@
 {
   "name": "Hasnain Portfolio Manager",
-  "short_name": "Portfolio Admin",
+  "short_name": "Ifan Admin",
   "description": "Administrative control center and live communication hub for Hasnain Al Ifan's portfolio platform.",
-  "start_url": "/admin",
+  "start_url": "/portal/login",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",

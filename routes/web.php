@@ -35,7 +35,16 @@ Route::get('/blog/{slug}', [PortfolioController::class, 'blogShow'])->name('blog
 
 // PWA Assets
 Route::get('/manifest.json', function () {
-    return response()->json(json_decode(file_get_contents(public_path('manifest.json')), true));
+    $manifest = json_decode(file_get_contents(public_path('manifest.json')), true);
+    $appConfig = config('portfolio.app', []);
+    if (!empty($appConfig['name'])) {
+        $manifest['name'] = $appConfig['name'];
+    }
+    if (!empty($appConfig['short_name'])) {
+        $manifest['short_name'] = $appConfig['short_name'];
+    }
+    $manifest['start_url'] = '/portal/login';
+    return response()->json($manifest);
 });
 Route::get('/sw.js', function () {
     return response(file_get_contents(public_path('sw.js')), 200, ['Content-Type' => 'application/javascript']);

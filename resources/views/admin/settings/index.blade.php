@@ -103,6 +103,26 @@
             </button>
         </div>
         <div id="pushStatusMsg" style="font-size:0.78rem; color:var(--accent-blue); margin-top:10px;"></div>
+
+        <hr style="border:none; border-top:1px solid var(--border-color); margin:20px 0;">
+
+        <!-- Mobile Installation & App Version Section -->
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+            <div>
+                <h4 style="font-size:0.92rem; font-weight:700; color:var(--text-primary); margin:0;">{{ $appInfo['name'] ?? 'Hasnain Portfolio Manager' }}</h4>
+                <div style="font-size:0.78rem; color:var(--text-secondary); margin-top:2px;">
+                    Version: <strong style="color:var(--accent-blue);">{{ $appInfo['version'] ?? 'v1.0.0' }}</strong> &middot; Target: {{ $appInfo['target_device'] ?? 'Samsung Galaxy A54' }}
+                </div>
+            </div>
+            <div style="display:flex; gap:8px;">
+                <button type="button" class="btn btn-primary btn-sm" onclick="openQrInstallModal()">
+                    📲 Scan QR Code
+                </button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="openAppVersionModal()">
+                    App Info
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 @endsection

@@ -424,6 +424,31 @@ class AdminPlatformTest extends TestCase
         $toggleResponse->assertStatus(200);
         $toggleResponse->assertJson(['status' => 'success']);
     }
+
+    /**
+     * 16. Web App Version & QR Code Mobile Installation Configuration.
+     */
+    public function test_web_app_version_and_qr_modal_integration(): void
+    {
+        $admin = $this->getAdminUser();
+
+        $response = $this->actingAs($admin)->get('/admin');
+        $response->assertStatus(200);
+        $response->assertSee('Hasnain Portfolio Manager');
+        $response->assertSee('Install Web App on Phone');
+        $response->assertSee('qrInstallModal');
+        $response->assertSee('appVersionModal');
+        $response->assertSee('qrcode.min.js');
+
+        // Test PWA Manifest returns dynamic app info
+        $manifestResponse = $this->get('/manifest.json');
+        $manifestResponse->assertStatus(200);
+        $manifestResponse->assertJsonFragment([
+            'name' => 'Hasnain Portfolio Manager',
+            'start_url' => '/portal/login',
+            'display' => 'standalone',
+        ]);
+    }
 }
 
 

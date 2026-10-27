@@ -62,6 +62,43 @@
     </div>
 </div>
 
+<!-- Personal Admin Web App & Mobile Deployment (Samsung Galaxy A54 Companion) -->
+<div class="web-app-hero-card">
+    <div style="display:flex; align-items:center; gap:18px;">
+        <div style="width:54px; height:54px; border-radius:14px; background:var(--bg-navy); border:2px solid var(--accent-blue); display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0; box-shadow:0 0 16px rgba(59,130,246,0.3);">
+            <img src="/icons/icon-192.png" alt="App Icon" style="width:100%; height:100%; object-fit:cover;">
+        </div>
+        <div>
+            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                <h2 style="font-size:1.15rem; font-weight:800; color:var(--text-primary); margin:0;">{{ $appInfo['name'] ?? 'Hasnain Portfolio Manager' }}</h2>
+                <button type="button" onclick="openAppVersionModal()" class="app-version-badge" title="Click to view App Version details">
+                    <span>{{ $appInfo['version'] ?? 'v1.0.0' }}</span>
+                </button>
+                <span class="badge badge-success" style="font-size:0.72rem; padding:3px 8px;">✓ Ready for Mobile</span>
+            </div>
+            <p style="font-size:0.85rem; color:var(--text-secondary); margin-top:4px; max-width:620px; line-height:1.45;">
+                আপনার Samsung Galaxy A54 ফোনে Personal Admin Web App ইনস্টল করে ব্রাউজার খোঁজা ছাড়াই হোমস্ক্রিন থেকে সরাসরি লাইভ চ্যাট ও পোর্টফোলিও পরিচালনা করুন।
+            </p>
+            <div style="display:flex; gap:16px; margin-top:8px; font-size:0.78rem; color:var(--text-muted); flex-wrap:wrap;">
+                <span>📱 Samsung Galaxy A54</span>
+                <span>⚡ PWA Standalone</span>
+                <span>📶 Local Wi-Fi: <code>{{ $appInfo['local_ip'] ?? '192.168.0.103' }}:{{ $appInfo['port'] ?? 8000 }}</code></span>
+            </div>
+        </div>
+    </div>
+
+    <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+        <button type="button" class="btn btn-primary" onclick="openQrInstallModal()" style="gap:8px; box-shadow:0 0 16px rgba(59,130,246,0.35);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            <span>Install Web App on Phone</span>
+        </button>
+        <button type="button" class="btn btn-secondary" onclick="openAppVersionModal()" style="gap:6px;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            <span>App Version Info</span>
+        </button>
+    </div>
+</div>
+
 <!-- KPI Row -->
 <div class="kpi-grid">
     <div class="kpi-card">

@@ -576,4 +576,23 @@ return [
         'author' => 'Hasnain Al Ifan',
         'canonical_url' => 'http://localhost:8000',
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Personal Admin Web App & Mobile Deployment (PWA)
+    |--------------------------------------------------------------------------
+    */
+    'app' => [
+        'name' => env('ADMIN_APP_NAME', 'Hasnain Portfolio Manager'),
+        'short_name' => 'Ifan Admin',
+        'version' => env('ADMIN_APP_VERSION', 'v1.0.0'),
+        'platform' => 'Web App / PWA',
+        'target_device' => 'Samsung Galaxy A54 & Android Devices',
+        'status' => 'Stable Release',
+        'update_info' => 'v1.0.0 — Mobile PWA Architecture, QR Code Quick-Deploy, Core Operations & In-Place CMS.',
+        'engine' => 'Laravel 12 / PHP 8.2',
+        'release_date' => 'October 2026',
+        'local_ip' => '192.168.0.103',
+        'port' => 8000,
+    ],
 ];

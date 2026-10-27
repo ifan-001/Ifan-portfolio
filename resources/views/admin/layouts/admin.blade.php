@@ -112,8 +112,24 @@
                             <span class="nav-badge">{{ $unreadInquiriesCount }}</span>
                         @endif
                     </a>
+
+                    <button type="button" class="nav-link" onclick="openQrInstallModal()" style="background:none; border:none; text-align:left; width:100%; cursor:pointer; font-family:inherit;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+                        <span>Install on Phone</span>
+                        <span class="nav-badge" style="background:rgba(59,130,246,0.2); color:#3B82F6;">QR</span>
+                    </button>
                 @endif
             </nav>
+
+            <div style="padding: 10px 16px; border-top: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 8px;">
+                <button type="button" onclick="openAppVersionModal()" class="app-version-badge" title="View Web App Version Details" style="width:100%; justify-content:space-between;">
+                    <span style="display:flex; align-items:center; gap:6px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                        <span style="font-size:0.75rem;">⚡</span>
+                        <span>{{ $appInfo['name'] ?? 'Hasnain Portfolio Manager' }}</span>
+                    </span>
+                    <span style="background:var(--accent-blue); color:#fff; padding:1px 5px; border-radius:4px; font-size:0.65rem;">{{ $appInfo['version'] ?? 'v1.0.0' }}</span>
+                </button>
+            </div>
 
             <div class="sidebar-footer">
                 <a href="{{ route('home') }}" target="_blank" class="btn btn-secondary btn-sm" title="View Public Portfolio">
@@ -148,6 +164,12 @@
                             <span>{{ $liveStatus->is_online ? 'Live / Online' : 'Offline' }}</span>
                         </button>
                     </form>
+
+                    <!-- Install on Phone Button -->
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="openQrInstallModal()" title="Install Web App on Phone via QR Code" style="display:inline-flex; align-items:center; gap:6px;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+                        <span>Install on Phone</span>
+                    </button>
 
                     <!-- Public Link -->
                     <a href="{{ route('home') }}" target="_blank" class="btn btn-secondary btn-sm" style="display:inline-flex;">
@@ -229,6 +251,11 @@
             });
         }
     </script>
+    
+    <!-- QR Code Generator & Modals -->
+    <script src="{{ asset('js/qrcode.min.js') }}"></script>
+    @include('admin.partials.app-modals')
+    
     @stack('scripts')
 </body>
 </html>

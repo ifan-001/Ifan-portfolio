@@ -1,8 +1,9 @@
 // Hasnain Portfolio Management PWA Service Worker
-const CACHE_NAME = 'portfolio-admin-shell-v1';
+const CACHE_NAME = 'portfolio-admin-shell-v1.0.0';
 const STATIC_ASSETS = [
     '/css/portfolio.css',
     '/js/portfolio.js',
+    '/js/qrcode.min.js',
     '/manifest.json',
     '/icons/icon.svg',
     '/offline.html'
