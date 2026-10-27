@@ -70,6 +70,12 @@
                 <form id="contact-form" action="{{ route('contact.submit') }}" method="POST" class="contact-form">
                     @csrf
 
+                    {{-- Honeypot Anti-Spam (Invisible to humans) --}}
+                    <div style="display: none;" aria-hidden="true">
+                        <label for="_hp_title">Leave this empty</label>
+                        <input type="text" id="_hp_title" name="_hp_title" tabindex="-1" autocomplete="off">
+                    </div>
+
                     <div id="contact-feedback" class="form-feedback" role="alert"></div>
 
                     @if(session('contact_success'))
@@ -80,7 +86,7 @@
 
                     <div class="form-group">
                         <label for="name" class="form-label">Full Name *</label>
-                        <input type="text" id="name" name="name" class="form-input" placeholder="e.g. Alex Morgan" required maxlength="100">
+                        <input type="text" id="name" name="name" class="form-input" placeholder="e.g. Alex Morgan" required minlength="2" maxlength="100">
                     </div>
 
                     <div class="form-group">
@@ -105,6 +111,10 @@
                             <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
                         </svg>
                     </button>
+
+                    <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; text-align: center;">
+                        Submitting prepares your message and opens a verified direct email link to <a href="mailto:{{ $portfolio['brand']['email'] }}" style="color: var(--accent-blue); text-decoration: underline;">{{ $portfolio['brand']['email'] }}</a>.
+                    </p>
                 </form>
             </div>
         </div>

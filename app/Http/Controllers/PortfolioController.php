@@ -23,15 +23,29 @@ class PortfolioController extends Controller
      */
     public function contact(Request $request)
     {
+        // 1. Anti-Spam Honeypot Check: bots fill hidden inputs
+        if ($request->filled('_hp_title')) {
+            Log::warning('Portfolio contact form honeypot triggered', [
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]);
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Spam protection triggered. Please contact directly via email.',
+            ], 422);
+        }
+
+        // 2. Strict Input Validation
         $validated = $request->validate([
-            'name' => 'required|string|max:100',
+            'name' => 'required|string|min:2|max:100',
             'email' => 'required|email|max:150',
             'subject' => 'nullable|string|max:200',
             'message' => 'required|string|min:10|max:3000',
         ]);
 
-        // Construct functional mailto fallback
-        $subject = urlencode($validated['subject'] ?? 'Portfolio Inquiry from ' . $validated['name']);
+        // Construct functional mailto link
+        $subject = urlencode($validated['subject'] ?: ('Portfolio Inquiry from ' . $validated['name']));
         $body = urlencode("From: {$validated['name']} ({$validated['email']})\n\n{$validated['message']}");
         $mailtoUrl = "mailto:hasnainalifan23@gmail.com?subject={$subject}&body={$body}";
 
@@ -39,12 +53,13 @@ class PortfolioController extends Controller
             'name' => $validated['name'],
             'email' => $validated['email'],
             'subject' => $validated['subject'] ?? 'N/A',
+            'ip' => $request->ip(),
         ]);
 
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json([
                 'status' => 'success',
-                'message' => 'Thank you for reaching out, ' . htmlspecialchars($validated['name']) . '! Your message details have been prepared.',
+                'message' => 'Thank you for reaching out, ' . htmlspecialchars($validated['name']) . '! Your message has been prepared.',
                 'mailto_url' => $mailtoUrl,
             ]);
         }

@@ -34,6 +34,33 @@ class ExampleTest extends TestCase
         ]);
     }
 
+    public function test_contact_honeypot_rejects_spam_bots(): void
+    {
+        $response = $this->postJson('/contact', [
+            'name' => 'Spam Bot',
+            'email' => 'bot@spammer.com',
+            'message' => 'Buy cheap links here now!',
+            '_hp_title' => 'Sneaky bot filled field',
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJson([
+            'status' => 'error',
+        ]);
+    }
+
+    public function test_contact_validation_fails_on_empty_message(): void
+    {
+        $response = $this->postJson('/contact', [
+            'name' => 'John',
+            'email' => 'not-an-email',
+            'message' => 'hi', // too short (< 10)
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['email', 'message']);
+    }
+
     public function test_resume_download_handles_unreleased_state(): void
     {
         $response = $this->get('/resume/download');

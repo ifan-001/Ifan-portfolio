@@ -11,9 +11,9 @@ return [
         'full_name' => 'Hasnain Al Ifan',
         'title' => 'Junior Software Engineer',
         'sub_title' => 'Web Application Development | Backend Engineering',
-        'location' => 'Dhaka, Bangladesh',
+        'location' => 'Mirpur-2, Dhaka, Bangladesh',
         'email' => 'hasnainalifan23@gmail.com',
-        'phone' => '+880 1745-927546', // Kept safe for contact if needed, or email primary
+        'phone' => '+8801608564447',
         'profile_image' => '/images/profile.jpg',
         'avatar_fallback' => 'HI',
         'positioning' => 'Junior Software Engineer building practical web applications and exploring mobile and intelligent software systems.',
@@ -166,7 +166,6 @@ return [
                 'Agora RTC Token Generator',
                 'SMS Gateway (sms_net_bd)',
                 'Endroid QR Code',
-                'Pusher PHP Server',
                 'Git & GitHub',
             ],
             'workflows' => [
