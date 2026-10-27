@@ -2888,3 +2888,41 @@ body.hide-admin-controls .admin-card-actions {
     display: none;
   }
 }
+
+/* Secret Admin Doorway Triggers (Hidden in plain sight from normal visitors) */
+.secret-brand-dot {
+  color: var(--accent-blue);
+  text-decoration: none;
+  cursor: pointer;
+  display: inline-block;
+  user-select: none;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.secret-brand-dot:hover {
+  transform: scale(1.35);
+  filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.9));
+}
+
+.secret-terminal-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  opacity: 0.45;
+  margin-left: 6px;
+  vertical-align: middle;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  padding: 2px 4px;
+  border-radius: var(--radius-sm);
+  cursor: default;
+}
+
+.secret-terminal-trigger:hover {
+  opacity: 1;
+  color: var(--accent-blue);
+  background: rgba(59, 130, 246, 0.12);
+  cursor: pointer;
+}
+

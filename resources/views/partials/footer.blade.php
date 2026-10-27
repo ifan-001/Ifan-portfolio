@@ -6,7 +6,7 @@
                     <img src="{{ asset('images/profile.jpg') }}" alt="Hasnain Al Ifan" class="brand-avatar-img">
                 </span>
                 <span style="font-weight: 800; font-size: 1.125rem; color: var(--text-primary);">
-                    IFAN<span class="brand-dot">.</span>
+                    IFAN<a href="{{ route('admin.login') }}" class="secret-brand-dot" aria-label="Brand Mark">.</a>
                 </span>
             </div>
             <p class="footer-copy">
@@ -14,10 +14,10 @@
             </p>
             <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">
                 Engineered with PHP, Laravel &amp; Blade Templates &middot; Dhaka, Bangladesh
-                <a href="{{ route('admin.login') }}" class="discreet-portal-trigger" title="Staff Portal" aria-label="Staff Portal">
+                <a href="{{ route('admin.login') }}" class="secret-terminal-trigger" aria-label="Terminal Prompt">
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        <polyline points="4 17 10 11 4 5"></polyline>
+                        <line x1="12" y1="19" x2="20" y2="19"></line>
                     </svg>
                 </a>
             </p>
