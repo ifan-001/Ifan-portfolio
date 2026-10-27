@@ -22,7 +22,7 @@ class AdminPlatformTest extends TestCase
             ['email' => 'hasnainalifan23@gmail.com'],
             [
                 'name' => 'Hasnain Al Ifan',
-                'password' => Hash::make('AdminSecretTestPass!'),
+                'password' => Hash::make('Ifan@Admin2026!'),
             ]
         );
     }
@@ -60,7 +60,7 @@ class AdminPlatformTest extends TestCase
         // Successful authentication
         $loginResponse = $this->post('/portal/login', [
             'email' => $admin->email,
-            'password' => 'AdminSecretTestPass!',
+            'password' => 'Ifan@Admin2026!',
         ]);
         $loginResponse->assertRedirect('/admin');
         $this->assertAuthenticatedAs($admin);
