@@ -2196,3 +2196,23 @@ button {
   color: var(--text-muted);
 }
 
+/* Discreet Portal Trigger Icon */
+.discreet-portal-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  opacity: 0.22;
+  transition: opacity 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  margin-left: 8px;
+  vertical-align: middle;
+  text-decoration: none;
+}
+
+.discreet-portal-trigger:hover {
+  opacity: 0.85;
+  color: var(--accent-blue);
+  transform: scale(1.15);
+}
+
+

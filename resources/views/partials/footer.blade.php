@@ -14,6 +14,12 @@
             </p>
             <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">
                 Engineered with PHP, Laravel &amp; Blade Templates &middot; Dhaka, Bangladesh
+                <a href="{{ route('admin.login') }}" class="discreet-portal-trigger" title="Staff Portal" aria-label="Staff Portal">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </a>
             </p>
         </div>
 
@@ -24,6 +30,7 @@
             <a href="#projects">Projects</a>
             <a href="#skills">Skills</a>
             <a href="#education">Education</a>
+            <a href="{{ route('blog.index') }}">Blog</a>
             <a href="#contact">Contact</a>
         </nav>
     </div>

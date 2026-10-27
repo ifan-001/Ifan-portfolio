@@ -11,9 +11,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        $middleware->redirectGuestsTo(fn () => route('admin.login'));
+
         $middleware->validateCsrfTokens(except: [
             'contact',
             'api/chat/*',
+            'track/click',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

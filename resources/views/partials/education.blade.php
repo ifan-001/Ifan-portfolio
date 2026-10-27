@@ -59,8 +59,8 @@
                         <h4 class="secondary-edu-degree">{{ $edu['degree'] }}</h4>
                         <div class="secondary-edu-inst">{{ $edu['institution'] }}</div>
                         <div class="secondary-edu-meta">
-                            <span>Group: {{ $edu['group'] }} &middot; GPA {{ $edu['gpa'] }}</span>
-                            <span>{{ $edu['passing_year'] }}</span>
+                            <span>Group: {{ $edu['group'] ?? $edu['field'] ?? 'Science' }} &middot; GPA {{ $edu['gpa'] ?? $edu['cgpa'] ?? 'N/A' }}</span>
+                            <span>{{ $edu['passing_year'] ?? $edu['period'] ?? '' }}</span>
                         </div>
                     </div>
                 @endforeach

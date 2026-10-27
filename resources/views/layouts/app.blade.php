@@ -74,7 +74,9 @@
     </main>
 
     {{-- Floating Live Chat System --}}
-    @include('partials.chat')
+    @if($portfolio['settings']['live_chat_enabled'] ?? true)
+        @include('partials.chat')
+    @endif
 
     @include('partials.footer')
 
