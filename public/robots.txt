@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /resume/download
+
+Sitemap: https://hasnainalifan.com/sitemap.xml
