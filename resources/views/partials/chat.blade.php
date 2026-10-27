@@ -25,7 +25,7 @@
         <div class="chat-header">
             <div class="chat-header-user">
                 <div class="chat-avatar-wrapper">
-                    <img src="{{ asset('images/profile.jpg') }}" alt="Hasnain Al Ifan" class="chat-avatar-img">
+                    <img src="{{ asset(ltrim($portfolio['brand']['profile_image'], '/')) }}" alt="Hasnain Al Ifan" class="chat-avatar-img">
                     <span id="chat-header-status-dot" class="chat-header-status-dot online"></span>
                 </div>
                 <div>
@@ -65,7 +65,7 @@
             {{-- Default System Welcome Message --}}
             <div class="chat-message-row admin">
                 <div class="chat-msg-avatar">
-                    <img src="{{ asset('images/profile.jpg') }}" alt="Hasnain Al Ifan">
+                    <img src="{{ asset(ltrim($portfolio['brand']['profile_image'], '/')) }}" alt="Hasnain Al Ifan">
                 </div>
                 <div class="chat-bubble admin">
                     <p id="chat-dynamic-welcome">

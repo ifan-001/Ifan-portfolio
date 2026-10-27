@@ -2,7 +2,7 @@
     <div class="container">
         <div class="section-header">
             <span class="section-eyebrow">Academic Exploration</span>
-            <div style="display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap;">
+            <div style="display:flex; align-items:center; justify-content:flex-start; gap:12px; flex-wrap:wrap;">
                 <h2 class="section-title" style="margin-bottom:0;">Beyond Application Development</h2>
                 @auth
                     <button type="button" class="admin-edit-trigger" onclick="openAddResearchModal()" title="Add research exploration or achievement highlight">

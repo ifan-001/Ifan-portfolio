@@ -120,7 +120,7 @@
                             </button>
                         @endauth
                         <img id="hero-profile-image"
-                             src="{{ asset('images/profile.jpg') }}?v={{ time() }}" 
+                             src="{{ asset(ltrim($portfolio['brand']['profile_image'], '/')) }}?v={{ file_exists(public_path(ltrim($portfolio['brand']['profile_image'], '/'))) ? filemtime(public_path(ltrim($portfolio['brand']['profile_image'], '/'))) : time() }}" 
                              alt="Hasnain Al Ifan - Junior Software Engineer" 
                              class="portrait-img"
                              loading="eager"
@@ -137,7 +137,7 @@
                             <div class="portrait-badge-sub">Junior Software Engineer</div>
                         </div>
                         <span class="brand-avatar-frame" style="width: 34px; height: 34px;" aria-hidden="true">
-                            <img src="{{ asset('images/profile.jpg') }}" alt="Hasnain Al Ifan" class="brand-avatar-img">
+                            <img src="{{ asset(ltrim($portfolio['brand']['profile_image'], '/')) }}" alt="Hasnain Al Ifan" class="brand-avatar-img">
                         </span>
                     </div>
                 </div>

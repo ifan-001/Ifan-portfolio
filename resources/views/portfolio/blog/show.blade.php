@@ -27,7 +27,7 @@
             <!-- Author & Metadata -->
             <div style="display:flex; align-items:center; gap:14px; padding-bottom:24px; border-bottom:1px solid var(--border-color);">
                 <div style="width:44px; height:44px; border-radius:50%; overflow:hidden; border:2px solid var(--accent-blue);">
-                    <img src="{{ asset('images/profile.jpg') }}" alt="Hasnain Al Ifan" style="width:100%; height:100%; object-fit:cover;">
+                    <img src="{{ asset(ltrim($portfolio['brand']['profile_image'] ?? 'images/profile.jpg', '/')) }}" alt="Hasnain Al Ifan" style="width:100%; height:100%; object-fit:cover;">
                 </div>
                 <div>
                     <div style="font-weight:700; font-size:0.95rem; color:var(--text-primary);">{{ $portfolio['brand']['full_name'] }}</div>
@@ -46,7 +46,7 @@
         <!-- Author Bio Footer Box -->
         <div style="padding:28px; background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-lg); display:flex; gap:20px; align-items:center; margin-bottom:48px;">
             <div style="width:64px; height:64px; border-radius:50%; overflow:hidden; border:2px solid var(--accent-blue); flex-shrink:0;">
-                <img src="{{ asset('images/profile.jpg') }}" alt="Hasnain Al Ifan" style="width:100%; height:100%; object-fit:cover;">
+                <img src="{{ asset(ltrim($portfolio['brand']['profile_image'] ?? 'images/profile.jpg', '/')) }}" alt="Hasnain Al Ifan" style="width:100%; height:100%; object-fit:cover;">
             </div>
             <div>
                 <div style="font-weight:700; font-size:1.1rem; color:var(--text-primary);">Written by {{ $portfolio['brand']['full_name'] }}</div>

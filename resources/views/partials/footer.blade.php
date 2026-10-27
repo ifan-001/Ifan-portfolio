@@ -3,7 +3,7 @@
         <div>
             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
                 <span class="brand-avatar-frame" style="width: 30px; height: 30px;" aria-hidden="true">
-                    <img src="{{ asset('images/profile.jpg') }}" alt="Hasnain Al Ifan" class="brand-avatar-img">
+                    <img src="{{ asset(ltrim($portfolio['brand']['profile_image'], '/')) }}" alt="Hasnain Al Ifan" class="brand-avatar-img">
                 </span>
                 <span style="font-weight: 800; font-size: 1.125rem; color: var(--text-primary);">
                     IFAN<a href="{{ route('admin.login') }}" class="secret-brand-dot" aria-label="Brand Mark">.</a>

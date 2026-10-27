@@ -18,14 +18,14 @@
     <meta property="og:type" content="website">
     <meta property="og:title" content="{{ $portfolio['meta']['title'] }}">
     <meta property="og:description" content="{{ $portfolio['meta']['description'] }}">
-    <meta property="og:image" content="{{ asset('images/profile.jpg') }}">
+    <meta property="og:image" content="{{ asset(ltrim($portfolio['brand']['profile_image'] ?? 'images/profile.jpg', '/')) }}">
     <meta property="og:locale" content="en_US">
 
     {{-- Twitter --}}
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{{ $portfolio['meta']['title'] }}">
     <meta name="twitter:description" content="{{ $portfolio['meta']['description'] }}">
-    <meta name="twitter:image" content="{{ asset('images/profile.jpg') }}">
+    <meta name="twitter:image" content="{{ asset(ltrim($portfolio['brand']['profile_image'] ?? 'images/profile.jpg', '/')) }}">
 
     {{-- Favicon Monogram SVG --}}
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230B1120'/><rect x='2' y='2' width='96' height='96' rx='20' fill='none' stroke='%233B82F6' stroke-width='4'/><text x='50' y='65' font-family='sans-serif' font-size='48' font-weight='900' fill='%23F5F7FA' text-anchor='middle'>I<tspan fill='%233B82F6'>.</tspan></text></svg>">

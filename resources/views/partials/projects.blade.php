@@ -2,7 +2,7 @@
     <div class="container">
         <div class="section-header">
             <span class="section-eyebrow">Portfolio Showcase</span>
-            <div style="display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap;">
+            <div style="display:flex; align-items:center; justify-content:flex-start; gap:12px; flex-wrap:wrap;">
                 <h2 class="section-title" style="margin-bottom:0;">Engineered Projects</h2>
                 @auth
                     <button type="button" class="admin-edit-trigger" onclick="openAddProjectModal()" title="Create and showcase a new software project">

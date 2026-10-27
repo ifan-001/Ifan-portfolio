@@ -54,7 +54,7 @@
         <div class="login-header">
             <div style="display:flex; justify-content:center; margin-bottom:12px;">
                 <span class="brand-avatar-frame" style="width:48px; height:48px; border:2px solid var(--accent-blue); border-radius:50%; overflow:hidden; display:inline-block;">
-                    <img src="{{ asset('images/profile.jpg') }}" alt="Hasnain Al Ifan" style="width:100%; height:100%; object-fit:cover;">
+                    <img src="{{ asset(ltrim(\App\Models\Profile::first()?->profile_image ?: 'images/profile.jpg', '/')) }}" alt="Hasnain Al Ifan" style="width:100%; height:100%; object-fit:cover;">
                 </span>
             </div>
             <div class="login-brand">IFAN<span style="color:var(--accent-blue);">.</span> PORTAL</div>

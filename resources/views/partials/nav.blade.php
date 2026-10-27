@@ -2,7 +2,7 @@
     <div class="container nav-wrapper">
         <a href="#hero" class="brand-logo" aria-label="Hasnain Al Ifan - Home">
             <span class="brand-avatar-frame" aria-hidden="true">
-                <img src="{{ asset('images/profile.jpg') }}" alt="Hasnain Al Ifan" class="brand-avatar-img">
+                <img src="{{ asset(ltrim($portfolio['brand']['profile_image'], '/')) }}" alt="Hasnain Al Ifan" class="brand-avatar-img">
             </span>
             <span>IFAN<span class="brand-dot">.</span></span>
         </a>
