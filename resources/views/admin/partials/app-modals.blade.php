@@ -46,14 +46,16 @@
                     </button>
                 </div>
 
-                <div style="display:flex; gap:8px;">
+                <div class="qr-input-group">
                     <input type="text" id="qrTargetUrlInput" class="form-control" value="http://{{ $appInfo['local_ip'] ?? '192.168.0.103' }}:{{ $appInfo['port'] ?? 8000 }}/portal/login" style="font-size:0.82rem; font-family:monospace;" oninput="handleCustomQrUrl(this.value)">
-                    <button type="button" class="btn btn-secondary btn-sm" onclick="copyQrTargetUrl()" id="qrCopyBtn" title="Copy URL to clipboard" style="white-space:nowrap;">
-                        Copy Link
-                    </button>
-                    <a id="qrOpenLinkBtn" href="http://{{ $appInfo['local_ip'] ?? '192.168.0.103' }}:{{ $appInfo['port'] ?? 8000 }}/portal/login" target="_blank" class="btn btn-secondary btn-sm" title="Open directly in new tab">
-                        Open ↗
-                    </a>
+                    <div class="qr-btn-row">
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="copyQrTargetUrl()" id="qrCopyBtn" title="Copy URL to clipboard" style="white-space:nowrap;">
+                            Copy Link
+                        </button>
+                        <a id="qrOpenLinkBtn" href="http://{{ $appInfo['local_ip'] ?? '192.168.0.103' }}:{{ $appInfo['port'] ?? 8000 }}/portal/login" target="_blank" class="btn btn-secondary btn-sm" title="Open directly in new tab">
+                            Open ↗
+                        </a>
+                    </div>
                 </div>
                 <div id="qrCopySuccessNotice" style="display:none; font-size:0.75rem; color:#10B981; margin-top:4px;">
                     ✓ Copied to clipboard!

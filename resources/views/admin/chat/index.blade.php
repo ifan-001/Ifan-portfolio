@@ -5,9 +5,9 @@
 
 @section('content')
 <div class="card" style="padding:0; overflow:hidden;">
-    <div style="display:grid; grid-template-columns:300px 1fr; min-height:600px; max-height:calc(100vh - 160px);">
+    <div class="chat-layout-grid">
         <!-- Conversations Sidebar -->
-        <div style="border-right:1px solid var(--border-color); background:rgba(15,23,42,0.6); display:flex; flex-direction:column;">
+        <div class="chat-conversations-pane" style="background:rgba(15,23,42,0.6); display:flex; flex-direction:column;">
             <div style="padding:16px; border-bottom:1px solid var(--border-color); display:flex; align-items:center; justify-content:space-between;">
                 <span style="font-weight:700; font-size:0.95rem;">Conversations</span>
                 <span class="badge badge-info">{{ $conversations->count() }}</span>
@@ -45,7 +45,7 @@
         </div>
 
         <!-- Chat Conversation Window -->
-        <div style="display:flex; flex-direction:column; background:var(--bg-card);">
+        <div class="chat-window-pane" style="display:flex; flex-direction:column; background:var(--bg-card);">
             @if($activeConversation)
                 <!-- Chat Window Header -->
                 <div style="padding:14px 20px; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.02);">

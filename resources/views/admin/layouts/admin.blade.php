@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Admin Dashboard') | Hasnain Al Ifan Portfolio Manager</title>
 
@@ -151,7 +151,8 @@
             <!-- Header Bar -->
             <header class="admin-header">
                 <div class="header-title-wrap">
-                    <h1>@yield('page_title', 'Dashboard')</h1>
+                    <span class="mobile-brand-pill">IFAN.</span>
+                    <h1 class="header-page-title">@yield('page_title', 'Dashboard')</h1>
                 </div>
 
                 <div class="header-actions">
@@ -161,18 +162,18 @@
                         @csrf
                         <button type="submit" class="status-pill" title="Click to toggle Online/Offline">
                             <span class="status-dot-sm {{ $liveStatus->is_online ? 'online' : 'offline' }}"></span>
-                            <span>{{ $liveStatus->is_online ? 'Live / Online' : 'Offline' }}</span>
+                            <span class="status-pill-text">{{ $liveStatus->is_online ? 'Live / Online' : 'Offline' }}</span>
                         </button>
                     </form>
 
-                    <!-- Install on Phone Button -->
-                    <button type="button" class="btn btn-secondary btn-sm" onclick="openQrInstallModal()" title="Install Web App on Phone via QR Code" style="display:inline-flex; align-items:center; gap:6px;">
+                    <!-- Install on Phone Button (Hidden on Mobile Screens) -->
+                    <button type="button" class="btn btn-secondary btn-sm header-install-btn" onclick="openQrInstallModal()" title="Install Web App on Phone via QR Code">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
                         <span>Install on Phone</span>
                     </button>
 
                     <!-- Public Link -->
-                    <a href="{{ route('home') }}" target="_blank" class="btn btn-secondary btn-sm" style="display:inline-flex;">
+                    <a href="{{ route('home') }}" target="_blank" class="btn btn-secondary btn-sm header-preview-btn" title="View Live Portfolio">
                         <span>Preview</span>
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
                     </a>

@@ -449,6 +449,31 @@ class AdminPlatformTest extends TestCase
             'display' => 'standalone',
         ]);
     }
+
+    /**
+     * 17. Mobile Viewport & Responsive Shell Integration for Samsung Galaxy A54.
+     */
+    public function test_mobile_viewport_and_responsive_shell_integration(): void
+    {
+        $admin = $this->getAdminUser();
+
+        // Admin shell layout must include mobile viewport-fit and bottom navigation
+        $adminResponse = $this->actingAs($admin)->get('/admin');
+        $adminResponse->assertStatus(200);
+        $adminResponse->assertSee('viewport-fit=cover', false);
+        $adminResponse->assertSee('mobile-bottom-nav', false);
+        $adminResponse->assertSee('table-responsive', false);
+        $adminResponse->assertSee('web-app-hero-card', false);
+        $adminResponse->assertSee('mobile-brand-pill', false);
+
+        // Login screen must include standalone mobile tags
+        auth()->logout();
+        $this->flushSession();
+        $loginResponse = $this->get('/portal/login');
+        $loginResponse->assertStatus(200);
+        $loginResponse->assertSee('viewport-fit=cover', false);
+        $loginResponse->assertSee('rel="manifest"', false);
+    }
 }
 
 

@@ -64,22 +64,22 @@
 
 <!-- Personal Admin Web App & Mobile Deployment (Samsung Galaxy A54 Companion) -->
 <div class="web-app-hero-card">
-    <div style="display:flex; align-items:center; gap:18px;">
-        <div style="width:54px; height:54px; border-radius:14px; background:var(--bg-navy); border:2px solid var(--accent-blue); display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0; box-shadow:0 0 16px rgba(59,130,246,0.3);">
+    <div class="web-app-hero-top">
+        <div class="web-app-hero-icon">
             <img src="/icons/icon-192.png" alt="App Icon" style="width:100%; height:100%; object-fit:cover;">
         </div>
-        <div>
-            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-                <h2 style="font-size:1.15rem; font-weight:800; color:var(--text-primary); margin:0;">{{ $appInfo['name'] ?? 'Hasnain Portfolio Manager' }}</h2>
+        <div class="web-app-hero-body">
+            <div class="web-app-hero-title-row">
+                <h2 class="web-app-hero-title">{{ $appInfo['name'] ?? 'Hasnain Portfolio Manager' }}</h2>
                 <button type="button" onclick="openAppVersionModal()" class="app-version-badge" title="Click to view App Version details">
                     <span>{{ $appInfo['version'] ?? 'v1.0.0' }}</span>
                 </button>
-                <span class="badge badge-success" style="font-size:0.72rem; padding:3px 8px;">✓ Ready for Mobile</span>
+                <span class="badge badge-success app-ready-badge">✓ Ready for Mobile</span>
             </div>
-            <p style="font-size:0.85rem; color:var(--text-secondary); margin-top:4px; max-width:620px; line-height:1.45;">
+            <p class="web-app-hero-desc">
                 আপনার Samsung Galaxy A54 ফোনে Personal Admin Web App ইনস্টল করে ব্রাউজার খোঁজা ছাড়াই হোমস্ক্রিন থেকে সরাসরি লাইভ চ্যাট ও পোর্টফোলিও পরিচালনা করুন।
             </p>
-            <div style="display:flex; gap:16px; margin-top:8px; font-size:0.78rem; color:var(--text-muted); flex-wrap:wrap;">
+            <div class="web-app-hero-meta">
                 <span>📱 Samsung Galaxy A54</span>
                 <span>⚡ PWA Standalone</span>
                 <span>📶 Local Wi-Fi: <code>{{ $appInfo['local_ip'] ?? '192.168.0.103' }}:{{ $appInfo['port'] ?? 8000 }}</code></span>
@@ -87,12 +87,12 @@
         </div>
     </div>
 
-    <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-        <button type="button" class="btn btn-primary" onclick="openQrInstallModal()" style="gap:8px; box-shadow:0 0 16px rgba(59,130,246,0.35);">
+    <div class="web-app-hero-actions">
+        <button type="button" class="btn btn-primary" onclick="openQrInstallModal()">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
             <span>Install Web App on Phone</span>
         </button>
-        <button type="button" class="btn btn-secondary" onclick="openAppVersionModal()" style="gap:6px;">
+        <button type="button" class="btn btn-secondary" onclick="openAppVersionModal()">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
             <span>App Version Info</span>
         </button>
@@ -127,10 +127,10 @@
 </div>
 
 <!-- Availability & PWA Status Banner -->
-<div class="card" style="margin-bottom:28px; background:linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%);">
-    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;">
-        <div style="display:flex; align-items:center; gap:16px;">
-            <div style="width:44px; height:44px; border-radius:50%; background:{{ $chatStatus->is_online ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)' }}; display:flex; align-items:center; justify-content:center;">
+<div class="card status-banner-card" style="margin-bottom:28px; background:linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%);">
+    <div class="status-banner-inner">
+        <div class="status-banner-left">
+            <div class="status-banner-icon {{ $chatStatus->is_online ? 'online' : 'offline' }}">
                 <span class="status-dot-sm {{ $chatStatus->is_online ? 'online' : 'offline' }}" style="width:14px; height:14px;"></span>
             </div>
             <div>
@@ -141,7 +141,7 @@
             </div>
         </div>
 
-        <form action="{{ route('admin.dashboard.toggle-status') }}" method="POST">
+        <form action="{{ route('admin.dashboard.toggle-status') }}" method="POST" class="status-banner-form">
             @csrf
             <button type="submit" class="btn {{ $chatStatus->is_online ? 'btn-secondary' : 'btn-primary' }}">
                 <span>Switch to {{ $chatStatus->is_online ? 'Offline' : 'Online' }}</span>

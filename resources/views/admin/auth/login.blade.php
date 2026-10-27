@@ -2,19 +2,26 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0B1120">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="robots" content="noindex, nofollow">
     <title>Staff Authentication | Hasnain Al Ifan</title>
+    <link rel="manifest" href="/manifest.json">
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
     <link rel="icon" type="image/svg+xml" href="/icons/icon.svg">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
     <style>
         body {
             display: flex;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
+            min-height: 100dvh;
             background: radial-gradient(circle at 50% 20%, #172554 0%, #0B1120 70%);
             padding: 20px;
+            box-sizing: border-box;
         }
         .login-box {
             width: 100%;
@@ -25,6 +32,7 @@
             padding: 36px 32px;
             box-shadow: 0 20px 50px rgba(0,0,0,0.6);
             backdrop-filter: blur(20px);
+            box-sizing: border-box;
         }
         .login-header {
             text-align: center;
@@ -46,6 +54,18 @@
             text-align: center;
             font-size: 0.78rem;
             color: var(--text-muted);
+        }
+        @media (max-width: 480px) {
+            body {
+                padding: 12px;
+            }
+            .login-box {
+                padding: 24px 18px;
+                border-radius: var(--radius-md);
+            }
+            .login-brand {
+                font-size: 1.2rem;
+            }
         }
     </style>
 </head>
