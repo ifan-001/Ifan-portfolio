@@ -61,9 +61,44 @@ class ExampleTest extends TestCase
         $response->assertJsonValidationErrors(['email', 'message']);
     }
 
-    public function test_resume_download_handles_unreleased_state(): void
+    public function test_resume_download_serves_pdf(): void
     {
         $response = $this->get('/resume/download');
-        $response->assertStatus(302);
+        $response->assertStatus(200);
+        $this->assertStringContainsString('application/pdf', $response->headers->get('Content-Type'));
+    }
+
+    public function test_chat_status_endpoint(): void
+    {
+        $response = $this->get('/api/chat/status');
+        $response->assertStatus(200);
+        $response->assertJsonStructure(['is_online', 'status_text', 'last_active_at']);
+    }
+
+    public function test_chat_toggle_status_endpoint(): void
+    {
+        $response = $this->postJson('/api/chat/status', ['is_online' => false]);
+        $response->assertStatus(200);
+        $response->assertJson(['is_online' => false]);
+
+        $responseToggle = $this->postJson('/api/chat/status', ['is_online' => true]);
+        $responseToggle->assertStatus(200);
+        $responseToggle->assertJson(['is_online' => true]);
+    }
+
+    public function test_chat_message_flow(): void
+    {
+        $session = 'test_session_' . uniqid();
+        $sendResponse = $this->postJson('/api/chat/send', [
+            'session_id' => $session,
+            'message' => 'Hello Hasnain, testing live chat!',
+            'visitor_name' => 'Recruiter Visitor',
+            'visitor_email' => 'visitor@test.com',
+        ]);
+        $sendResponse->assertStatus(200);
+
+        $fetchResponse = $this->get("/api/chat/messages?session_id={$session}");
+        $fetchResponse->assertStatus(200);
+        $fetchResponse->assertSee('Hello Hasnain, testing live chat!');
     }
 }

@@ -49,7 +49,34 @@ class PortfolioController extends Controller
         $body = urlencode("From: {$validated['name']} ({$validated['email']})\n\n{$validated['message']}");
         $mailtoUrl = "mailto:hasnainalifan23@gmail.com?subject={$subject}&body={$body}";
 
-        Log::info('Portfolio Contact Inquiry Received', [
+        // 3. Persist to database so no message is ever lost
+        try {
+            \App\Models\ContactMessage::create([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'subject' => $validated['subject'] ?? null,
+                'message' => $validated['message'],
+                'ip' => $request->ip(),
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('Failed to persist contact message: ' . $e->getMessage());
+        }
+
+        // 4. Attempt mail dispatch if SMTP or mailer is configured
+        try {
+            \Illuminate\Support\Facades\Mail::raw(
+                "You received a new message from your portfolio website:\n\nName: {$validated['name']}\nEmail: {$validated['email']}\nSubject: {$validated['subject']}\n\nMessage:\n{$validated['message']}",
+                function ($m) use ($validated) {
+                    $m->to('hasnainalifan23@gmail.com')
+                      ->replyTo($validated['email'], $validated['name'])
+                      ->subject('Portfolio Inquiry: ' . ($validated['subject'] ?: $validated['name']));
+                }
+            );
+        } catch (\Throwable $e) {
+            Log::info('Mail dispatch fallback: ' . $e->getMessage());
+        }
+
+        Log::info('Portfolio Contact Inquiry Received & Saved', [
             'name' => $validated['name'],
             'email' => $validated['email'],
             'subject' => $validated['subject'] ?? 'N/A',
@@ -75,10 +102,13 @@ class PortfolioController extends Controller
         $resumeConfig = config('portfolio.resume');
         $resumePath = public_path($resumeConfig['path']);
 
-        if ($resumeConfig['is_available'] && File::exists($resumePath)) {
-            return response()->download($resumePath, 'Hasnain-Al-Ifan-CV.pdf');
+        if (File::exists($resumePath)) {
+            return response()->file($resumePath, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="Hasnain-Al-Ifan-CV.pdf"',
+            ]);
         }
 
-        return redirect()->route('home')->with('resume_notice', 'The official CV PDF is currently being finalized for upcoming graduation. Please email hasnainalifan23@gmail.com for a direct copy.');
+        return redirect()->route('home')->with('resume_notice', 'The official CV PDF is currently being updated. Please contact hasnainalifan23@gmail.com.');
     }
 }

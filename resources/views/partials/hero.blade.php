@@ -113,7 +113,9 @@
                             <div class="portrait-badge-title">{{ $portfolio['brand']['full_name'] }}</div>
                             <div class="portrait-badge-sub">Junior Software Engineer</div>
                         </div>
-                        <span class="monogram" style="width: 32px; height: 32px; font-size: 0.8125rem;">I.</span>
+                        <span class="brand-avatar-frame" style="width: 34px; height: 34px;" aria-hidden="true">
+                            <img src="{{ asset('images/profile.jpg') }}" alt="Hasnain Al Ifan" class="brand-avatar-img">
+                        </span>
                     </div>
                 </div>
             </div>

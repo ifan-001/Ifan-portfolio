@@ -67,8 +67,8 @@ return [
     */
     'resume' => [
         'path' => '/resume/Hasnain-Al-Ifan-CV.pdf',
-        'is_available' => false, // Set to true once the final verified PDF is placed in public/resume
-        'status_note' => 'Full CV available on request during current final-semester review.',
+        'is_available' => true,
+        'status_note' => 'Official CV available for preview and download.',
     ],
 
     /*

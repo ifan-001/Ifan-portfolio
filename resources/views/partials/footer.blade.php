@@ -1,8 +1,10 @@
 <footer class="site-footer">
     <div class="container footer-inner">
         <div>
-            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                <span class="monogram" style="width: 28px; height: 28px; font-size: 0.75rem;">I.</span>
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                <span class="brand-avatar-frame" style="width: 30px; height: 30px;" aria-hidden="true">
+                    <img src="{{ asset('images/profile.jpg') }}" alt="Hasnain Al Ifan" class="brand-avatar-img">
+                </span>
                 <span style="font-weight: 800; font-size: 1.125rem; color: var(--text-primary);">
                     IFAN<span class="brand-dot">.</span>
                 </span>

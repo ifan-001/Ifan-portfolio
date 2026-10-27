@@ -206,4 +206,209 @@ document.addEventListener('DOMContentLoaded', function () {
       fallbackAvatar.style.display = 'flex';
     });
   }
+
+  // 7. Live Chat System Logic
+  const chatBubbleBtn = document.getElementById('chat-bubble-btn');
+  const chatWindow = document.getElementById('chat-window');
+  const chatCloseBtn = document.getElementById('chat-close-btn');
+  const chatIconOpen = document.getElementById('chat-icon-open');
+  const chatIconClose = document.getElementById('chat-icon-close');
+  const chatStatusIndicator = document.getElementById('chat-status-indicator');
+  const chatHeaderStatusDot = document.getElementById('chat-header-status-dot');
+  const chatHeaderStatusText = document.getElementById('chat-header-status-text');
+  const chatStatusBanner = document.getElementById('chat-status-banner');
+  const chatStatusBannerText = document.getElementById('chat-status-banner-text');
+  const chatDynamicWelcome = document.getElementById('chat-dynamic-welcome');
+  const adminStatusToggle = document.getElementById('admin-status-toggle');
+  const chatInputForm = document.getElementById('chat-input-form');
+  const chatTextInput = document.getElementById('chat-text-input');
+  const chatMessagesBody = document.getElementById('chat-messages-body');
+  const chatVisitorName = document.getElementById('chat-visitor-name');
+  const chatVisitorEmail = document.getElementById('chat-visitor-email');
+
+  let chatSessionId = localStorage.getItem('portfolio_chat_session_id') || ('sess_' + Math.random().toString(36).substring(2, 15));
+  localStorage.setItem('portfolio_chat_session_id', chatSessionId);
+
+  let isChatOpen = false;
+  let chatPollInterval = null;
+  let lastMessageCount = 0;
+
+  function updateChatStatusUI(isOnline) {
+    if (isOnline) {
+      chatStatusIndicator.className = 'chat-status-indicator online';
+      chatStatusIndicator.title = 'Status: Hasnain is Active';
+      if (chatHeaderStatusDot) chatHeaderStatusDot.className = 'chat-header-status-dot online';
+      if (chatHeaderStatusText) chatHeaderStatusText.innerHTML = '<span class="status-text-pill online">Active Now</span>';
+      if (chatStatusBanner) {
+        chatStatusBanner.className = 'chat-status-banner online';
+        chatStatusBannerText.textContent = 'Hasnain is currently online & ready to chat.';
+      }
+      if (chatDynamicWelcome) {
+        chatDynamicWelcome.textContent = "Hello! 👋 Thanks for visiting my portfolio. I'm currently active—feel free to send me a direct message about web development, Laravel, or collaboration!";
+      }
+    } else {
+      chatStatusIndicator.className = 'chat-status-indicator offline';
+      chatStatusIndicator.title = 'Status: Hasnain is Away';
+      if (chatHeaderStatusDot) chatHeaderStatusDot.className = 'chat-header-status-dot offline';
+      if (chatHeaderStatusText) chatHeaderStatusText.innerHTML = '<span class="status-text-pill offline">Away &bull; Leave a message</span>';
+      if (chatStatusBanner) {
+        chatStatusBanner.className = 'chat-status-banner offline';
+        chatStatusBannerText.textContent = 'Hasnain is currently away from his desk. Leave a message.';
+      }
+      if (chatDynamicWelcome) {
+        chatDynamicWelcome.textContent = "Hello! 👋 I'm currently away from my desk. Leave your message and contact info, and I'll receive it immediately!";
+      }
+    }
+  }
+
+  function fetchChatStatus() {
+    fetch('/api/chat/status')
+      .then(res => res.json())
+      .then(data => {
+        updateChatStatusUI(data.is_online);
+      })
+      .catch(err => console.debug('Chat status fetch notice:', err));
+  }
+
+  function fetchMessages() {
+    fetch(`/api/chat/messages?session_id=${encodeURIComponent(chatSessionId)}`)
+      .then(res => res.json())
+      .then(data => {
+        updateChatStatusUI(data.is_online);
+
+        if (data.messages && data.messages.length > lastMessageCount) {
+          // Clear previous dynamically rendered messages (keep welcome)
+          const rows = chatMessagesBody.querySelectorAll('.chat-message-row.dynamic');
+          rows.forEach(r => r.remove());
+
+          data.messages.forEach(msg => {
+            appendMessageToUI(msg.sender, msg.message, msg.time, false);
+          });
+
+          lastMessageCount = data.messages.length;
+          chatMessagesBody.scrollTop = chatMessagesBody.scrollHeight;
+        }
+      })
+      .catch(err => console.debug('Messages fetch notice:', err));
+  }
+
+  function appendMessageToUI(sender, text, time, shouldScroll = true) {
+    const row = document.createElement('div');
+    row.className = `chat-message-row ${sender} dynamic`;
+
+    if (sender === 'admin') {
+      row.innerHTML = `
+        <div class="chat-msg-avatar">
+          <img src="/images/profile.jpg" alt="Hasnain Al Ifan">
+        </div>
+        <div class="chat-bubble admin">
+          <p>${escapeHtml(text)}</p>
+          <span class="chat-msg-time">${time || 'Just now'}</span>
+        </div>
+      `;
+    } else {
+      row.innerHTML = `
+        <div class="chat-bubble visitor">
+          <p>${escapeHtml(text)}</p>
+          <span class="chat-msg-time">${time || 'Just now'}</span>
+        </div>
+      `;
+    }
+
+    chatMessagesBody.appendChild(row);
+    if (shouldScroll) {
+      chatMessagesBody.scrollTop = chatMessagesBody.scrollHeight;
+    }
+  }
+
+  function escapeHtml(string) {
+    const div = document.createElement('div');
+    div.textContent = string;
+    return div.innerHTML;
+  }
+
+  function toggleChatWindow() {
+    isChatOpen = !isChatOpen;
+    chatWindow.style.display = isChatOpen ? 'flex' : 'none';
+    chatBubbleBtn.setAttribute('aria-expanded', isChatOpen ? 'true' : 'false');
+
+    if (isChatOpen) {
+      chatIconOpen.style.display = 'none';
+      chatIconClose.style.display = 'block';
+      fetchMessages();
+      chatTextInput.focus();
+      chatPollInterval = setInterval(fetchMessages, 3500);
+    } else {
+      chatIconOpen.style.display = 'block';
+      chatIconClose.style.display = 'none';
+      if (chatPollInterval) clearInterval(chatPollInterval);
+    }
+  }
+
+  if (chatBubbleBtn && chatWindow) {
+    chatBubbleBtn.addEventListener('click', toggleChatWindow);
+    if (chatCloseBtn) chatCloseBtn.addEventListener('click', toggleChatWindow);
+
+    // Initial status fetch on page load
+    fetchChatStatus();
+    setInterval(fetchChatStatus, 15000); // Check status periodically
+  }
+
+  // Admin Quick Switcher
+  if (adminStatusToggle) {
+    adminStatusToggle.addEventListener('click', function (e) {
+      e.stopPropagation();
+      fetch('/api/chat/status', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+      })
+        .then(res => res.json())
+        .then(data => {
+          updateChatStatusUI(data.is_online);
+        })
+        .catch(err => console.error('Status toggle error:', err));
+    });
+  }
+
+  // Handle message send
+  if (chatInputForm) {
+    chatInputForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const text = chatTextInput.value.trim();
+      if (!text) return;
+
+      const vName = chatVisitorName ? chatVisitorName.value.trim() : '';
+      const vEmail = chatVisitorEmail ? chatVisitorEmail.value.trim() : '';
+
+      // Optimistic UI update
+      appendMessageToUI('visitor', text, 'Just now', true);
+      chatTextInput.value = '';
+      lastMessageCount++;
+
+      fetch('/api/chat/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({
+          session_id: chatSessionId,
+          message: text,
+          visitor_name: vName,
+          visitor_email: vEmail,
+        }),
+      })
+        .then(res => res.json())
+        .then(data => {
+          console.debug('Chat message sent:', data);
+        })
+        .catch(err => {
+          console.error('Error sending chat message:', err);
+        });
+    });
+  }
 });
+

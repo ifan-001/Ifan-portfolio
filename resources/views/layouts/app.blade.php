@@ -40,8 +40,8 @@
     {{-- Schema.org JSON-LD Structured Data --}}
     <script type="application/ld+json">
     {
-        "@context": "https://schema.org",
-        "@type": "Person",
+        "@@context": "https://schema.org",
+        "@@type": "Person",
         "name": "{{ $portfolio['brand']['full_name'] }}",
         "jobTitle": "{{ $portfolio['brand']['title'] }}",
         "worksFor": {
@@ -72,6 +72,9 @@
     <main id="main-content">
         @yield('content')
     </main>
+
+    {{-- Floating Live Chat System --}}
+    @include('partials.chat')
 
     @include('partials.footer')
 
