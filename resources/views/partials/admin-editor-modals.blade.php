@@ -14,7 +14,10 @@
 <div id="profileInfoModal" class="admin-modal" role="dialog" aria-modal="true" aria-labelledby="profileModalTitle">
     <div class="admin-modal-header">
         <h3 id="profileModalTitle" class="admin-modal-title">Edit Profile &amp; Identity</h3>
-        <button type="button" class="admin-modal-close" onclick="closeAdminModal('profileInfoModal')">&times;</button>
+        <div class="admin-modal-header-actions">
+            <button type="submit" form="profileInfoForm" class="btn btn-primary btn-xs">💾 Save</button>
+            <button type="button" class="admin-modal-close" onclick="closeAdminModal('profileInfoModal')">&times;</button>
+        </div>
     </div>
     <form id="profileInfoForm" onsubmit="handleProfileUpdate(event)">
         @csrf
@@ -75,7 +78,7 @@
         </div>
         <div class="admin-modal-footer">
             <button type="button" class="btn btn-secondary btn-sm" onclick="closeAdminModal('profileInfoModal')">Cancel</button>
-            <button type="submit" class="btn btn-primary btn-sm">Save Changes</button>
+            <button type="submit" class="btn btn-primary btn-sm">💾 Save Profile Changes</button>
         </div>
     </form>
 </div>
@@ -84,12 +87,15 @@
 <div id="profilePhotoModal" class="admin-modal" role="dialog" aria-modal="true" aria-labelledby="photoModalTitle">
     <div class="admin-modal-header">
         <h3 id="photoModalTitle" class="admin-modal-title">Profile Picture &amp; Automatic Fitting</h3>
-        <button type="button" class="admin-modal-close" onclick="closeAdminModal('profilePhotoModal')">&times;</button>
+        <div class="admin-modal-header-actions">
+            <button type="submit" form="profilePhotoForm" class="btn btn-primary btn-xs">💾 Save Photo</button>
+            <button type="button" class="admin-modal-close" onclick="closeAdminModal('profilePhotoModal')">&times;</button>
+        </div>
     </div>
     <form id="profilePhotoForm" onsubmit="handlePhotoUpload(event)">
         @csrf
         <div class="admin-modal-body">
-            <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:16px;">
+            <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:12px;">
                 Upload a portrait photo. The system maintains the original aspect ratio with automatic cropping, responsive scaling, and instant live preview.
             </p>
 
@@ -101,21 +107,21 @@
             {{-- Live Fit Dual Preview --}}
             <div class="photo-preview-grid">
                 <div>
-                    <div class="preview-heading">Portrait Frame Preview (4:5 Hero Card)</div>
+                    <div class="preview-heading">Portrait (4:5 Hero)</div>
                     <div class="photo-preview-box portrait-box">
                         <img id="livePreviewPortrait" src="{{ asset($portfolio['brand']['profile_image']) }}?v={{ time() }}" alt="Preview" class="preview-img-fit">
                     </div>
                 </div>
 
                 <div>
-                    <div class="preview-heading">Brand Monogram Preview (1:1 Circle)</div>
+                    <div class="preview-heading">Circle (1:1 Avatar)</div>
                     <div class="photo-preview-box circle-box">
                         <img id="livePreviewCircle" src="{{ asset($portfolio['brand']['profile_image']) }}?v={{ time() }}" alt="Preview" class="preview-img-fit">
                     </div>
                 </div>
             </div>
 
-            <div class="admin-form-group" style="margin-top:16px;">
+            <div class="admin-form-group" style="margin-top:12px;">
                 <label class="admin-label">Vertical Position Alignment</label>
                 <select id="photoPositionSelect" class="admin-select" onchange="adjustPreviewPosition(this.value)">
                     <option value="center top" selected>Center Top (Recommended for portraits - head remains visible)</option>
@@ -130,7 +136,7 @@
         </div>
         <div class="admin-modal-footer">
             <button type="button" class="btn btn-secondary btn-sm" onclick="closeAdminModal('profilePhotoModal')">Cancel</button>
-            <button type="submit" id="photoSaveBtn" class="btn btn-primary btn-sm">Save &amp; Apply Photo</button>
+            <button type="submit" id="photoSaveBtn" class="btn btn-primary btn-sm">💾 Save &amp; Apply Photo</button>
         </div>
     </form>
 </div>
@@ -139,7 +145,13 @@
 <div id="aboutBioModal" class="admin-modal admin-modal-lg" role="dialog" aria-modal="true" aria-labelledby="aboutModalTitle">
     <div class="admin-modal-header">
         <h3 id="aboutModalTitle" class="admin-modal-title">Edit About Me Bio Paragraphs</h3>
-        <button type="button" class="admin-modal-close" onclick="closeAdminModal('aboutBioModal')">&times;</button>
+        <div class="admin-modal-header-actions">
+            <button type="button" class="btn btn-secondary btn-xs" onclick="restoreAuthenticBio()" style="color:#F59E0B; border-color:rgba(245,158,11,0.4);" title="Restore original authentic 4 paragraphs from config">
+                ↺ Restore Bio
+            </button>
+            <button type="submit" form="aboutBioForm" class="btn btn-primary btn-xs">💾 Save Bio</button>
+            <button type="button" class="admin-modal-close" onclick="closeAdminModal('aboutBioModal')">&times;</button>
+        </div>
     </div>
     <form id="aboutBioForm" onsubmit="handleAboutBioSave(event)">
         @csrf
@@ -148,9 +160,6 @@
                 <p style="font-size:0.85rem; color:var(--text-secondary); margin:0;">
                     Manage bio paragraphs. You can edit existing text, add new paragraphs, or remove paragraphs.
                 </p>
-                <button type="button" class="btn btn-secondary btn-xs" onclick="restoreAuthenticBio()" style="color:#F59E0B; border-color:rgba(245,158,11,0.4);" title="Restore original authentic 4 paragraphs from config">
-                    ↺ Restore Authentic Bio
-                </button>
             </div>
 
             <div id="bioParagraphsContainer" class="bio-paragraphs-list">
@@ -171,7 +180,7 @@
         </div>
         <div class="admin-modal-footer">
             <button type="button" class="btn btn-secondary btn-sm" onclick="closeAdminModal('aboutBioModal')">Cancel</button>
-            <button type="submit" class="btn btn-primary btn-sm">Save Bio Paragraphs</button>
+            <button type="submit" class="btn btn-primary btn-sm">💾 Save Bio Paragraphs</button>
         </div>
     </form>
 </div>
@@ -180,7 +189,10 @@
 <div id="skillModal" class="admin-modal" role="dialog" aria-modal="true" aria-labelledby="skillModalTitle">
     <div class="admin-modal-header">
         <h3 id="skillModalTitle" class="admin-modal-title">Add / Edit Skill</h3>
-        <button type="button" class="admin-modal-close" onclick="closeAdminModal('skillModal')">&times;</button>
+        <div class="admin-modal-header-actions">
+            <button type="submit" form="skillForm" class="btn btn-primary btn-xs">💾 Save</button>
+            <button type="button" class="admin-modal-close" onclick="closeAdminModal('skillModal')">&times;</button>
+        </div>
     </div>
     <form id="skillForm" onsubmit="handleSkillSave(event)">
         @csrf
@@ -221,7 +233,7 @@
         <div class="admin-modal-footer">
             <button type="button" id="skillDeleteBtn" class="btn btn-danger btn-sm" onclick="handleSkillDelete()" style="display:none; margin-right:auto;">Delete Skill</button>
             <button type="button" class="btn btn-secondary btn-sm" onclick="closeAdminModal('skillModal')">Cancel</button>
-            <button type="submit" class="btn btn-primary btn-sm">Save Skill</button>
+            <button type="submit" class="btn btn-primary btn-sm">💾 Save Skill</button>
         </div>
     </form>
 </div>
@@ -230,7 +242,10 @@
 <div id="projectModal" class="admin-modal admin-modal-lg" role="dialog" aria-modal="true" aria-labelledby="projectModalTitle">
     <div class="admin-modal-header">
         <h3 id="projectModalTitle" class="admin-modal-title">Add / Edit Project</h3>
-        <button type="button" class="admin-modal-close" onclick="closeAdminModal('projectModal')">&times;</button>
+        <div class="admin-modal-header-actions">
+            <button type="submit" form="projectForm" class="btn btn-primary btn-xs">💾 Save</button>
+            <button type="button" class="admin-modal-close" onclick="closeAdminModal('projectModal')">&times;</button>
+        </div>
     </div>
     <form id="projectForm" onsubmit="handleProjectSave(event)" enctype="multipart/form-data">
         @csrf
@@ -307,7 +322,7 @@
         <div class="admin-modal-footer">
             <button type="button" id="projectDeleteBtn" class="btn btn-danger btn-sm" onclick="handleProjectDelete()" style="display:none; margin-right:auto;">Delete Project</button>
             <button type="button" class="btn btn-secondary btn-sm" onclick="closeAdminModal('projectModal')">Cancel</button>
-            <button type="submit" class="btn btn-primary btn-sm">Save Project</button>
+            <button type="submit" class="btn btn-primary btn-sm">💾 Save Project</button>
         </div>
     </form>
 </div>
@@ -316,7 +331,10 @@
 <div id="experienceModal" class="admin-modal admin-modal-lg" role="dialog" aria-modal="true" aria-labelledby="expModalTitle">
     <div class="admin-modal-header">
         <h3 id="expModalTitle" class="admin-modal-title">Add / Edit Experience</h3>
-        <button type="button" class="admin-modal-close" onclick="closeAdminModal('experienceModal')">&times;</button>
+        <div class="admin-modal-header-actions">
+            <button type="submit" form="experienceForm" class="btn btn-primary btn-xs">💾 Save</button>
+            <button type="button" class="admin-modal-close" onclick="closeAdminModal('experienceModal')">&times;</button>
+        </div>
     </div>
     <form id="experienceForm" onsubmit="handleExperienceSave(event)">
         @csrf
@@ -376,7 +394,7 @@
         <div class="admin-modal-footer">
             <button type="button" id="expDeleteBtn" class="btn btn-danger btn-sm" onclick="handleExperienceDelete()" style="display:none; margin-right:auto;">Delete Record</button>
             <button type="button" class="btn btn-secondary btn-sm" onclick="closeAdminModal('experienceModal')">Cancel</button>
-            <button type="submit" class="btn btn-primary btn-sm">Save Experience</button>
+            <button type="submit" class="btn btn-primary btn-sm">💾 Save Experience</button>
         </div>
     </form>
 </div>
@@ -385,7 +403,10 @@
 <div id="educationModal" class="admin-modal" role="dialog" aria-modal="true" aria-labelledby="eduModalTitle">
     <div class="admin-modal-header">
         <h3 id="eduModalTitle" class="admin-modal-title">Add / Edit Education</h3>
-        <button type="button" class="admin-modal-close" onclick="closeAdminModal('educationModal')">&times;</button>
+        <div class="admin-modal-header-actions">
+            <button type="submit" form="educationForm" class="btn btn-primary btn-xs">💾 Save</button>
+            <button type="button" class="admin-modal-close" onclick="closeAdminModal('educationModal')">&times;</button>
+        </div>
     </div>
     <form id="educationForm" onsubmit="handleEducationSave(event)">
         @csrf
@@ -432,7 +453,7 @@
         <div class="admin-modal-footer">
             <button type="button" id="eduDeleteBtn" class="btn btn-danger btn-sm" onclick="handleEducationDelete()" style="display:none; margin-right:auto;">Delete Record</button>
             <button type="button" class="btn btn-secondary btn-sm" onclick="closeAdminModal('educationModal')">Cancel</button>
-            <button type="submit" class="btn btn-primary btn-sm">Save Education</button>
+            <button type="submit" class="btn btn-primary btn-sm">💾 Save Education</button>
         </div>
     </form>
 </div>
@@ -441,7 +462,10 @@
 <div id="researchModal" class="admin-modal" role="dialog" aria-modal="true" aria-labelledby="resModalTitle">
     <div class="admin-modal-header">
         <h3 id="resModalTitle" class="admin-modal-title">Add Research Topic / Highlight</h3>
-        <button type="button" class="admin-modal-close" onclick="closeAdminModal('researchModal')">&times;</button>
+        <div class="admin-modal-header-actions">
+            <button type="submit" form="researchForm" class="btn btn-primary btn-xs">💾 Save</button>
+            <button type="button" class="admin-modal-close" onclick="closeAdminModal('researchModal')">&times;</button>
+        </div>
     </div>
     <form id="researchForm" onsubmit="handleResearchSave(event)">
         @csrf
@@ -491,7 +515,7 @@
         </div>
         <div class="admin-modal-footer">
             <button type="button" class="btn btn-secondary btn-sm" onclick="closeAdminModal('researchModal')">Cancel</button>
-            <button type="submit" class="btn btn-primary btn-sm">Save Item</button>
+            <button type="submit" class="btn btn-primary btn-sm">💾 Save Item</button>
         </div>
     </form>
 </div>
@@ -500,7 +524,10 @@
 <div id="blogModal" class="admin-modal admin-modal-lg" role="dialog" aria-modal="true" aria-labelledby="blogModalTitle">
     <div class="admin-modal-header">
         <h3 id="blogModalTitle" class="admin-modal-title">Write / Edit Blog Article</h3>
-        <button type="button" class="admin-modal-close" onclick="closeAdminModal('blogModal')">&times;</button>
+        <div class="admin-modal-header-actions">
+            <button type="submit" form="blogForm" class="btn btn-primary btn-xs">💾 Save</button>
+            <button type="button" class="admin-modal-close" onclick="closeAdminModal('blogModal')">&times;</button>
+        </div>
     </div>
     <form id="blogForm" onsubmit="handleBlogSave(event)">
         @csrf
@@ -545,7 +572,7 @@
         <div class="admin-modal-footer">
             <button type="button" id="blogDeleteBtn" class="btn btn-danger btn-sm" onclick="handleBlogDelete()" style="display:none; margin-right:auto;">Delete Post</button>
             <button type="button" class="btn btn-secondary btn-sm" onclick="closeAdminModal('blogModal')">Cancel</button>
-            <button type="submit" class="btn btn-primary btn-sm">Save Article</button>
+            <button type="submit" class="btn btn-primary btn-sm">💾 Save Article</button>
         </div>
     </form>
 </div>
@@ -554,7 +581,10 @@
 <div id="resumeModal" class="admin-modal" role="dialog" aria-modal="true" aria-labelledby="resumeModalTitle">
     <div class="admin-modal-header">
         <h3 id="resumeModalTitle" class="admin-modal-title">Manage Resume &amp; CV</h3>
-        <button type="button" class="admin-modal-close" onclick="closeAdminModal('resumeModal')">&times;</button>
+        <div class="admin-modal-header-actions">
+            <button type="submit" form="resumeForm" class="btn btn-primary btn-xs">💾 Save</button>
+            <button type="button" class="admin-modal-close" onclick="closeAdminModal('resumeModal')">&times;</button>
+        </div>
     </div>
     <form id="resumeForm" onsubmit="handleResumeSave(event)" enctype="multipart/form-data">
         @csrf
@@ -582,7 +612,7 @@
         </div>
         <div class="admin-modal-footer">
             <button type="button" class="btn btn-secondary btn-sm" onclick="closeAdminModal('resumeModal')">Cancel</button>
-            <button type="submit" class="btn btn-primary btn-sm">Save Resume Settings</button>
+            <button type="submit" class="btn btn-primary btn-sm">💾 Save Resume Settings</button>
         </div>
     </form>
 </div>
@@ -591,7 +621,10 @@
 <div id="socialsModal" class="admin-modal" role="dialog" aria-modal="true" aria-labelledby="socialsModalTitle">
     <div class="admin-modal-header">
         <h3 id="socialsModalTitle" class="admin-modal-title">Manage Social Links</h3>
-        <button type="button" class="admin-modal-close" onclick="closeAdminModal('socialsModal')">&times;</button>
+        <div class="admin-modal-header-actions">
+            <button type="submit" form="socialsForm" class="btn btn-primary btn-xs">💾 Save</button>
+            <button type="button" class="admin-modal-close" onclick="closeAdminModal('socialsModal')">&times;</button>
+        </div>
     </div>
     <form id="socialsForm" onsubmit="handleSocialsSave(event)">
         @csrf
@@ -618,7 +651,7 @@
         </div>
         <div class="admin-modal-footer">
             <button type="button" class="btn btn-secondary btn-sm" onclick="closeAdminModal('socialsModal')">Cancel</button>
-            <button type="submit" class="btn btn-primary btn-sm">Save Social Links</button>
+            <button type="submit" class="btn btn-primary btn-sm">💾 Save Social Links</button>
         </div>
     </form>
 </div>

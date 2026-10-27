@@ -208,37 +208,5 @@
         @endif
     </div>
 </div>
-
-<!-- Quick CMS Links Grid -->
-<div class="card">
-    <div class="card-header">
-        <h3 class="card-title">Content Management Shortcuts</h3>
-    </div>
-    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:16px;">
-        <a href="{{ route('admin.profile.edit') }}" class="btn btn-secondary" style="justify-content:flex-start; padding:14px;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-            <span>Edit Profile &amp; Bio</span>
-        </a>
-        <a href="{{ route('admin.resume.index') }}" class="btn btn-secondary" style="justify-content:flex-start; padding:14px;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-            <span>Replace CV PDF</span>
-        </a>
-        <a href="{{ route('admin.projects.create') }}" class="btn btn-secondary" style="justify-content:flex-start; padding:14px;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon></svg>
-            <span>+ Add New Project</span>
-        </a>
-        <a href="{{ route('admin.blog.create') }}" class="btn btn-secondary" style="justify-content:flex-start; padding:14px;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
-            <span>+ Write Blog Article</span>
-        </a>
-        <a href="{{ route('admin.skills.index') }}" class="btn btn-secondary" style="justify-content:flex-start; padding:14px;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 18l6-6-6-6"></path><path d="M8 6l-6 6 6 6"></path></svg>
-            <span>Manage Skills ({{ $skillCount }})</span>
-        </a>
-        <a href="{{ route('admin.analytics.index') }}" class="btn btn-secondary" style="justify-content:flex-start; padding:14px;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
-            <span>View Full Analytics</span>
-        </a>
-    </div>
-</div>
 @endsection
+

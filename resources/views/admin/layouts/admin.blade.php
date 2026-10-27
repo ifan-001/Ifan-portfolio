@@ -42,23 +42,44 @@
                 </a>
             </div>
 
-            <!-- 3 Pillars Switcher Bar -->
-            <div class="pillar-nav-switcher">
-                <a href="{{ route('admin.dashboard') }}" class="pillar-nav-btn {{ $currentPillar === 'operations' ? 'active' : '' }}" title="Core Operations">
-                    <span>⚡ Operations</span>
+            <!-- 3 Pillars Switcher Section -->
+            <div class="sidebar-pillar-menu pillar-nav-switcher">
+                <a href="{{ route('admin.dashboard') }}" class="sidebar-pillar-btn pillar-nav-btn {{ $currentPillar === 'operations' ? 'active' : '' }}" title="Core Operations">
+                    <span class="pillar-icon-box">⚡</span>
+                    <div class="pillar-text-box">
+                        <span class="pillar-title">Core Operations</span>
+                        <span class="pillar-sub">Dashboard, Chat, Inquiries</span>
+                    </div>
+                    @if($currentPillar === 'operations')
+                        <span class="pillar-badge-indicator">Active</span>
+                    @endif
                 </a>
-                <a href="{{ route('admin.content') }}" class="pillar-nav-btn {{ $currentPillar === 'content' ? 'active' : '' }}" title="Content Management (Visual Portfolio Editor)">
-                    <span>✦ Content CMS</span>
+
+                <a href="{{ route('admin.content') }}" class="sidebar-pillar-btn pillar-nav-btn {{ $currentPillar === 'content' ? 'active' : '' }}" title="Content Management (Visual Portfolio Editor)">
+                    <span class="pillar-icon-box" style="color:var(--accent-blue);">✦</span>
+                    <div class="pillar-text-box">
+                        <span class="pillar-title">Content Management</span>
+                        <span class="pillar-sub">Live Visual Editor (On Site)</span>
+                    </div>
+                    <span class="pillar-badge-indicator">Open ↗</span>
                 </a>
-                <a href="{{ route('admin.analytics.index') }}" class="pillar-nav-btn {{ $currentPillar === 'insights' ? 'active' : '' }}" title="System & Insights">
-                    <span>⚙ Insights</span>
+
+                <a href="{{ route('admin.analytics.index') }}" class="sidebar-pillar-btn pillar-nav-btn {{ $currentPillar === 'insights' ? 'active' : '' }}" title="System & Insights">
+                    <span class="pillar-icon-box">⚙</span>
+                    <div class="pillar-text-box">
+                        <span class="pillar-title">System &amp; Insights</span>
+                        <span class="pillar-sub">Analytics &amp; Platform Settings</span>
+                    </div>
+                    @if($currentPillar === 'insights')
+                        <span class="pillar-badge-indicator">Active</span>
+                    @endif
                 </a>
             </div>
 
             <nav class="sidebar-nav">
                 @if($currentPillar === 'insights')
                     {{-- Pillar 3: System & Insights --}}
-                    <div class="nav-section-title">System &amp; Insights</div>
+                    <div class="nav-section-title">System &amp; Insights Features</div>
                     <a href="{{ route('admin.analytics.index') }}" class="nav-link {{ request()->routeIs('admin.analytics.*') ? 'active' : '' }}">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
                         <span>Analytics &amp; Telemetry</span>
@@ -70,7 +91,7 @@
                     </a>
                 @else
                     {{-- Pillar 1: Core Operations (Default) --}}
-                    <div class="nav-section-title">Core Operations</div>
+                    <div class="nav-section-title">Core Operations Features</div>
                     <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
                         <span>Dashboard Overview</span>
@@ -92,12 +113,6 @@
                         @endif
                     </a>
                 @endif
-
-                <div class="nav-section-title" style="margin-top:16px;">Quick Links</div>
-                <a href="{{ route('admin.content') }}" class="nav-link" style="color:var(--accent-blue);">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
-                    <span>Visual Portfolio Editor</span>
-                </a>
             </nav>
 
             <div class="sidebar-footer">

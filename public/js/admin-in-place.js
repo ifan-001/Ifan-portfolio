@@ -96,11 +96,12 @@ function adjustPreviewPosition(posValue) {
 async function handlePhotoUpload(e) {
     e.preventDefault();
     const form = e.target;
-    const saveBtn = document.getElementById('photoSaveBtn');
+    const submitBtns = form.querySelectorAll('button[type="submit"]');
+    const headerBtn = document.querySelector('button[form="profilePhotoForm"]');
     const formData = new FormData(form);
 
-    saveBtn.disabled = true;
-    saveBtn.textContent = 'Uploading & Fitting...';
+    submitBtns.forEach(b => { b.disabled = true; b.textContent = 'Saving...'; });
+    if (headerBtn) { headerBtn.disabled = true; headerBtn.textContent = 'Saving...'; }
 
     try {
         const response = await fetch('/admin/profile/photo', {
@@ -125,15 +126,15 @@ async function handlePhotoUpload(e) {
             });
             setTimeout(() => {
                 closeAdminModal('profilePhotoModal');
-            }, 600);
+            }, 500);
         } else {
             showAdminToast(data.message || 'Photo upload failed. Check file type and size.', true);
         }
     } catch (err) {
         showAdminToast('Network error during photo upload.', true);
     } finally {
-        saveBtn.disabled = false;
-        saveBtn.textContent = 'Save & Apply Photo';
+        submitBtns.forEach(b => { b.disabled = false; b.textContent = '💾 Save & Apply Photo'; });
+        if (headerBtn) { headerBtn.disabled = false; headerBtn.textContent = '💾 Save Photo'; }
     }
 }
 

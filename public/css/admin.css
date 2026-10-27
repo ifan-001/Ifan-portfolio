@@ -21,7 +21,7 @@
     --status-offline: #EF4444;
     --status-away: #F59E0B;
     
-    --sidebar-width: 260px;
+    --sidebar-width: 275px;
     --header-height: 64px;
     --bottom-nav-height: 64px;
     --radius-sm: 6px;
@@ -64,6 +64,9 @@ body {
     bottom: 0;
     left: 0;
     z-index: 100;
+    overflow-x: hidden;
+    overflow-y: auto;
+    box-sizing: border-box;
     transition: var(--transition);
 }
 
@@ -531,40 +534,106 @@ textarea.form-control {
 }
 
 /* 3 Pillars Architecture Styles */
+.sidebar-pillar-menu,
 .pillar-nav-switcher {
     display: flex;
-    padding: 10px 12px;
+    flex-direction: column;
+    padding: 10px;
     gap: 6px;
     background: rgba(0, 0, 0, 0.25);
     border-bottom: 1px solid var(--border-color);
+    width: 100%;
+    box-sizing: border-box;
 }
 
+.sidebar-pillar-btn,
 .pillar-nav-btn {
-    flex: 1;
     display: flex;
     align-items: center;
-    justify-content: center;
-    font-size: 0.74rem;
-    font-weight: 600;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
     color: var(--text-secondary);
     text-decoration: none;
-    padding: 8px 4px;
-    border-radius: var(--radius-sm);
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.05);
     transition: var(--transition);
-    white-space: nowrap;
+    width: 100%;
+    box-sizing: border-box;
 }
 
+.sidebar-pillar-btn:hover,
 .pillar-nav-btn:hover {
     color: var(--text-primary);
     background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.12);
 }
 
+.sidebar-pillar-btn.active,
 .pillar-nav-btn.active {
-    background: rgba(59, 130, 246, 0.16);
-    border-color: rgba(59, 130, 246, 0.4);
+    background: rgba(59, 130, 246, 0.15);
+    border-color: var(--accent-blue);
+    color: var(--text-primary);
+    box-shadow: 0 0 16px rgba(59, 130, 246, 0.2);
+}
+
+.pillar-icon-box {
+    width: 30px;
+    height: 30px;
+    border-radius: var(--radius-sm);
+    background: rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    flex-shrink: 0;
+}
+
+.sidebar-pillar-btn.active .pillar-icon-box,
+.pillar-nav-btn.active .pillar-icon-box {
+    background: var(--accent-blue);
+    color: #ffffff;
+}
+
+.pillar-text-box {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+}
+
+.pillar-title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pillar-sub {
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 1px;
+}
+
+.sidebar-pillar-btn.active .pillar-sub,
+.pillar-nav-btn.active .pillar-sub {
+    color: rgba(59, 130, 246, 0.9);
+}
+
+.pillar-badge-indicator {
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: var(--radius-full);
+    background: rgba(59, 130, 246, 0.2);
     color: var(--accent-blue);
+    border: 1px solid rgba(59, 130, 246, 0.35);
+    flex-shrink: 0;
 }
 
 /* Pillar Hub Cards on Overview */
