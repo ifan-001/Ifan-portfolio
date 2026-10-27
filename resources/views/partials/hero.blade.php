@@ -2,9 +2,16 @@
     <div class="container">
         <div class="hero-grid">
             <div class="hero-content">
-                <div class="status-badge">
-                    <span class="status-dot"></span>
-                    <span>{{ $portfolio['brand']['title'] }} &middot; {{ $portfolio['experience'][0]['company'] }}</span>
+                <div style="display:flex; align-items:center; flex-wrap:wrap; gap:8px;">
+                    <div class="status-badge">
+                        <span class="status-dot"></span>
+                        <span>{{ $portfolio['brand']['title'] }} &middot; {{ $portfolio['experience'][0]['company'] }}</span>
+                    </div>
+                    @auth
+                        <button type="button" class="admin-edit-trigger" onclick="openAdminModal('profileInfoModal')" title="Edit profile details, designation, and bio">
+                            ✎ Edit Profile
+                        </button>
+                    @endauth
                 </div>
 
                 <h1 class="hero-name">{{ $portfolio['brand']['full_name'] }}</h1>
@@ -56,6 +63,11 @@
                     <a href="#contact" class="btn btn-secondary">
                         <span>Let's Connect</span>
                     </a>
+                    @auth
+                        <button type="button" class="admin-edit-trigger" onclick="openAdminModal('resumeModal')" title="Upload or manage CV PDF">
+                            📄 Edit Resume / CV
+                        </button>
+                    @endauth
                 </div>
 
                 <div class="social-links" aria-label="Professional Social Profiles">
@@ -89,6 +101,12 @@
                             <polyline points="22,6 12,13 2,6"></polyline>
                         </svg>
                     </a>
+
+                    @auth
+                        <button type="button" class="admin-edit-trigger" onclick="openAdminModal('socialsModal')" title="Edit social media links">
+                            🔗 Edit Socials
+                        </button>
+                    @endauth
                 </div>
             </div>
 
@@ -96,8 +114,13 @@
             <div class="hero-visual">
                 <div class="portrait-frame">
                     <div class="portrait-image-wrapper">
+                        @auth
+                            <button type="button" class="admin-photo-overlay-btn" onclick="openAdminModal('profilePhotoModal')" title="Upload new portrait photo and adjust fit">
+                                📷 Change Photo &amp; Fit
+                            </button>
+                        @endauth
                         <img id="hero-profile-image"
-                             src="{{ asset('images/profile.jpg') }}" 
+                             src="{{ asset('images/profile.jpg') }}?v={{ time() }}" 
                              alt="Hasnain Al Ifan - Junior Software Engineer" 
                              class="portrait-img"
                              loading="eager"

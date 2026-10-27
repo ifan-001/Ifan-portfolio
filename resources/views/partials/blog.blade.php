@@ -4,8 +4,15 @@
         <div class="section-header" style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:16px;">
             <div>
                 <span class="section-eyebrow">Technical Writings</span>
-                <h2 class="section-title">Engineering Articles</h2>
-                <p class="section-desc">Practical architectural walkthroughs, deep dives, and code solutions.</p>
+                <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                    <h2 class="section-title" style="margin-bottom:0;">Engineering Articles</h2>
+                    @auth
+                        <button type="button" class="admin-edit-trigger" onclick="openAddBlogModal()" title="Write a new engineering post">
+                            + Write New Article
+                        </button>
+                    @endauth
+                </div>
+                <p class="section-desc" style="margin-top:10px;">Practical architectural walkthroughs, deep dives, and code solutions.</p>
             </div>
             <a href="{{ route('blog.index') }}" class="btn btn-secondary btn-sm">View All Articles &rarr;</a>
         </div>
@@ -14,13 +21,23 @@
             @foreach($portfolio['blog_posts'] as $post)
                 <article style="background:var(--bg-primary); border:1px solid var(--border-subtle); border-radius:var(--radius-lg); padding:24px; display:flex; flex-direction:column; justify-content:space-between; transition:all var(--transition-fast);">
                     <div>
-                        @if(!empty($post->tags))
-                            <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px;">
-                                @foreach(array_slice($post->tags, 0, 2) as $t)
-                                    <span style="font-size:0.7rem; font-weight:700; text-transform:uppercase; color:var(--accent-blue); background:rgba(59, 130, 246, 0.1); padding:2px 6px; border-radius:4px;">{{ $t }}</span>
-                                @endforeach
-                            </div>
-                        @endif
+                        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+                            @if(!empty($post->tags))
+                                <div style="display:flex; flex-wrap:wrap; gap:6px;">
+                                    @foreach(array_slice($post->tags, 0, 2) as $t)
+                                        <span style="font-size:0.7rem; font-weight:700; text-transform:uppercase; color:var(--accent-blue); background:rgba(59, 130, 246, 0.1); padding:2px 6px; border-radius:4px;">{{ $t }}</span>
+                                    @endforeach
+                                </div>
+                            @else
+                                <div></div>
+                            @endif
+
+                            @auth
+                                <button type="button" class="admin-btn-mini" onclick="openEditBlogModal({{ $post->id }}, '{{ addslashes($post->title) }}', '{{ $post->slug }}', '{{ addslashes(implode(', ', $post->tags ?? [])) }}', '{{ $post->status }}', '{{ addslashes($post->excerpt ?? '') }}', '{{ addslashes($post->content) }}')">
+                                    ✎ Edit
+                                </button>
+                            @endauth
+                        </div>
 
                         <h3 style="font-size:1.15rem; font-weight:700; color:var(--text-primary); margin-bottom:8px; line-height:1.4;">
                             <a href="{{ route('blog.show', $post->slug) }}" style="color:var(--text-primary); text-decoration:none;">

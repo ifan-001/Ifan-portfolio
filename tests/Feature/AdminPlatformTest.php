@@ -12,10 +12,12 @@ use App\Models\Skill;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
 class AdminPlatformTest extends TestCase
 {
+    use DatabaseTransactions;
     protected function getAdminUser(): User
     {
         return User::updateOrCreate(
@@ -310,4 +312,118 @@ class AdminPlatformTest extends TestCase
             'device_name' => 'Samsung Galaxy A54 (Chrome Mobile)',
         ]);
     }
+
+    /**
+     * 11. 3-Pillar Admin Portal structure and command hub.
+     */
+    public function test_admin_three_pillar_navigation_and_dashboard(): void
+    {
+        $admin = $this->getAdminUser();
+
+        $response = $this->actingAs($admin)->get('/admin');
+        $response->assertStatus(200);
+        $response->assertSee('Core Operations');
+        $response->assertSee('Content Management');
+        $response->assertSee('System & Insights');
+        $response->assertSee('Open Visual Portfolio Editor');
+
+        // Content management redirect
+        $contentRedirect = $this->actingAs($admin)->get('/admin/content');
+        $contentRedirect->assertRedirect('/?admin_mode=cms');
+    }
+
+    /**
+     * 12. In-Place Visual CMS presence for Admin vs complete privacy for regular visitors.
+     */
+    public function test_in_place_visual_cms_admin_vs_guest_privacy(): void
+    {
+        $admin = $this->getAdminUser();
+
+        // Admin sees the visual toolbar and in-place edit modals
+        $adminView = $this->actingAs($admin)->get('/');
+        $adminView->assertStatus(200);
+        $adminView->assertSee('id="adminCommandBar"', false);
+        $adminView->assertSee('id="aboutBioModal"', false);
+        $adminView->assertSee('id="profilePhotoModal"', false);
+        $adminView->assertSee("openAdminModal('aboutBioModal')", false);
+
+        // Guest / Public visitor sees ZERO admin toolbar, edit buttons, or admin modals
+        $this->flushSession();
+        auth()->logout();
+        $guestView = $this->get('/');
+        $guestView->assertStatus(200);
+        $guestView->assertDontSee('id="adminCommandBar"', false);
+        $guestView->assertDontSee('id="aboutBioModal"', false);
+        $guestView->assertDontSee('id="profilePhotoModal"', false);
+        $guestView->assertDontSee("openAdminModal('aboutBioModal')", false);
+        $guestView->assertDontSee('Visitor View');
+    }
+
+    /**
+     * 13. In-Place About Bio: update and authentic restore endpoints.
+     */
+    public function test_about_bio_update_and_restore(): void
+    {
+        $admin = $this->getAdminUser();
+
+        // Update bio via in-place editor
+        $updateResponse = $this->actingAs($admin)->postJson('/admin/profile/about-bio', [
+            'paragraphs' => [
+                'Custom paragraph 1 for in-place test.',
+                'Custom paragraph 2 for in-place test.',
+            ],
+        ]);
+        $updateResponse->assertStatus(200);
+        $updateResponse->assertJson(['status' => 'success']);
+
+        // Restore authentic bio
+        $restoreResponse = $this->actingAs($admin)->postJson('/admin/profile/about-bio/restore');
+        $restoreResponse->assertStatus(200);
+        $restoreResponse->assertJson(['status' => 'success']);
+        $data = $restoreResponse->json('detailed_bio');
+        $this->assertCount(4, $data);
+        $this->assertStringContainsString('Bangladesh University of Business and Technology (BUBT)', $data[0]);
+        $this->assertStringContainsString('DoctorQR', $data[1]);
+    }
+
+    /**
+     * 14. Profile photo upload with automatic aspect-ratio fitting and position alignment.
+     */
+    public function test_photo_upload_with_object_position(): void
+    {
+        $admin = $this->getAdminUser();
+
+        $photoFile = UploadedFile::fake()->create('profile_test.jpg', 200, 'image/jpeg');
+
+        $uploadResponse = $this->actingAs($admin)->post(
+            '/admin/profile/photo',
+            [
+                'profile_image' => $photoFile,
+                'object_position' => 'center 20%',
+            ],
+            ['Accept' => 'application/json']
+        );
+
+        $uploadResponse->assertStatus(200);
+        $uploadResponse->assertJson(['status' => 'success']);
+        $this->assertNotNull($uploadResponse->json('photo_url'));
+    }
+
+    /**
+     * 15. In-Place Section visibility toggle.
+     */
+    public function test_section_visibility_toggle(): void
+    {
+        $admin = $this->getAdminUser();
+
+        $toggleResponse = $this->actingAs($admin)->postJson('/admin/settings/toggle-section', [
+            'section' => 'show_blog',
+            'enabled' => false,
+        ]);
+
+        $toggleResponse->assertStatus(200);
+        $toggleResponse->assertJson(['status' => 'success']);
+    }
 }
+
+

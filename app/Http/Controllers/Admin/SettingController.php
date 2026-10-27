@@ -56,8 +56,35 @@ class SettingController extends Controller
             SiteSetting::set('primary_accent_color', $request->input('primary_accent_color'));
         }
 
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Platform visibility and appearance settings updated successfully!',
+            ]);
+        }
+
         return redirect()->route('admin.settings.index')
             ->with('status', 'Platform visibility and appearance settings updated successfully!');
+    }
+
+    /**
+     * Instantly toggle individual section visibility.
+     */
+    public function toggleSection(Request $request)
+    {
+        $validated = $request->validate([
+            'section' => 'required|string',
+            'enabled' => 'required|boolean',
+        ]);
+
+        SiteSetting::set($validated['section'], (bool) $validated['enabled']);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Section visibility updated successfully!',
+            'section' => $validated['section'],
+            'enabled' => (bool) $validated['enabled'],
+        ]);
     }
 
     public function updatePassword(Request $request)

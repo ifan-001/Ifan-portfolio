@@ -2,8 +2,15 @@
     <div class="container">
         <div class="section-header">
             <span class="section-eyebrow">Academic Background</span>
-            <h2 class="section-title">Education</h2>
-            <p class="section-desc">
+            <div style="display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap;">
+                <h2 class="section-title" style="margin-bottom:0;">Education</h2>
+                @auth
+                    <button type="button" class="admin-edit-trigger" onclick="openAddEducationModal()" title="Add education qualification">
+                        + Add Education
+                    </button>
+                @endauth
+            </div>
+            <p class="section-desc" style="margin-top:16px;">
                 Computer Science and Engineering foundations from BUBT, supplemented by foundational science education.
             </p>
         </div>
@@ -16,12 +23,21 @@
 
             @if($bachelor)
                 <div class="bachelor-card">
-                    <div class="edu-badge-primary">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
-                            <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
-                        </svg>
-                        <span>University Degree &middot; In Progress</span>
+                    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+                        <div class="edu-badge-primary">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                                <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                            </svg>
+                            <span>University Degree &middot; In Progress</span>
+                        </div>
+                        @auth
+                            @if(!empty($bachelor['id']))
+                                <button type="button" class="admin-btn-mini" onclick="openEditEducationModal({{ $bachelor['id'] }}, '{{ addslashes($bachelor['institution']) }}', '{{ addslashes($bachelor['degree']) }}', '{{ addslashes($bachelor['expected_graduation'] ?? $bachelor['passing_year'] ?? '') }}', '{{ addslashes($bachelor['status']) }}', '{{ $bachelor['cgpa'] ?? '' }}', '4.00', '{{ addslashes(implode(', ', $bachelor['coursework'] ?? [])) }}')">
+                                    ✎ Edit University Details
+                                </button>
+                            @endif
+                        @endauth
                     </div>
 
                     <h3 class="edu-title">{{ $bachelor['degree'] }}</h3>

@@ -66,6 +66,13 @@ class ProjectController extends Controller
             'order' => $validated['order'] ?? (Project::max('order') + 1),
         ]);
 
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Project "' . $validated['title'] . '" created successfully!',
+            ]);
+        }
+
         return redirect()->route('admin.projects.index')
             ->with('status', 'Project "' . htmlspecialchars($validated['title']) . '" created successfully!');
     }
@@ -123,14 +130,28 @@ class ProjectController extends Controller
         }
         $project->save();
 
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Project "' . $project->title . '" updated successfully!',
+            ]);
+        }
+
         return redirect()->route('admin.projects.index')
             ->with('status', 'Project "' . htmlspecialchars($project->title) . '" updated successfully!');
     }
 
-    public function destroy(Project $project)
+    public function destroy(Request $request, Project $project)
     {
         $title = $project->title;
         $project->delete();
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Project "' . $title . '" deleted successfully.',
+            ]);
+        }
 
         return redirect()->route('admin.projects.index')
             ->with('status', 'Project "' . $title . '" deleted successfully.');

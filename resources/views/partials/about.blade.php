@@ -2,8 +2,15 @@
     <div class="container">
         <div class="section-header">
             <span class="section-eyebrow">Background & Engineering Focus</span>
-            <h2 class="section-title">About Me</h2>
-            <p class="section-desc">
+            <div style="display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap;">
+                <h2 class="section-title" style="margin-bottom:0;">About Me</h2>
+                @auth
+                    <button type="button" class="admin-edit-trigger" onclick="openAdminModal('aboutBioModal')" title="Edit, add, or delete bio paragraphs">
+                        ✎ Edit Bio Paragraphs
+                    </button>
+                @endauth
+            </div>
+            <p class="section-desc" style="margin-top:16px;">
                 Early-career software engineer dedicated to building practical applications, understanding complete system workflows, and writing maintainable code.
             </p>
         </div>

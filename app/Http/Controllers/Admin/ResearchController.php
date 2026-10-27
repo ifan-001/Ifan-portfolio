@@ -46,6 +46,13 @@ class ResearchController extends Controller
             'order' => $validated['order'] ?? (ResearchItem::max('order') + 1),
         ]);
 
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Research item created successfully!',
+            ]);
+        }
+
         return redirect()->route('admin.research.index')
             ->with('status', 'Research item created successfully!');
     }
@@ -79,14 +86,28 @@ class ResearchController extends Controller
             'order' => $validated['order'] ?? $item->order,
         ]);
 
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Research item updated successfully!',
+            ]);
+        }
+
         return redirect()->route('admin.research.index')
             ->with('status', 'Research item updated successfully!');
     }
 
-    public function destroyItem(ResearchItem $item)
+    public function destroyItem(Request $request, ResearchItem $item)
     {
         $title = $item->title;
         $item->delete();
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Research item "' . $title . '" deleted.',
+            ]);
+        }
 
         return redirect()->route('admin.research.index')
             ->with('status', 'Research item "' . $title . '" deleted.');
@@ -112,14 +133,28 @@ class ResearchController extends Controller
             'order' => $validated['order'] ?? (Achievement::max('order') + 1),
         ]);
 
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Highlight/Achievement added successfully!',
+            ]);
+        }
+
         return redirect()->route('admin.research.index')
             ->with('status', 'Highlight/Achievement added successfully!');
     }
 
-    public function destroyAchievement(Achievement $achievement)
+    public function destroyAchievement(Request $request, Achievement $achievement)
     {
         $title = $achievement->title;
         $achievement->delete();
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Achievement "' . $title . '" deleted.',
+            ]);
+        }
 
         return redirect()->route('admin.research.index')
             ->with('status', 'Achievement "' . $title . '" deleted.');

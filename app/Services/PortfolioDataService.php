@@ -75,6 +75,7 @@ class PortfolioDataService
                     'description' => 'Technologies and methodologies applied in production and academic projects',
                     'skills' => $skillsInCat->map(function ($s) {
                         return [
+                            'id' => $s->id,
                             'name' => $s->name,
                             'context' => $s->category,
                             'proficiency' => $s->proficiency,
@@ -91,6 +92,7 @@ class PortfolioDataService
         if ($dbExp->isNotEmpty()) {
             $experience = $dbExp->map(function ($exp) {
                 return [
+                    'id' => $exp->id,
                     'company' => $exp->company,
                     'location' => $exp->location,
                     'website' => $exp->website,
@@ -123,6 +125,7 @@ class PortfolioDataService
 
                 return [
                     'id' => $p->slug,
+                    'db_id' => $p->id,
                     'title' => $p->title,
                     'slug' => $p->slug,
                     'category' => $p->category,
@@ -149,6 +152,7 @@ class PortfolioDataService
         if ($dbEdu->isNotEmpty()) {
             $education = $dbEdu->map(function ($e, $idx) {
                 return [
+                    'id' => $e->id,
                     'degree' => $e->degree,
                     'institution' => $e->institution,
                     'location' => 'Dhaka, Bangladesh',
@@ -174,6 +178,7 @@ class PortfolioDataService
                 'note' => $cfg['research']['note'] ?? 'These reflect academic curiosity and capstone exploration.',
                 'interests' => $dbRes->map(function ($r) {
                     return [
+                        'id' => $r->id,
                         'title' => $r->title,
                         'icon' => 'cpu',
                         'description' => $r->summary,
@@ -189,6 +194,7 @@ class PortfolioDataService
         if ($dbAch->isNotEmpty()) {
             $highlights = $dbAch->map(function ($a) {
                 return [
+                    'id' => $a->id,
                     'label' => $a->category,
                     'value' => $a->title,
                     'detail' => $a->description,

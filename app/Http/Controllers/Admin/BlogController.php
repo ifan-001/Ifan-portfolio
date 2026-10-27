@@ -67,6 +67,13 @@ class BlogController extends Controller
             'published_at' => $validated['status'] === 'published' ? now() : null,
         ]);
 
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Blog article "' . $post->title . '" saved successfully!',
+            ]);
+        }
+
         return redirect()->route('admin.blog.index')
             ->with('status', 'Blog article "' . htmlspecialchars($post->title) . '" saved successfully!');
     }
@@ -123,14 +130,28 @@ class BlogController extends Controller
         }
         $blog->save();
 
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Article updated successfully!',
+            ]);
+        }
+
         return redirect()->route('admin.blog.index')
             ->with('status', 'Article updated successfully!');
     }
 
-    public function destroy(BlogPost $blog)
+    public function destroy(Request $request, BlogPost $blog)
     {
         $title = $blog->title;
         $blog->delete();
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Article "' . $title . '" deleted.',
+            ]);
+        }
 
         return redirect()->route('admin.blog.index')
             ->with('status', 'Article "' . $title . '" deleted.');

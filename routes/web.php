@@ -79,9 +79,18 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('admin.dashboard');
     Route::post('/status/toggle', [DashboardController::class, 'toggleStatus'])->name('admin.dashboard.toggle-status');
 
-    // Profile & Identity
+    // Pillar 2: Content Management (Opens Public Portfolio in Visual CMS Mode)
+    Route::get('/content', function () {
+        return redirect('/?admin_mode=cms');
+    })->name('admin.content');
+
+    // Profile, Photo & Bio Management
     Route::get('/profile', [AdminProfileController::class, 'edit'])->name('admin.profile.edit');
     Route::post('/profile', [AdminProfileController::class, 'update'])->name('admin.profile.update');
+    Route::post('/profile/about-bio', [AdminProfileController::class, 'updateAboutBio'])->name('admin.profile.about-bio');
+    Route::post('/profile/about-bio/restore', [AdminProfileController::class, 'restoreAboutBio'])->name('admin.profile.about-bio.restore');
+    Route::post('/profile/photo', [AdminProfileController::class, 'updatePhoto'])->name('admin.profile.photo');
+    Route::post('/profile/socials', [AdminProfileController::class, 'updateSocials'])->name('admin.profile.socials');
 
     // Resume Management
     Route::get('/resume', [AdminResumeController::class, 'index'])->name('admin.resume.index');
@@ -156,6 +165,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     // Platform Settings & Security
     Route::get('/settings', [SettingController::class, 'index'])->name('admin.settings.index');
     Route::post('/settings', [SettingController::class, 'update'])->name('admin.settings.update');
+    Route::post('/settings/toggle-section', [SettingController::class, 'toggleSection'])->name('admin.settings.toggle-section');
     Route::post('/settings/password', [SettingController::class, 'updatePassword'])->name('admin.settings.password');
 
     // Web Push Notifications

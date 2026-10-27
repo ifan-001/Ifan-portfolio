@@ -47,6 +47,13 @@ class ResumeController extends Controller
         }
         $profile->save();
 
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Resume settings & PDF file updated successfully!',
+            ]);
+        }
+
         return redirect()->route('admin.resume.index')
             ->with('status', 'Resume settings & PDF file updated successfully!');
     }

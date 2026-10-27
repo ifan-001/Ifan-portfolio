@@ -2,8 +2,15 @@
     <div class="container">
         <div class="section-header">
             <span class="section-eyebrow">Technical Competencies</span>
-            <h2 class="section-title">Skills &amp; Engineering Practices</h2>
-            <p class="section-desc">
+            <div style="display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap;">
+                <h2 class="section-title" style="margin-bottom:0;">Skills &amp; Engineering Practices</h2>
+                @auth
+                    <button type="button" class="admin-edit-trigger" onclick="openAddSkillModal()" title="Add a new technical competency">
+                        + Add New Skill
+                    </button>
+                @endauth
+            </div>
+            <p class="section-desc" style="margin-top:16px;">
                 Practical abilities gained through real software development in production environments, academic projects, and continuous hands-on learning.
             </p>
         </div>
@@ -21,7 +28,14 @@
                             @endphp
                             <li class="skill-item">
                                 <span class="skill-name">{{ $s['name'] }}</span>
-                                <span class="skill-context {{ $isPro ? 'pro' : '' }}">{{ $s['context'] }}</span>
+                                <div style="display:flex; align-items:center; gap:6px;">
+                                    <span class="skill-context {{ $isPro ? 'pro' : '' }}">{{ $s['context'] }}</span>
+                                    @auth
+                                        @if(!empty($s['id']))
+                                            <button type="button" class="admin-btn-mini" onclick="openEditSkillModal({{ $s['id'] }}, '{{ addslashes($s['name']) }}', '{{ addslashes($cat['title']) }}', {{ $s['proficiency'] ?? 85 }})" title="Edit or delete skill">✎</button>
+                                        @endif
+                                    @endauth
+                                </div>
                             </li>
                         @endforeach
                     </ul>

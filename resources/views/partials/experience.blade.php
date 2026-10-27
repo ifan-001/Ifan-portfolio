@@ -2,8 +2,15 @@
     <div class="container">
         <div class="section-header">
             <span class="section-eyebrow">Work History</span>
-            <h2 class="section-title">Professional Experience</h2>
-            <p class="section-desc">
+            <div style="display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap;">
+                <h2 class="section-title" style="margin-bottom:0;">Professional Experience</h2>
+                @auth
+                    <button type="button" class="admin-edit-trigger" onclick="openAddExperienceModal()" title="Add professional work experience">
+                        + Add Work Experience
+                    </button>
+                @endauth
+            </div>
+            <p class="section-desc" style="margin-top:16px;">
                 Continuous tenure at APPIFLY BD LIMITED advancing from software engineering intern to Junior Software Engineer, building real-world web applications and enterprise workflows.
             </p>
         </div>
@@ -13,7 +20,16 @@
                 <div class="company-card">
                     <div class="company-header">
                         <div>
-                            <h3 class="company-name">{{ $exp['company'] }}</h3>
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <h3 class="company-name">{{ $exp['company'] }}</h3>
+                                @auth
+                                    @if(!empty($exp['id']))
+                                        <button type="button" class="admin-btn-mini" onclick="openEditExperienceModal({{ $exp['id'] }}, '{{ addslashes($exp['company']) }}', '{{ addslashes($exp['location'] ?? '') }}', '{{ addslashes($exp['roles'][0]['designation'] ?? '') }}', '{{ addslashes($exp['timeline_label']) }}', '{{ addslashes($exp['roles'][0]['type'] ?? 'Full-time') }}', '{{ addslashes($exp['roles'][0]['summary'] ?? '') }}', '{{ addslashes(implode("\n", $exp['highlights'] ?? [])) }}', {{ ($exp['roles'][0]['current'] ?? false) ? 1 : 0 }})">
+                                            ✎ Edit
+                                        </button>
+                                    @endif
+                                @endauth
+                            </div>
                             <div class="company-loc">{{ $exp['location'] }}</div>
                         </div>
                         <div class="company-timeline-pill">

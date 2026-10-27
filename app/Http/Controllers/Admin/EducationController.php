@@ -45,6 +45,13 @@ class EducationController extends Controller
             'order' => $validated['order'] ?? (Education::max('order') + 1),
         ]);
 
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Education record added successfully!',
+            ]);
+        }
+
         return redirect()->route('admin.education.index')
             ->with('status', 'Education record added successfully!');
     }
@@ -80,14 +87,28 @@ class EducationController extends Controller
             'order' => $validated['order'] ?? $education->order,
         ]);
 
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Education updated successfully!',
+            ]);
+        }
+
         return redirect()->route('admin.education.index')
             ->with('status', 'Education updated successfully!');
     }
 
-    public function destroy(Education $education)
+    public function destroy(Request $request, Education $education)
     {
         $inst = $education->institution;
         $education->delete();
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Education record for ' . $inst . ' deleted successfully.',
+            ]);
+        }
 
         return redirect()->route('admin.education.index')
             ->with('status', 'Education record for ' . $inst . ' deleted successfully.');

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     {{-- SEO Meta Tags --}}
     <title>{{ $portfolio['meta']['title'] ?? 'Hasnain Al Ifan | Junior Software Engineer' }}</title>
@@ -66,7 +67,11 @@
     }
     </script>
 </head>
-<body>
+<body class="@auth has-admin-bar @endauth">
+    @auth
+        @include('partials.admin-toolbar')
+    @endauth
+
     @include('partials.nav')
 
     <main id="main-content">
@@ -82,5 +87,10 @@
 
     {{-- Portfolio Client Script --}}
     <script src="{{ asset('js/portfolio.js') }}"></script>
+
+    @auth
+        @include('partials.admin-editor-modals')
+        <script src="{{ asset('js/admin-in-place.js') }}"></script>
+    @endauth
 </body>
 </html>

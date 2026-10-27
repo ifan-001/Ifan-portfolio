@@ -2,8 +2,15 @@
     <div class="container">
         <div class="section-header">
             <span class="section-eyebrow">Portfolio Showcase</span>
-            <h2 class="section-title">Engineered Projects</h2>
-            <p class="section-desc">
+            <div style="display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap;">
+                <h2 class="section-title" style="margin-bottom:0;">Engineered Projects</h2>
+                @auth
+                    <button type="button" class="admin-edit-trigger" onclick="openAddProjectModal()" title="Create and showcase a new software project">
+                        + Add New Project
+                    </button>
+                @endauth
+            </div>
+            <p class="section-desc" style="margin-top:16px;">
                 Real software applications ranging from a doctor-focused SaaS platform built in production to university projects across web, mobile, desktop, and computer vision.
             </p>
         </div>
@@ -57,6 +64,14 @@
                                 <span>GitHub Repository</span>
                             </a>
                         @endif
+
+                        @auth
+                            @if(!empty($doctorQr['db_id']))
+                                <button type="button" class="admin-edit-trigger" onclick="openEditProjectModal({{ $doctorQr['db_id'] }}, '{{ addslashes($doctorQr['title']) }}', '{{ $doctorQr['slug'] }}', '{{ $doctorQr['category'] }}', '{{ addslashes($doctorQr['role'] ?? '') }}', '{{ addslashes($doctorQr['summary']) }}', '', '{{ implode(', ', $doctorQr['tech_stack'] ?? []) }}', '{{ $doctorQr['live_url'] }}', '{{ $doctorQr['repo_url'] }}', 1)">
+                                    ✎ Edit Details &amp; Image
+                                </button>
+                            @endif
+                        @endauth
                     </div>
                 </div>
 
@@ -195,6 +210,16 @@
                                 </a>
                             </div>
                         @endif
+
+                        @auth
+                            @if(!empty($project['db_id']))
+                                <div style="margin-top: 10px; display: flex; justify-content: flex-end;">
+                                    <button type="button" class="admin-edit-trigger" style="font-size:0.7rem; padding:3px 8px;" onclick="openEditProjectModal({{ $project['db_id'] }}, '{{ addslashes($project['title']) }}', '{{ $project['slug'] }}', '{{ $project['category'] }}', '{{ addslashes($project['role'] ?? '') }}', '{{ addslashes($project['summary']) }}', '', '{{ implode(', ', $project['tech_stack'] ?? []) }}', '{{ $project['live_url'] }}', '{{ $project['repo_url'] }}', 0)">
+                                        ✎ Edit Project
+                                    </button>
+                                </div>
+                            @endif
+                        @endauth
                     </div>
                 </div>
             @endforeach

@@ -49,6 +49,13 @@ class ExperienceController extends Controller
             'order' => $validated['order'] ?? (Experience::max('order') + 1),
         ]);
 
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Experience record created successfully!',
+            ]);
+        }
+
         return redirect()->route('admin.experience.index')
             ->with('status', 'Experience record created successfully!');
     }
@@ -88,14 +95,28 @@ class ExperienceController extends Controller
             'order' => $validated['order'] ?? $experience->order,
         ]);
 
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Experience updated successfully!',
+            ]);
+        }
+
         return redirect()->route('admin.experience.index')
             ->with('status', 'Experience updated successfully!');
     }
 
-    public function destroy(Experience $experience)
+    public function destroy(Request $request, Experience $experience)
     {
         $company = $experience->company;
         $experience->delete();
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Experience at ' . $company . ' deleted successfully.',
+            ]);
+        }
 
         return redirect()->route('admin.experience.index')
             ->with('status', 'Experience at ' . $company . ' deleted successfully.');

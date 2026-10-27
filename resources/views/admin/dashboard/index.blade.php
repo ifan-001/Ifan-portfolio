@@ -4,6 +4,64 @@
 @section('page_title', 'Portfolio Control Center')
 
 @section('content')
+<!-- 3-Pillar Master Architecture Hub -->
+<div class="pillar-hub-grid" style="margin-bottom: 28px;">
+    <!-- Pillar 1: Core Operations -->
+    <div class="pillar-hub-card active">
+        <div class="pillar-hub-top">
+            <span class="pillar-hub-icon">⚡</span>
+            <span class="badge badge-primary">Pillar 1 &middot; Active</span>
+        </div>
+        <h2 class="pillar-hub-title">Core Operations</h2>
+        <p class="pillar-hub-desc">
+            দৈনন্দিন ওয়েবসাইট পরিচালনা, লাইভ উপস্থিতি সুইচ, ভিজিটর সরাসরি চ্যাট কনসোল এবং যোগাযোগ ইনবক্স।
+        </p>
+        <div class="pillar-hub-tags">
+            <a href="{{ route('admin.dashboard') }}" class="pillar-tag active">Dashboard Overview</a>
+            <a href="{{ route('admin.chat.index') }}" class="pillar-tag">
+                Live Chat Console @if($unreadChats > 0)<span class="tag-counter" style="background:#EF4444;">{{ $unreadChats }}</span>@endif
+            </a>
+            <a href="{{ route('admin.inquiries.index') }}" class="pillar-tag">
+                Inquiries Inbox @if($unreadInquiries > 0)<span class="tag-counter">{{ $unreadInquiries }}</span>@endif
+            </a>
+        </div>
+    </div>
+
+    <!-- Pillar 2: Content Management (Live In-Place Visual CMS) -->
+    <div class="pillar-hub-card featured">
+        <div class="pillar-hub-top">
+            <span class="pillar-hub-icon" style="background:rgba(59, 130, 246, 0.2); color:#3B82F6;">✦</span>
+            <span class="badge badge-success">Pillar 2 &middot; In-Place CMS</span>
+        </div>
+        <h2 class="pillar-hub-title">Content Management</h2>
+        <p class="pillar-hub-desc">
+            সম্পূর্ণ পোর্টফোলিও ওয়েবসাইটটি সরাসরি খুলবে এবং প্রতিটি সেকশন (Profile, Bio, Skills, Projects, Experience, Blog) সরাসরি সাইট থেকেই এডিট করা যাবে।
+        </p>
+        <div style="margin-top:auto; padding-top:16px;">
+            <a href="{{ route('admin.content') }}" class="btn btn-primary" style="width:100%; justify-content:center; gap:8px;">
+                <span>Open Visual Portfolio Editor</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </a>
+        </div>
+    </div>
+
+    <!-- Pillar 3: System & Insights -->
+    <div class="pillar-hub-card">
+        <div class="pillar-hub-top">
+            <span class="pillar-hub-icon">⚙</span>
+            <span class="badge" style="background:rgba(255,255,255,0.08); color:var(--text-secondary);">Pillar 3</span>
+        </div>
+        <h2 class="pillar-hub-title">System &amp; Insights</h2>
+        <p class="pillar-hub-desc">
+            ওয়েবসাইট ট্রাফিক অ্যানালিটিক্স, ভিজিটর পরিসংখ্যান, নিরাপত্তা, পাসওয়ার্ড পরিবর্তন এবং প্ল্যাটফর্ম সেটিংস।
+        </p>
+        <div class="pillar-hub-tags">
+            <a href="{{ route('admin.analytics.index') }}" class="pillar-tag">Analytics &amp; Telemetry</a>
+            <a href="{{ route('admin.settings.index') }}" class="pillar-tag">Platform Settings</a>
+        </div>
+    </div>
+</div>
+
 <!-- KPI Row -->
 <div class="kpi-grid">
     <div class="kpi-card">

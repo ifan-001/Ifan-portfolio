@@ -43,6 +43,13 @@ class SkillController extends Controller
             'order' => $validated['order'] ?? (Skill::max('order') + 1),
         ]);
 
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Skill "' . $validated['name'] . '" added successfully!',
+            ]);
+        }
+
         return redirect()->route('admin.skills.index')
             ->with('status', 'Skill "' . htmlspecialchars($validated['name']) . '" added successfully!');
     }
@@ -65,14 +72,28 @@ class SkillController extends Controller
             'order' => $validated['order'] ?? $skill->order,
         ]);
 
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Skill updated successfully!',
+            ]);
+        }
+
         return redirect()->route('admin.skills.index')
             ->with('status', 'Skill updated successfully!');
     }
 
-    public function destroy(Skill $skill)
+    public function destroy(Request $request, Skill $skill)
     {
         $name = $skill->name;
         $skill->delete();
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Skill "' . $name . '" deleted successfully.',
+            ]);
+        }
 
         return redirect()->route('admin.skills.index')
             ->with('status', 'Skill "' . $name . '" deleted successfully.');
