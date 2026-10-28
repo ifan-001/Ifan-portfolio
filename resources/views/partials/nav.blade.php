@@ -12,7 +12,6 @@
         </a>
 
         <nav class="nav-links" aria-label="Main Navigation">
-            <a href="{{ $homePrefix }}#hero" class="nav-link {{ $isHome ? 'active' : '' }}">Home</a>
             <a href="{{ $homePrefix }}#about" class="nav-link">About</a>
             <a href="{{ $homePrefix }}#experience" class="nav-link">Experience</a>
             <a href="{{ $homePrefix }}#projects" class="nav-link">Projects</a>
@@ -30,13 +29,14 @@
             </a>
 
             {{-- Dedicated Header Button for Interactive Apps & Tools --}}
-            <a href="{{ route('apps.index') }}" class="nav-feed-pill {{ request()->routeIs('apps.*') ? 'active' : '' }}" style="border-color:rgba(168,85,247,0.3); color:#A855F7; background:rgba(168,85,247,0.1);" title="Use Interactive Projects, Resume Builder & Playable Games">
-                <span style="font-size:0.85rem;" aria-hidden="true">🚀</span>
-                <span>Apps &amp; Tools</span>
+            <a href="{{ route('apps.index') }}" class="nav-apps-pill {{ request()->routeIs('apps.*') ? 'active' : '' }}" title="Use Interactive Projects, Resume Builder & Playable Games">
+                <span class="apps-icon" aria-hidden="true">🚀</span>
+                <span class="pill-label-desktop">Apps &amp; Tools</span>
+                <span class="pill-label-mobile">Apps</span>
             </a>
 
-            <a href="{{ route('resume.download') }}" class="btn btn-sm btn-secondary" target="_blank" rel="noopener noreferrer" title="Open Hasnain Al Ifan Resume (PDF)">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <a href="{{ route('resume.download') }}" class="btn-nav btn-nav-secondary" target="_blank" rel="noopener noreferrer" title="Open Hasnain Al Ifan Resume (PDF)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                     <polyline points="14 2 14 8 20 8"></polyline>
                     <line x1="16" y1="13" x2="8" y2="13"></line>
@@ -45,13 +45,13 @@
                 <span>Resume</span>
             </a>
 
-            <a href="{{ $homePrefix }}#contact" class="btn btn-sm btn-primary">
+            <a href="{{ $homePrefix }}#contact" class="btn-nav btn-nav-primary" title="Get in touch">
                 Let's Talk
             </a>
 
             {{-- Theme Switcher (Dark & Bright Theme) --}}
             <button type="button" class="theme-toggle-btn" id="theme-toggle-btn" onclick="togglePortfolioTheme()" aria-label="Toggle Bright / Dark theme" title="Switch to Bright Theme">
-                <svg class="theme-icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <svg class="theme-icon-sun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <circle cx="12" cy="12" r="5"></circle>
                     <line x1="12" y1="1" x2="12" y2="3"></line>
                     <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -62,7 +62,7 @@
                     <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
                     <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
                 </svg>
-                <svg class="theme-icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;" aria-hidden="true">
+                <svg class="theme-icon-moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;" aria-hidden="true">
                     <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                 </svg>
             </button>
