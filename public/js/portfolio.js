@@ -41,13 +41,36 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // 2. Active Section Scroll Spy
+  // 2. Active Section Scroll Spy & Sticky Header Styling
   const sections = document.querySelectorAll('section[id]');
   const navLinks = document.querySelectorAll('.nav-link, .mobile-nav-link');
+  const siteHeader = document.getElementById('site-header');
 
   function updateActiveNav() {
     const scrollY = window.pageYOffset || document.documentElement.scrollTop;
     const headerHeight = 90;
+
+    // Toggle subtle glass elevation on scroll
+    if (siteHeader) {
+      if (scrollY > 15) {
+        siteHeader.classList.add('scrolled');
+      } else {
+        siteHeader.classList.remove('scrolled');
+      }
+    }
+
+    // When at the very top of the page, clear section highlights
+    if (scrollY < 250) {
+      navLinks.forEach(function (link) {
+        const href = link.getAttribute('href') || '';
+        if (href.includes('#hero')) {
+          link.classList.add('active');
+        } else if (href.includes('#')) {
+          link.classList.remove('active');
+        }
+      });
+      return;
+    }
 
     sections.forEach(function (section) {
       const sectionHeight = section.offsetHeight;
@@ -56,9 +79,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
       if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
         navLinks.forEach(function (link) {
-          if (link.getAttribute('href') === '#' + sectionId) {
+          const href = link.getAttribute('href') || '';
+          if (href === '#' + sectionId || href.endsWith('#' + sectionId)) {
             link.classList.add('active');
-          } else if (link.getAttribute('href').startsWith('#')) {
+          } else if (href.includes('#')) {
             link.classList.remove('active');
           }
         });
