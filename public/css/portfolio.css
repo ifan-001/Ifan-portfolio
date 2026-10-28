@@ -3142,4 +3142,49 @@ body.hide-admin-controls .admin-card-actions {
   100% { transform: scale(0.95); opacity: 0.8; }
 }
 
+/* ==========================================================================
+   Comprehensive UI & Responsive Layout Fixes (PC & Mobile Samsung Galaxy A54)
+   ========================================================================== */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+  width: 100%;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  /* On mobile header, hide the desktop-only contact and resume buttons so header never overflows */
+  .nav-actions > a.btn {
+    display: none !important;
+  }
+  .site-header {
+    height: 64px;
+  }
+  .nav-actions {
+    gap: 8px;
+  }
+  .nav-feed-pill {
+    padding: 4px 8px;
+    font-size: 0.75rem;
+  }
+  .brand-logo {
+    font-size: 1.05rem;
+  }
+  .container {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  .section {
+    padding-top: 48px;
+    padding-bottom: 48px;
+  }
+  .btn {
+    max-width: 100%;
+  }
+}
+
+
 

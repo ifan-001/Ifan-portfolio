@@ -15,7 +15,7 @@ class FeedPostController extends Controller
     public function index(Request $request)
     {
         $category = $request->query('category', 'all');
-        $query = FeedPost::orderByDesc('is_pinned')->orderByDesc('published_at');
+        $query = FeedPost::with('comments')->orderByDesc('is_pinned')->orderByDesc('published_at');
 
         if ($category !== 'all') {
             $query->where('category', $category);
@@ -162,5 +162,15 @@ class FeedPostController extends Controller
         $post->update(['is_pinned' => !$post->is_pinned]);
 
         return redirect()->back()->with('status', $post->is_pinned ? 'Post pinned to top of feed.' : 'Post unpinned.');
+    }
+
+    /**
+     * Delete a comment on a feed post.
+     */
+    public function destroyComment(\App\Models\FeedPostComment $comment)
+    {
+        $comment->delete();
+
+        return redirect()->back()->with('status', 'Comment deleted.');
     }
 }

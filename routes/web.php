@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\SkillController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\FeedController;
+use App\Http\Controllers\InteractiveAppController;
 use App\Http\Controllers\PortfolioController;
 use Illuminate\Support\Facades\Route;
 
@@ -39,6 +40,13 @@ Route::get('/blog/{slug}', [PortfolioController::class, 'blogShow'])->name('blog
 // Public Feed (Dedicated updates view, accessible strictly via header button)
 Route::get('/feed', [FeedController::class, 'index'])->name('feed.index');
 Route::post('/feed/{post}/like', [FeedController::class, 'like'])->name('feed.like');
+Route::post('/feed/{post}/comment', [FeedController::class, 'storeComment'])->name('feed.comment');
+
+// Interactive Apps & Tools (Live Resume Builder, Playable Games, QR Generator)
+Route::get('/apps', [InteractiveAppController::class, 'index'])->name('apps.index');
+Route::get('/apps/resume-builder', [InteractiveAppController::class, 'resumeBuilder'])->name('apps.resume-builder');
+Route::get('/apps/cyber-game', [InteractiveAppController::class, 'cyberGame'])->name('apps.cyber-game');
+Route::get('/apps/qr-medical', [InteractiveAppController::class, 'qrMedical'])->name('apps.qr-medical');
 
 // PWA Assets
 Route::get('/manifest.json', function () {
@@ -170,6 +178,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::post('/feed/{post}', [FeedPostController::class, 'update'])->name('admin.feed.update');
     Route::post('/feed/{post}/pin', [FeedPostController::class, 'togglePin'])->name('admin.feed.pin');
     Route::delete('/feed/{post}', [FeedPostController::class, 'destroy'])->name('admin.feed.destroy');
+    Route::delete('/feed/comments/{comment}', [FeedPostController::class, 'destroyComment'])->name('admin.feed.comments.destroy');
 
     // Unified Inbox (Consolidates Live & Random Visitor Chats + Contact Inquiries)
     Route::get('/inbox', [InboxController::class, 'index'])->name('admin.inbox.index');
@@ -177,6 +186,20 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::delete('/inbox/chat/{conversation}', [InboxController::class, 'destroyChat'])->name('admin.inbox.chat.destroy');
     Route::post('/inbox/inquiry/{inquiry}/status', [InboxController::class, 'updateInquiryStatus'])->name('admin.inbox.inquiry.status');
     Route::delete('/inbox/inquiry/{inquiry}', [InboxController::class, 'destroyInquiry'])->name('admin.inbox.inquiry.destroy');
+    Route::get('/notifications/check', function () {
+        $chatUnread = \App\Models\ChatMessage::where('sender', 'visitor')->where('is_read', false)->count();
+        $inquiryUnread = \App\Models\ContactMessage::where('status', 'unread')->count();
+        $latestChat = \App\Models\ChatMessage::where('sender', 'visitor')->where('is_read', false)->latest()->first();
+        $latestInquiry = \App\Models\ContactMessage::where('status', 'unread')->latest()->first();
+
+        return response()->json([
+            'total_unread' => $chatUnread + $inquiryUnread,
+            'chat_unread' => $chatUnread,
+            'inquiry_unread' => $inquiryUnread,
+            'latest_preview' => $latestChat ? $latestChat->message : ($latestInquiry ? $latestInquiry->message : null),
+            'latest_sender' => $latestInquiry ? $latestInquiry->name : 'Live Visitor',
+        ]);
+    })->name('admin.notifications.check');
 
     // Legacy Aliases for backwards compatibility with existing links and tests
     Route::get('/inquiries', [InquiryController::class, 'index'])->name('admin.inquiries.index');

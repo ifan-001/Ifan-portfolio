@@ -251,9 +251,10 @@
                 @endif
 
                 {{-- Post Footer / Stats --}}
-                <div style="display:flex; justify-content:space-between; align-items:center; padding-top:12px; border-top:1px solid var(--border-color); font-size:0.85rem; color:var(--text-secondary);">
-                    <div>
+                <div style="display:flex; justify-content:space-between; align-items:center; padding-top:12px; border-top:1px solid var(--border-color); font-size:0.85rem; color:var(--text-secondary); margin-bottom:12px;">
+                    <div style="display:flex; gap:16px;">
                         <span>❤️ {{ $post->likes_count }} Likes</span>
+                        <span>💬 {{ $post->comments->count() }} Comments</span>
                     </div>
 
                     <div>
@@ -262,6 +263,39 @@
                         </a>
                     </div>
                 </div>
+
+                {{-- Comments Moderation List --}}
+                @if($post->comments->isNotEmpty())
+                    <div style="background:rgba(0,0,0,0.2); border-radius:8px; padding:12px; margin-top:8px;">
+                        <div style="font-size:0.75rem; text-transform:uppercase; font-weight:700; color:var(--text-secondary); margin-bottom:8px;">
+                            Comments ({{ $post->comments->count() }}):
+                        </div>
+                        <div style="display:flex; flex-direction:column; gap:8px;">
+                            @foreach($post->comments as $comment)
+                                <div style="display:flex; justify-content:space-between; align-items:flex-start; background:var(--bg-primary); padding:8px 12px; border-radius:6px; font-size:0.825rem;">
+                                    <div style="flex:1;">
+                                        <div style="display:flex; align-items:center; gap:6px; margin-bottom:2px;">
+                                            <strong style="color:var(--text-primary);">{{ $comment->user_name }}</strong>
+                                            @if($comment->is_admin)
+                                                <span style="font-size:0.65rem; background:var(--accent-blue); color:#fff; padding:0 4px; border-radius:3px;">Admin</span>
+                                            @endif
+                                            <span style="color:var(--text-secondary); font-size:0.75rem;">&bull; {{ $comment->created_at->diffForHumans() }}</span>
+                                        </div>
+                                        <div style="color:var(--text-secondary);">{{ $comment->comment }}</div>
+                                    </div>
+
+                                    <form action="{{ route('admin.feed.comments.destroy', $comment->id) }}" method="POST" onsubmit="return confirm('Delete this comment?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-secondary btn-xs" style="color:#EF4444; padding:2px 6px;" title="Delete comment">
+                                            ✕
+                                        </button>
+                                    </form>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
             </div>
         @empty
             <div style="text-align:center; padding:50px 20px; background:var(--bg-secondary); border-radius:12px; border:1px dashed var(--border-color);">

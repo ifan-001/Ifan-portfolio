@@ -29,6 +29,12 @@
                 <span>Feed</span>
             </a>
 
+            {{-- Dedicated Header Button for Interactive Apps & Tools --}}
+            <a href="{{ route('apps.index') }}" class="nav-feed-pill {{ request()->routeIs('apps.*') ? 'active' : '' }}" style="border-color:rgba(168,85,247,0.3); color:#A855F7; background:rgba(168,85,247,0.1);" title="Use Interactive Projects, Resume Builder & Playable Games">
+                <span style="font-size:0.85rem;" aria-hidden="true">🚀</span>
+                <span>Apps &amp; Tools</span>
+            </a>
+
             <a href="{{ route('resume.download') }}" class="btn btn-sm btn-secondary" target="_blank" rel="noopener noreferrer" title="Open Hasnain Al Ifan Resume (PDF)">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -79,6 +85,14 @@
                 <span>Feed / Updates</span>
             </span>
             <span style="font-size:0.7rem; background:var(--accent-blue); color:#fff; padding:2px 8px; border-radius:10px; font-weight:600;">NEW</span>
+        </a>
+
+        <a href="{{ route('apps.index') }}" class="mobile-nav-link {{ request()->routeIs('apps.*') ? 'active' : '' }}" style="display:flex; align-items:center; justify-content:space-between; background:rgba(168,85,247,0.08); border-radius:8px; padding:10px 14px; margin-bottom:8px;">
+            <span style="display:flex; align-items:center; gap:8px; font-weight:600; color:var(--text-primary);">
+                <span>🚀</span>
+                <span>Apps, CV Builder &amp; Games</span>
+            </span>
+            <span style="font-size:0.7rem; background:#A855F7; color:#fff; padding:2px 8px; border-radius:10px; font-weight:600;">USE LIVE</span>
         </a>
 
         <a href="{{ $homePrefix }}#hero" class="mobile-nav-link {{ $isHome ? 'active' : '' }}">Home</a>

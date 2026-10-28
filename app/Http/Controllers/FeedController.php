@@ -18,7 +18,7 @@ class FeedController extends Controller
     public function index(Request $request)
     {
         $category = $request->query('category', 'all');
-        $query = FeedPost::published();
+        $query = FeedPost::published()->with('comments');
 
         if ($category !== 'all' && in_array($category, ['professional', 'social', 'industrial', 'project', 'research'])) {
             $query->where('category', $category);
@@ -51,5 +51,43 @@ class FeedController extends Controller
             'status' => 'success',
             'likes_count' => $post->likes_count,
         ]);
+    }
+
+    /**
+     * Post a comment on a feed post.
+     */
+    public function storeComment(Request $request, FeedPost $post)
+    {
+        $validated = $request->validate([
+            'user_name' => 'required|string|min:2|max:100',
+            'user_email' => 'nullable|email|max:150',
+            'comment' => 'required|string|min:2|max:2000',
+        ]);
+
+        $isAdmin = auth()->check();
+
+        $comment = $post->comments()->create([
+            'user_name' => $isAdmin ? 'Hasnain Al Ifan' : $validated['user_name'],
+            'user_email' => $validated['user_email'] ?? null,
+            'comment' => $validated['comment'],
+            'is_admin' => $isAdmin,
+            'status' => 'approved',
+        ]);
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'comment' => [
+                    'id' => $comment->id,
+                    'user_name' => $comment->user_name,
+                    'is_admin' => $comment->is_admin,
+                    'comment' => $comment->comment,
+                    'created_at' => $comment->created_at->diffForHumans(),
+                ],
+                'comments_count' => $post->comments()->count(),
+            ]);
+        }
+
+        return redirect()->back()->with('status', 'Comment published successfully!');
     }
 }

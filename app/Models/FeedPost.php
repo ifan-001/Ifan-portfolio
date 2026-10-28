@@ -4,10 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class FeedPost extends Model
 {
     use HasFactory;
+
+    public function comments(): HasMany
+    {
+        return $this->hasMany(FeedPostComment::class, 'feed_post_id')->orderBy('created_at', 'asc');
+    }
 
     protected $guarded = ['id'];
 

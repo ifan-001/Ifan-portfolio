@@ -139,17 +139,78 @@
                 @endif
 
                 {{-- Interaction Bar --}}
-                <div style="display:flex; justify-content:space-between; align-items:center; padding-top:14px; border-top:1px solid var(--border-card); font-size:0.9rem;">
-                    <button type="button" class="feed-like-btn" onclick="likePost({{ $post->id }})" id="like-btn-{{ $post->id }}"
-                            style="background:none; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:8px; color:var(--text-secondary); font-weight:600; padding:6px 12px; border-radius:20px; transition:all 0.15s;">
-                        <span class="like-icon" style="font-size:1.1rem; transition:transform 0.15s;">🤍</span>
-                        <span id="like-count-{{ $post->id }}">{{ $post->likes_count }}</span>
-                        <span>Likes</span>
-                    </button>
+                <div style="display:flex; justify-content:space-between; align-items:center; padding-top:14px; border-top:1px solid var(--border-card); font-size:0.9rem; flex-wrap:wrap; gap:10px;">
+                    <div style="display:flex; gap:8px; align-items:center;">
+                        <button type="button" class="feed-like-btn" onclick="likePost({{ $post->id }})" id="like-btn-{{ $post->id }}"
+                                style="background:none; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:8px; color:var(--text-secondary); font-weight:600; padding:6px 12px; border-radius:20px; transition:all 0.15s;">
+                            <span class="like-icon" style="font-size:1.1rem; transition:transform 0.15s;">🤍</span>
+                            <span id="like-count-{{ $post->id }}">{{ $post->likes_count }}</span>
+                            <span>Likes</span>
+                        </button>
+
+                        <button type="button" class="feed-comment-toggle-btn" onclick="toggleComments({{ $post->id }})"
+                                style="background:none; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:6px; color:var(--text-secondary); font-weight:600; padding:6px 12px; border-radius:20px; transition:all 0.15s;">
+                            <span style="font-size:1.05rem;">💬</span>
+                            <span id="comments-count-{{ $post->id }}">{{ $post->comments->count() }}</span>
+                            <span>Comments</span>
+                        </button>
+                    </div>
 
                     <div style="color:var(--text-secondary); font-size:0.8rem;">
                         <span>Hasnain Official Post</span>
                     </div>
+                </div>
+
+                {{-- Comments Section (Collapsible / Expandable) --}}
+                <div class="feed-comments-section" id="comments-box-{{ $post->id }}" style="margin-top:16px; padding-top:16px; border-top:1px dashed var(--border-card); display:block;">
+                    {{-- Comments List --}}
+                    <div class="comments-list" id="comments-list-{{ $post->id }}" style="display:flex; flex-direction:column; gap:12px; margin-bottom:14px;">
+                        @forelse($post->comments as $c)
+                            <div class="comment-item" style="background:rgba(0,0,0,0.1); border:1px solid var(--border-card); border-radius:10px; padding:10px 14px;">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                                    <div style="display:flex; align-items:center; gap:8px;">
+                                        @if($c->is_admin)
+                                            <img src="/images/profile.jpg" alt="Author" style="width:24px; height:24px; border-radius:50%; object-fit:cover; border:1px solid var(--accent-blue);">
+                                            <span style="font-weight:700; color:var(--text-primary); font-size:0.85rem;">{{ $c->user_name }}</span>
+                                            <span style="font-size:0.65rem; background:var(--accent-blue); color:#fff; padding:1px 5px; border-radius:4px; font-weight:600;">AUTHOR</span>
+                                        @else
+                                            <span style="width:24px; height:24px; border-radius:50%; background:linear-gradient(135deg, #3B82F6, #1E3A8A); color:#fff; display:inline-flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:700;">
+                                                {{ strtoupper(substr($c->user_name, 0, 1)) }}
+                                            </span>
+                                            <span style="font-weight:600; color:var(--text-primary); font-size:0.85rem;">{{ $c->user_name }}</span>
+                                        @endif
+                                    </div>
+                                    <span style="font-size:0.75rem; color:var(--text-secondary);">{{ $c->created_at->diffForHumans() }}</span>
+                                </div>
+                                <div style="font-size:0.88rem; color:var(--text-secondary); line-height:1.45; padding-left:32px;">
+                                    {{ $c->comment }}
+                                </div>
+                            </div>
+                        @empty
+                            <p class="no-comments-msg" style="color:var(--text-secondary); font-size:0.825rem; font-style:italic; margin:0 0 6px 0;">No comments yet. Be the first to share your thoughts!</p>
+                        @endforelse
+                    </div>
+
+                    {{-- Add Comment Form --}}
+                    <form class="comment-form" onsubmit="submitComment(event, {{ $post->id }})" action="{{ route('feed.comment', $post->id) }}" method="POST" style="background:var(--bg-secondary); border:1px solid var(--border-card); border-radius:10px; padding:12px;">
+                        @csrf
+                        <div style="display:flex; gap:10px; margin-bottom:8px; flex-wrap:wrap;">
+                            <input type="text" name="user_name" required placeholder="Your Name"
+                                   value="{{ auth()->check() ? 'Hasnain Al Ifan' : '' }}"
+                                   style="flex:1; min-width:140px; background:var(--bg-primary); border:1px solid var(--border-card); color:var(--text-primary); padding:7px 12px; border-radius:6px; font-size:0.825rem;">
+                            @if(!auth()->check())
+                                <input type="email" name="user_email" placeholder="Email (Optional)"
+                                       style="flex:1; min-width:140px; background:var(--bg-primary); border:1px solid var(--border-card); color:var(--text-primary); padding:7px 12px; border-radius:6px; font-size:0.825rem;">
+                            @endif
+                        </div>
+                        <div style="display:flex; gap:8px;">
+                            <input type="text" name="comment" required placeholder="Write a comment or constructive feedback..." autocomplete="off"
+                                   style="flex:1; background:var(--bg-primary); border:1px solid var(--border-card); color:var(--text-primary); padding:8px 14px; border-radius:20px; font-size:0.85rem;">
+                            <button type="submit" class="btn btn-primary btn-sm" style="border-radius:20px; padding:6px 16px; font-weight:600; white-space:nowrap;">
+                                Post
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </article>
         @empty
@@ -256,6 +317,75 @@ function copyPostLink(url) {
     } else {
         prompt('Copy this link:', url);
     }
+}
+
+function toggleComments(postId) {
+    const box = document.getElementById('comments-box-' + postId);
+    if (!box) return;
+    if (box.style.display === 'none') {
+        box.style.display = 'block';
+        const input = box.querySelector('input[name="comment"]');
+        if (input) input.focus();
+    } else {
+        box.style.display = 'none';
+    }
+}
+
+function submitComment(e, postId) {
+    e.preventDefault();
+    const form = e.target;
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const commentInput = form.querySelector('input[name="comment"]');
+    const text = commentInput.value.trim();
+    if (!text) return;
+
+    submitBtn.disabled = true;
+    const formData = new FormData(form);
+
+    fetch(form.action, {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
+        },
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === 'success') {
+            const list = document.getElementById('comments-list-' + postId);
+            const countEl = document.getElementById('comments-count-' + postId);
+            const noMsg = list.querySelector('.no-comments-msg');
+            if (noMsg) noMsg.remove();
+
+            if (countEl) countEl.textContent = data.comments_count;
+
+            const c = data.comment;
+            const item = document.createElement('div');
+            item.className = 'comment-item';
+            item.style.cssText = 'background:rgba(0,0,0,0.1); border:1px solid var(--border-card); border-radius:10px; padding:10px 14px; animation:fadeIn 0.3s ease;';
+            item.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        ${c.is_admin ? '<img src="/images/profile.jpg" alt="Author" style="width:24px; height:24px; border-radius:50%; object-fit:cover; border:1px solid var(--accent-blue);"><span style="font-weight:700; color:var(--text-primary); font-size:0.85rem;">' + c.user_name + '</span><span style="font-size:0.65rem; background:var(--accent-blue); color:#fff; padding:1px 5px; border-radius:4px; font-weight:600;">AUTHOR</span>' : '<span style="width:24px; height:24px; border-radius:50%; background:linear-gradient(135deg, #3B82F6, #1E3A8A); color:#fff; display:inline-flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:700;">' + (c.user_name.charAt(0).toUpperCase()) + '</span><span style="font-weight:600; color:var(--text-primary); font-size:0.85rem;">' + c.user_name + '</span>'}
+                    </div>
+                    <span style="font-size:0.75rem; color:var(--text-secondary);">${c.created_at}</span>
+                </div>
+                <div style="font-size:0.88rem; color:var(--text-secondary); line-height:1.45; padding-left:32px;">
+                    ${c.comment}
+                </div>
+            `;
+            list.appendChild(item);
+            commentInput.value = '';
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        form.submit();
+    })
+    .finally(() => {
+        submitBtn.disabled = false;
+    });
 }
 </script>
 @endsection

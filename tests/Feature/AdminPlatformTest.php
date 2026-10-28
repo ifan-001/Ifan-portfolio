@@ -560,7 +560,92 @@ class AdminPlatformTest extends TestCase
         $likeResponse->assertStatus(200);
         $likeResponse->assertJson(['status' => 'success']);
     }
+
+    /**
+     * 20. Feed Post Comments flow.
+     */
+    public function test_feed_post_comments_flow(): void
+    {
+        $admin = $this->getAdminUser();
+
+        $post = \App\Models\FeedPost::create([
+            'author_name' => 'Hasnain Al Ifan',
+            'category' => 'professional',
+            'content' => 'Zero-downtime deployment strategies for enterprise Laravel.',
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+
+        // 1. Visitor posts comment via AJAX
+        $commentResponse = $this->postJson("/feed/{$post->id}/comment", [
+            'user_name' => 'Fahim Rahman',
+            'user_email' => 'fahim@techbd.com',
+            'comment' => 'Great insights! How do you handle schema migrations with zero downtime?',
+        ]);
+        $commentResponse->assertStatus(200);
+        $commentResponse->assertJson(['status' => 'success']);
+
+        $this->assertDatabaseHas('feed_post_comments', [
+            'feed_post_id' => $post->id,
+            'user_name' => 'Fahim Rahman',
+        ]);
+
+        // 2. Admin deletes comment
+        $comment = $post->comments()->first();
+        $deleteResponse = $this->actingAs($admin)->delete("/admin/feed/comments/{$comment->id}");
+        $deleteResponse->assertStatus(302);
+        $this->assertDatabaseMissing('feed_post_comments', ['id' => $comment->id]);
+    }
+
+    /**
+     * 21. Incoming message notification check endpoint.
+     */
+    public function test_incoming_message_notification_check_endpoint(): void
+    {
+        $admin = $this->getAdminUser();
+
+        $response = $this->actingAs($admin)->getJson('/admin/notifications/check');
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            'total_unread',
+            'chat_unread',
+            'inquiry_unread',
+            'latest_preview',
+            'latest_sender',
+        ]);
+    }
+
+    /**
+     * 22. Interactive Apps & Tools directory and tools flow.
+     */
+    public function test_interactive_apps_hub_and_tools_flow(): void
+    {
+        // 1. Directory
+        $dirResponse = $this->get('/apps');
+        $dirResponse->assertStatus(200);
+        $dirResponse->assertSee('Interactive Projects &amp; Tools Hub', false);
+        $dirResponse->assertSee('Live Resume &amp; CV Builder', false);
+        $dirResponse->assertSee('Code Breaker: Cyber Defense', false);
+
+        // 2. Resume Builder tool
+        $resumeResponse = $this->get('/apps/resume-builder');
+        $resumeResponse->assertStatus(200);
+        $resumeResponse->assertSee('Interactive Resume &amp; CV Builder', false);
+        $resumeResponse->assertSee('Print / Save as PDF');
+
+        // 3. Cyber Game tool
+        $gameResponse = $this->get('/apps/cyber-game');
+        $gameResponse->assertStatus(200);
+        $gameResponse->assertSee('Code Breaker: Cyber Defense');
+        $gameResponse->assertSee('gameCanvas');
+
+        // 4. DoctorQR Medical ID Card Generator
+        $qrResponse = $this->get('/apps/qr-medical');
+        $qrResponse->assertStatus(200);
+        $qrResponse->assertSee('DoctorQR Emergency Medical ID Generator');
+    }
 }
+
 
 
 

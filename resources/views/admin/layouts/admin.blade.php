@@ -170,6 +170,12 @@
                         <span>Install on Phone</span>
                     </button>
 
+                    <!-- Sound & Vibrate Alert Toggle -->
+                    <button type="button" id="admin-alert-toggle-btn" onclick="toggleAlertSoundAndVibe()" class="btn btn-secondary btn-sm" style="display:inline-flex; align-items:center; gap:6px;" title="Notification Sound & Phone Vibration">
+                        <span id="alert-bell-icon">🔔</span>
+                        <span id="alert-bell-text" class="header-install-btn-text">Alerts: ON</span>
+                    </button>
+
                     <!-- Public Link -->
                     <a href="{{ route('home') }}" target="_blank" class="btn btn-secondary btn-sm header-preview-btn" title="View Live Portfolio">
                         <span>Preview</span>
@@ -251,6 +257,177 @@
     <!-- QR Code Generator & Modals -->
     <script src="{{ asset('js/qrcode.min.js') }}"></script>
     @include('admin.partials.app-modals')
+    
+    <!-- Real-Time Incoming Message Alert Sound & Phone Vibration Engine -->
+    <div id="admin-floating-toast" style="position:fixed; top:20px; right:20px; z-index:99999; display:none; background:#1E3A8A; color:#FFFFFF; border:2px solid #3B82F6; border-radius:12px; padding:14px 18px; box-shadow:0 10px 30px rgba(0,0,0,0.5); max-width:360px; animation:slideDown 0.3s ease;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px;">
+            <div style="font-weight:700; font-size:0.95rem; display:flex; align-items:center; gap:6px;">
+                <span>🔔</span>
+                <span id="toast-title">New Message Received!</span>
+            </div>
+            <button type="button" onclick="document.getElementById('admin-floating-toast').style.display='none'" style="background:none; border:none; color:#fff; cursor:pointer; font-size:1rem;">✕</button>
+        </div>
+        <p id="toast-body" style="font-size:0.85rem; margin:0 0 10px 0; line-height:1.4; color:#E2E8F0;"></p>
+        <a href="{{ route('admin.inbox.index') }}" class="btn btn-primary btn-xs" style="width:100%; text-align:center; display:block;">
+            Open in Inbox &rarr;
+        </a>
+    </div>
+
+    <script>
+    // Audio Context & Vibration Engine
+    let alertAudioContext = null;
+    let alertsEnabled = localStorage.getItem('admin_alerts_enabled') !== 'false';
+    let lastKnownTotalUnread = {{ $totalInboxUnreadCount ?? 0 }};
+
+    function initAudioContext() {
+        if (!alertAudioContext) {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (AudioCtx) {
+                alertAudioContext = new AudioCtx();
+            }
+        }
+        if (alertAudioContext && alertAudioContext.state === 'suspended') {
+            alertAudioContext.resume();
+        }
+    }
+
+    // Melodic double-bell chime (Synthesized via Web Audio API)
+    function playNotificationChime() {
+        if (!alertsEnabled) return;
+        try {
+            initAudioContext();
+            if (!alertAudioContext) return;
+
+            const t = alertAudioContext.currentTime;
+
+            // Bell 1 (E5 tone)
+            const osc1 = alertAudioContext.createOscillator();
+            const gain1 = alertAudioContext.createGain();
+            osc1.type = 'sine';
+            osc1.frequency.setValueAtTime(659.25, t);
+            gain1.gain.setValueAtTime(0.35, t);
+            gain1.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+            osc1.connect(gain1);
+            gain1.connect(alertAudioContext.destination);
+            osc1.start(t);
+            osc1.stop(t + 0.35);
+
+            // Bell 2 (A5 higher harmonious bell)
+            const osc2 = alertAudioContext.createOscillator();
+            const gain2 = alertAudioContext.createGain();
+            osc2.type = 'sine';
+            osc2.frequency.setValueAtTime(880, t + 0.12);
+            gain2.gain.setValueAtTime(0.4, t + 0.12);
+            gain2.gain.exponentialRampToValueAtTime(0.001, t + 0.8);
+            osc2.connect(gain2);
+            gain2.connect(alertAudioContext.destination);
+            osc2.start(t + 0.12);
+            osc2.stop(t + 0.8);
+        } catch (e) {
+            console.warn('Audio play failed:', e);
+        }
+    }
+
+    // Phone vibration (Hardware vibration for Samsung Galaxy A54 & Android devices)
+    function triggerPhoneVibration() {
+        if (!alertsEnabled) return;
+        if ('vibrate' in navigator) {
+            try {
+                // Distinct double-pulse pattern: 250ms buzz, 100ms pause, 250ms buzz
+                navigator.vibrate([250, 100, 250, 100, 350]);
+            } catch (e) {
+                console.warn('Vibration failed:', e);
+            }
+        }
+    }
+
+    function toggleAlertSoundAndVibe() {
+        initAudioContext();
+        alertsEnabled = !alertsEnabled;
+        localStorage.setItem('admin_alerts_enabled', alertsEnabled ? 'true' : 'false');
+        updateAlertToggleUI();
+
+        if (alertsEnabled) {
+            // Test tone & test vibration immediately so user feels it
+            playNotificationChime();
+            triggerPhoneVibration();
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+        }
+    }
+
+    function updateAlertToggleUI() {
+        const btn = document.getElementById('admin-alert-toggle-btn');
+        const icon = document.getElementById('alert-bell-icon');
+        const text = document.getElementById('alert-bell-text');
+        if (!btn) return;
+        if (alertsEnabled) {
+            icon.textContent = '🔔';
+            text.textContent = 'Alerts: ON';
+            btn.style.color = '#10B981';
+            btn.style.borderColor = '#10B981';
+        } else {
+            icon.textContent = '🔕';
+            text.textContent = 'Alerts: OFF';
+            btn.style.color = 'var(--text-secondary)';
+            btn.style.borderColor = 'var(--border-color)';
+        }
+    }
+
+    function showIncomingMessageToast(sender, preview) {
+        const toast = document.getElementById('admin-floating-toast');
+        const title = document.getElementById('toast-title');
+        const body = document.getElementById('toast-body');
+        if (toast && title && body) {
+            title.textContent = `New message from ${sender || 'Visitor'}`;
+            body.textContent = preview ? (preview.length > 80 ? preview.substring(0, 80) + '...' : preview) : 'A new message was received on your portfolio.';
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 8000);
+        }
+
+        // Native System Notification
+        if ('Notification' in window && Notification.permission === 'granted') {
+            try {
+                new Notification(`New Message from ${sender || 'Visitor'}`, {
+                    body: preview || 'You received a new inquiry or live chat message.',
+                    icon: '/images/profile.jpg',
+                    vibrate: [250, 100, 250]
+                });
+            } catch (e) {}
+        }
+    }
+
+    // Auto-poll for incoming messages every 6 seconds
+    function pollIncomingMessages() {
+        fetch('{{ route("admin.notifications.check") }}', {
+            headers: { 'Accept': 'application/json' }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.total_unread > lastKnownTotalUnread) {
+                // Trigger Sound, Vibration, and Toast!
+                playNotificationChime();
+                triggerPhoneVibration();
+                showIncomingMessageToast(data.latest_sender, data.latest_preview);
+            }
+            lastKnownTotalUnread = data.total_unread;
+        })
+        .catch(err => {})
+        .finally(() => {
+            setTimeout(pollIncomingMessages, 6000);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        updateAlertToggleUI();
+        // First touch anywhere unlocks audio context
+        document.body.addEventListener('click', initAudioContext, { once: true });
+        document.body.addEventListener('touchstart', initAudioContext, { once: true });
+        // Start polling
+        setTimeout(pollIncomingMessages, 4000);
+    });
+    </script>
     
     @stack('scripts')
 </body>
