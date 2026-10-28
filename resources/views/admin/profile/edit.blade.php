@@ -21,7 +21,7 @@
             <div>
                 <label for="profile_image" class="form-label" style="font-size:0.95rem; font-weight:700;">Replace Portrait Photo</label>
                 <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:10px;">
-                    Used in Navbar brand box, Hero portrait overlay, and OpenGraph social preview tags. Supports JPEG, PNG, WEBP (Max 3MB).
+                    Used in Navbar brand box, Hero portrait overlay, and OpenGraph social preview tags. Supports JPEG, PNG, WEBP, AVIF (Max 20MB).
                 </p>
                 <input type="file" id="profile_image" name="profile_image" accept="image/*" class="form-control" style="padding:6px 12px; font-size:0.82rem;" onchange="previewImage(this)">
             </div>

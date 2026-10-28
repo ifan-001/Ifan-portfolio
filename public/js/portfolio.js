@@ -410,5 +410,38 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
   }
+
+  // 6. Initialize Theme Toggle UI
+  const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+  updateThemeToggleUI(currentTheme);
 });
+
+// Theme Switcher Logic (Dark & Bright Theme)
+function togglePortfolioTheme() {
+  const current = document.documentElement.getAttribute('data-theme') || 'dark';
+  const newTheme = current === 'bright' ? 'dark' : 'bright';
+  document.documentElement.setAttribute('data-theme', newTheme);
+  try {
+    localStorage.setItem('portfolio-theme', newTheme);
+  } catch (e) {}
+  updateThemeToggleUI(newTheme);
+}
+
+function updateThemeToggleUI(theme) {
+  const isBright = theme === 'bright';
+  document.querySelectorAll('.theme-toggle-btn').forEach(function (btn) {
+    const sunIcon = btn.querySelector('.theme-icon-sun');
+    const moonIcon = btn.querySelector('.theme-icon-moon');
+    const label = btn.querySelector('.theme-toggle-label');
+    if (sunIcon) sunIcon.style.display = isBright ? 'none' : 'block';
+    if (moonIcon) moonIcon.style.display = isBright ? 'block' : 'none';
+    if (label) label.textContent = isBright ? 'Switch to Dark Theme' : 'Switch to Bright Theme';
+    btn.setAttribute('title', isBright ? 'Switch to Dark Theme' : 'Switch to Bright Theme');
+  });
+}
+
+// Global exposure
+window.togglePortfolioTheme = togglePortfolioTheme;
+window.updateThemeToggleUI = updateThemeToggleUI;
+
 

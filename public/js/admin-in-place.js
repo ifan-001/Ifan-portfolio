@@ -115,23 +115,38 @@ async function handlePhotoUpload(e) {
 
         const data = await response.json();
         if (response.ok && data.status === 'success') {
-            showAdminToast(data.message || 'Profile picture updated & fitted successfully!');
-            // Update photo immediately on page elements
+            showAdminToast(data.message || 'Profile picture updated & saved permanently!');
+            // Update photo immediately on all page elements
             const heroImg = document.getElementById('hero-profile-image');
             if (heroImg && data.image_url) {
                 heroImg.src = data.image_url;
             }
-            document.querySelectorAll('.brand-avatar-img').forEach(img => {
+            document.querySelectorAll('.brand-avatar-img, .brand-avatar-frame img, #avatarPreview').forEach(img => {
                 if (data.image_url) img.src = data.image_url;
             });
+
+            // Update modal live previews to reflect saved image
+            const pPortrait = document.getElementById('livePreviewPortrait');
+            const pCircle = document.getElementById('livePreviewCircle');
+            if (pPortrait && data.image_url) pPortrait.src = data.image_url;
+            if (pCircle && data.image_url) pCircle.src = data.image_url;
+
+            // Reset file input so user can pick and change it anytime again
+            const fileInput = document.getElementById('photoFileInput');
+            if (fileInput) fileInput.value = '';
+
             setTimeout(() => {
                 closeAdminModal('profilePhotoModal');
-            }, 500);
+            }, 600);
         } else {
-            showAdminToast(data.message || 'Photo upload failed. Check file type and size.', true);
+            let errorMsg = data.message || 'Photo upload failed. Check file type and size.';
+            if (data.errors && data.errors.profile_image) {
+                errorMsg = Array.isArray(data.errors.profile_image) ? data.errors.profile_image.join(' ') : data.errors.profile_image;
+            }
+            showAdminToast(errorMsg, true);
         }
     } catch (err) {
-        showAdminToast('Network error during photo upload.', true);
+        showAdminToast('Network error during photo upload. Please check connection.', true);
     } finally {
         submitBtns.forEach(b => { b.disabled = false; b.textContent = '💾 Save & Apply Photo'; });
         if (headerBtn) { headerBtn.disabled = false; headerBtn.textContent = '💾 Save Photo'; }

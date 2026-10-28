@@ -59,6 +59,178 @@
   --transition-slow: 0.4s ease;
 }
 
+/* ==========================================================================
+   Bright (Light Mode) Design System Token Overrides
+   ========================================================================== */
+[data-theme="bright"],
+html[data-theme="bright"] {
+  --bg-primary: #F8FAFC;
+  --bg-secondary: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --bg-card-hover: #F1F5F9;
+  --bg-elevated: #F8FAFC;
+  --bg-input: #FFFFFF;
+
+  --text-primary: #0F172A;
+  --text-secondary: #334155;
+  --text-muted: #64748B;
+  --text-light: #1E293B;
+
+  --accent-blue: #2563EB;
+  --accent-blue-hover: #1D4ED8;
+  --accent-blue-subtle: rgba(37, 99, 235, 0.08);
+  --accent-blue-glow: rgba(37, 99, 235, 0.2);
+
+  --border-subtle: #E2E8F0;
+  --border-card: #E2E8F0;
+  --border-hover: #CBD5E1;
+  --border-accent: rgba(37, 99, 235, 0.35);
+
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 4px 16px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 10px 30px rgba(15, 23, 42, 0.12);
+  --shadow-accent: 0 4px 20px rgba(37, 99, 235, 0.18);
+}
+
+/* Theme Toggle Button Styles */
+.theme-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.theme-toggle-btn:hover {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+  transform: translateY(-1px);
+}
+
+.theme-toggle-btn-mobile {
+  width: 100%;
+  height: 44px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  margin-bottom: 8px;
+}
+
+/* Bright Theme Specific Adjustments */
+[data-theme="bright"] .site-header {
+  background-color: rgba(255, 255, 255, 0.92);
+  border-bottom-color: #E2E8F0;
+  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
+}
+
+[data-theme="bright"] .mobile-nav-drawer {
+  background-color: rgba(255, 255, 255, 0.98);
+  border-left-color: #E2E8F0;
+  box-shadow: -4px 0 24px rgba(15, 23, 42, 0.08);
+}
+
+[data-theme="bright"] .theme-toggle-btn {
+  background: rgba(15, 23, 42, 0.04);
+  border-color: #CBD5E1;
+  color: #0F172A;
+}
+
+[data-theme="bright"] .theme-toggle-btn:hover {
+  background: rgba(37, 99, 235, 0.1);
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+}
+
+[data-theme="bright"] .brand-avatar-frame {
+  background-color: #FFFFFF;
+  border-color: var(--accent-blue);
+}
+
+[data-theme="bright"] .hero-glow-blob {
+  opacity: 0.12;
+}
+
+[data-theme="bright"] .hero-stat-card {
+  background-color: #FFFFFF;
+  border-color: #E2E8F0;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+}
+
+[data-theme="bright"] .btn-secondary {
+  background-color: #FFFFFF;
+  border-color: #CBD5E1;
+  color: #0F172A;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+}
+
+[data-theme="bright"] .btn-secondary:hover {
+  background-color: #F8FAFC;
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+}
+
+[data-theme="bright"] .project-card,
+[data-theme="bright"] .experience-card,
+[data-theme="bright"] .skill-group-card,
+[data-theme="bright"] .education-card,
+[data-theme="bright"] .research-card,
+[data-theme="bright"] .blog-card,
+[data-theme="bright"] .contact-card {
+  background-color: #FFFFFF;
+  border-color: #E2E8F0;
+  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.05);
+}
+
+[data-theme="bright"] .project-card:hover,
+[data-theme="bright"] .experience-card:hover,
+[data-theme="bright"] .blog-card:hover {
+  border-color: var(--accent-blue);
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.1);
+}
+
+[data-theme="bright"] .pill-tag {
+  background-color: #F1F5F9;
+  border-color: #E2E8F0;
+  color: #334155;
+}
+
+[data-theme="bright"] .form-input,
+[data-theme="bright"] .form-textarea {
+  background-color: #F8FAFC;
+  border-color: #CBD5E1;
+  color: #0F172A;
+}
+
+[data-theme="bright"] .form-input:focus,
+[data-theme="bright"] .form-textarea:focus {
+  background-color: #FFFFFF;
+  border-color: var(--accent-blue);
+}
+
+[data-theme="bright"] .chat-widget-box {
+  background-color: #FFFFFF;
+  border-color: #E2E8F0;
+  box-shadow: 0 14px 44px rgba(15, 23, 42, 0.15);
+}
+
+[data-theme="bright"] .chat-msg-visitor {
+  background-color: #F1F5F9;
+  color: #0F172A;
+}
+
+[data-theme="bright"] .site-footer {
+  background-color: #F1F5F9;
+  border-top-color: #E2E8F0;
+}
+
 /* --------------------------------------------------------------------------
    CSS Reset & Base
    -------------------------------------------------------------------------- */

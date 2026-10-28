@@ -100,7 +100,7 @@
             </p>
 
             <div class="admin-form-group">
-                <label class="admin-label">Select Photo (JPEG, PNG, WEBP &middot; Max 5MB)</label>
+                <label class="admin-label">Select Photo (JPEG, PNG, WEBP, AVIF &middot; Max 20MB)</label>
                 <input type="file" id="photoFileInput" name="profile_image" accept="image/*" class="admin-file-input" onchange="previewSelectedPhoto(this)" required>
             </div>
 

@@ -4,39 +4,57 @@
 @section('page_title', 'Live Visitor Messaging Console')
 
 @section('content')
-<div class="card" style="padding:0; overflow:hidden;">
-    <div class="chat-layout-grid">
-        <!-- Conversations Sidebar -->
-        <div class="chat-conversations-pane" style="background:rgba(15,23,42,0.6); display:flex; flex-direction:column;">
-            <div style="padding:16px; border-bottom:1px solid var(--border-color); display:flex; align-items:center; justify-content:space-between;">
-                <span style="font-weight:700; font-size:0.95rem;">Conversations</span>
-                <span class="badge badge-info">{{ $conversations->count() }}</span>
+<div class="chat-console-card">
+    <div class="chat-console-grid">
+        <!-- Conversations Sidebar (Hidden on mobile when conversation is active) -->
+        <div class="chat-convo-sidebar" style="{{ $activeConversation && request()->has('conversation_id') ? 'display: none;' : '' }} @media (min-width: 901px) { display: flex !important; }">
+            <div class="chat-convo-header">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="font-weight:700; font-size:0.95rem; color:var(--text-primary);">Visitor Chats</span>
+                    <span class="badge badge-info" style="font-size:0.7rem; padding:2px 7px;">{{ $conversations->count() }}</span>
+                </div>
+
+                <a href="{{ route('admin.chat.index') }}" class="btn btn-secondary btn-xs" title="Refresh conversation list">
+                    ↻ Refresh
+                </a>
             </div>
 
-            <div style="flex:1; overflow-y:auto; padding:8px;">
+            <div class="chat-convo-scroll">
                 @if($conversations->isEmpty())
-                    <p style="padding:20px 12px; font-size:0.85rem; color:var(--text-muted); text-align:center;">No visitor conversations yet.</p>
+                    <div style="padding:40px 16px; text-align:center; color:var(--text-muted);">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:8px; opacity:0.5;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                        <p style="font-size:0.85rem; margin:0;">No live chats yet.</p>
+                        <span style="font-size:0.75rem;">Visitor messages will appear here in real-time.</span>
+                    </div>
                 @else
                     @foreach($conversations as $c)
                         @php
                             $isActive = $activeConversation && $activeConversation->id === $c->id;
                             $latestMsg = $c->messages->first();
                             $hasUnread = $c->messages()->where('sender', 'visitor')->where('is_read', false)->exists();
+                            $visitorName = $c->visitor_name ?: 'Visitor #' . substr($c->session_id, 0, 6);
+                            $initial = strtoupper(substr($visitorName, 0, 1)) ?: 'V';
                         @endphp
-                        <a href="{{ route('admin.chat.index', ['conversation_id' => $c->id]) }}" style="display:block; padding:12px; border-radius:var(--radius-md); text-decoration:none; margin-bottom:4px; background:{{ $isActive ? 'rgba(59, 130, 246, 0.15)' : 'transparent' }}; border:1px solid {{ $isActive ? 'var(--accent-blue)' : 'transparent' }}; transition:var(--transition);">
-                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                                <span style="font-weight:700; font-size:0.88rem; color:{{ $isActive ? 'var(--accent-blue)' : 'var(--text-primary)' }};">
-                                    {{ $c->visitor_name ?: 'Visitor #' . substr($c->session_id, 0, 6) }}
-                                </span>
+                        <a href="{{ route('admin.chat.index', ['conversation_id' => $c->id]) }}" class="chat-convo-item {{ $isActive ? 'active' : '' }}">
+                            <div class="chat-convo-avatar">
+                                {{ $initial }}
                                 @if($hasUnread)
-                                    <span style="width:8px; height:8px; border-radius:50%; background:#EF4444;"></span>
+                                    <span class="chat-unread-dot" title="New unread message"></span>
                                 @endif
                             </div>
-                            <div style="font-size:0.78rem; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                                {{ $latestMsg ? $latestMsg->message : 'Started chat' }}
-                            </div>
-                            <div style="font-size:0.7rem; color:var(--text-muted); margin-top:4px; text-align:right;">
-                                {{ $c->last_message_at ? $c->last_message_at->diffForHumans() : '' }}
+
+                            <div style="flex:1; min-width:0;">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px;">
+                                    <span style="font-weight:700; font-size:0.88rem; color:{{ $isActive ? 'var(--accent-blue)' : 'var(--text-primary)' }}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                        {{ $visitorName }}
+                                    </span>
+                                    <span style="font-size:0.68rem; color:var(--text-muted); flex-shrink:0;">
+                                        {{ $c->last_message_at ? $c->last_message_at->diffForHumans(null, true) : '' }}
+                                    </span>
+                                </div>
+                                <div style="font-size:0.78rem; color:var(--text-secondary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                    {{ $latestMsg ? $latestMsg->message : 'Started conversation' }}
+                                </div>
                             </div>
                         </a>
                     @endforeach
@@ -44,64 +62,80 @@
             </div>
         </div>
 
-        <!-- Chat Conversation Window -->
-        <div class="chat-window-pane" style="display:flex; flex-direction:column; background:var(--bg-card);">
+        <!-- Chat Main Pane -->
+        <div class="chat-main-pane">
             @if($activeConversation)
                 <!-- Chat Window Header -->
-                <div style="padding:14px 20px; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.02);">
-                    <div>
-                        <div style="font-weight:700; font-size:1rem; color:var(--text-primary);">
-                            {{ $activeConversation->visitor_name ?: 'Anonymous Visitor' }}
+                <div class="chat-header-bar">
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <a href="{{ route('admin.chat.index') }}" class="btn btn-secondary btn-xs" style="display:inline-flex;" title="Back to conversations list">
+                            &larr; Back
+                        </a>
+
+                        <div class="chat-convo-avatar" style="width:36px; height:36px; font-size:0.85rem; background:var(--accent-blue); color:#fff;">
+                            {{ strtoupper(substr($activeConversation->visitor_name ?: 'V', 0, 1)) }}
                         </div>
-                        <div style="font-size:0.75rem; color:var(--text-muted);">
-                            Session: {{ $activeConversation->session_id }} &middot;
-                            {{ $activeConversation->visitor_email ?: 'No email provided' }}
+
+                        <div>
+                            <div style="font-weight:700; font-size:0.95rem; color:var(--text-primary);">
+                                {{ $activeConversation->visitor_name ?: 'Visitor #' . substr($activeConversation->session_id, 0, 6) }}
+                            </div>
+                            <div style="font-size:0.72rem; color:var(--text-muted);">
+                                {{ $activeConversation->visitor_email ?: 'Anonymous Visitor' }} &middot; Session: {{ substr($activeConversation->session_id, 0, 8) }}
+                            </div>
                         </div>
                     </div>
 
-                    <div style="display:flex; align-items:center; gap:8px;">
-                        <span class="status-dot-sm {{ $status->is_online ? 'online' : 'offline' }}"></span>
-                        <span style="font-size:0.8rem; color:var(--text-secondary);">
-                            {{ $status->is_online ? 'You are Online' : 'You are Offline' }}
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <span class="status-pill" style="padding:4px 10px; font-size:0.75rem;">
+                            <span class="status-dot-sm {{ $status->is_online ? 'online' : 'offline' }}"></span>
+                            <span>{{ $status->is_online ? 'You are Live' : 'Offline' }}</span>
                         </span>
                     </div>
                 </div>
 
-                <!-- Messages Stream -->
-                <div id="adminMessageStream" style="flex:1; overflow-y:auto; padding:20px; display:flex; flex-direction:column; gap:12px;">
+                <!-- Messages Stream Box -->
+                <div id="adminMessageStream" class="chat-stream-box">
                     @forelse($activeConversation->messages as $msg)
                         @php $isAdmin = $msg->sender === 'admin'; @endphp
-                        <div style="align-self:{{ $isAdmin ? 'flex-end' : 'flex-start' }}; max-width:75%;">
-                            <div style="padding:10px 16px; border-radius:14px; font-size:0.88rem; line-height:1.5; background:{{ $isAdmin ? 'var(--accent-blue)' : 'rgba(255,255,255,0.06)' }}; color:{{ $isAdmin ? '#ffffff' : 'var(--text-primary)' }}; border:1px solid {{ $isAdmin ? 'transparent' : 'var(--border-color)' }};">
+                        <div class="chat-bubble-wrap {{ $isAdmin ? 'admin' : 'visitor' }}">
+                            <div class="chat-bubble">
                                 {{ $msg->message }}
                             </div>
-                            <div style="font-size:0.7rem; color:var(--text-muted); margin-top:3px; text-align:{{ $isAdmin ? 'right' : 'left' }};">
+                            <span class="chat-bubble-time">
                                 {{ $isAdmin ? 'You' : ($activeConversation->visitor_name ?: 'Visitor') }} &middot; {{ $msg->created_at->format('h:i A') }}
-                            </div>
+                            </span>
                         </div>
                     @empty
-                        <div style="text-align:center; color:var(--text-muted); margin-top:40px; font-size:0.85rem;">
+                        <div style="text-align:center; color:var(--text-muted); margin:auto; font-size:0.85rem;">
                             No messages exchanged yet in this session.
                         </div>
                     @endforelse
                 </div>
 
                 <!-- Reply Input Bar -->
-                <div style="padding:16px 20px; border-top:1px solid var(--border-color); background:rgba(15,23,42,0.8);">
-                    <form id="adminReplyForm" action="{{ route('admin.chat.reply') }}" method="POST" style="display:flex; gap:12px;">
+                <div class="chat-reply-bar">
+                    <form id="adminReplyForm" action="{{ route('admin.chat.reply') }}" method="POST">
                         @csrf
                         <input type="hidden" name="conversation_id" value="{{ $activeConversation->id }}">
-                        <input type="text" id="adminReplyInput" name="message" class="form-control" required placeholder="Type your reply to visitor..." autocomplete="off">
-                        <button type="submit" class="btn btn-primary" style="flex-shrink:0;">
-                            <span>Send</span>
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-                        </button>
+                        <div class="chat-reply-input-wrap">
+                            <input type="text" id="adminReplyInput" name="message" class="chat-reply-input" required placeholder="Type reply to {{ $activeConversation->visitor_name ?: 'visitor' }}..." autocomplete="off" autofocus>
+                            <button type="submit" class="chat-reply-send-btn" title="Send Reply">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                            </button>
+                        </div>
                     </form>
                 </div>
             @else
-                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; color:var(--text-muted); padding:40px;">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:12px; opacity:0.5;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                    <p>Select a conversation from the sidebar to inspect or reply.</p>
+                <!-- Clean Empty State -->
+                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; min-height:480px; color:var(--text-muted); padding:40px; text-align:center;">
+                    <div style="width:68px; height:68px; border-radius:50%; background:rgba(59,130,246,0.08); border:1px solid rgba(59,130,246,0.2); display:flex; align-items:center; justify-content:center; color:var(--accent-blue); margin-bottom:16px;">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                    </div>
+                    <h3 style="font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:6px;">Select a Visitor Conversation</h3>
+                    <p style="font-size:0.85rem; max-width:380px; margin:0 auto; line-height:1.5;">
+                        Choose an active visitor thread from the sidebar to view chat history and reply in real time.
+                    </p>
                 </div>
             @endif
         </div>
@@ -124,20 +158,19 @@
             const res = await fetch(pollUrl);
             const data = await res.json();
             if (data.status === 'success' && data.messages) {
-                // If message count changed, refresh stream smoothly
-                const currentCount = stream.querySelectorAll('div[style*="max-width:75%"]').length;
+                const currentCount = stream.querySelectorAll('.chat-bubble-wrap').length;
                 if (data.messages.length > currentCount) {
                     let html = '';
                     data.messages.forEach(msg => {
                         const isAdmin = msg.sender === 'admin';
                         html += `
-                            <div style="align-self:${isAdmin ? 'flex-end' : 'flex-start'}; max-width:75%;">
-                                <div style="padding:10px 16px; border-radius:14px; font-size:0.88rem; line-height:1.5; background:${isAdmin ? 'var(--accent-blue)' : 'rgba(255,255,255,0.06)'}; color:${isAdmin ? '#ffffff' : 'var(--text-primary)'}; border:1px solid ${isAdmin ? 'transparent' : 'var(--border-color)'};">
+                            <div class="chat-bubble-wrap ${isAdmin ? 'admin' : 'visitor'}">
+                                <div class="chat-bubble">
                                     ${escapeHtml(msg.message)}
                                 </div>
-                                <div style="font-size:0.7rem; color:var(--text-muted); margin-top:3px; text-align:${isAdmin ? 'right' : 'left'};">
+                                <span class="chat-bubble-time">
                                     ${isAdmin ? 'You' : 'Visitor'} &middot; ${msg.time}
-                                </div>
+                                </span>
                             </div>
                         `;
                     });
@@ -146,7 +179,7 @@
                 }
             }
         } catch (e) {
-            // connection retry
+            // retry on next interval
         }
     }, 3000);
 

@@ -33,7 +33,10 @@ class ProfileController extends Controller
             'short_bio' => 'nullable|string|max:2000',
             'detailed_bio_text' => 'nullable|string|max:6000',
             'positioning' => 'nullable|string|max:1000',
-            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072',
+            'profile_image' => 'nullable|file|mimes:jpeg,png,jpg,webp,gif,svg,bmp,avif|max:20480',
+        ], [
+            'profile_image.mimes' => 'The photo must be an image file (JPEG, PNG, WEBP, GIF, BMP, or AVIF).',
+            'profile_image.max' => 'The photo size cannot exceed 20MB.',
         ]);
 
         // Process detailed bio into paragraphs array
@@ -60,7 +63,8 @@ class ProfileController extends Controller
         // Process profile image upload
         if ($request->hasFile('profile_image')) {
             $file = $request->file('profile_image');
-            $fileName = 'profile_' . time() . '.' . $file->getClientOriginalExtension();
+            $ext = strtolower($file->getClientOriginalExtension() ?: 'jpg');
+            $fileName = 'profile_' . time() . '_' . Str::random(5) . '.' . $ext;
             $destination = public_path('images');
             if (!File::isDirectory($destination)) {
                 File::makeDirectory($destination, 0755, true);
@@ -156,12 +160,18 @@ class ProfileController extends Controller
     public function updatePhoto(Request $request)
     {
         $request->validate([
-            'profile_image' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120',
+            'profile_image' => 'required|file|mimes:jpeg,png,jpg,webp,gif,svg,bmp,avif|max:20480',
+        ], [
+            'profile_image.required' => 'Please select an image file to upload.',
+            'profile_image.file' => 'The uploaded file is invalid.',
+            'profile_image.mimes' => 'The photo must be an image (JPEG, PNG, WEBP, GIF, BMP, or AVIF).',
+            'profile_image.max' => 'The photo size cannot exceed 20MB.',
         ]);
 
         $profile = Profile::current();
         $file = $request->file('profile_image');
-        $fileName = 'profile_' . time() . '.' . $file->getClientOriginalExtension();
+        $ext = strtolower($file->getClientOriginalExtension() ?: 'jpg');
+        $fileName = 'profile_' . time() . '_' . Str::random(5) . '.' . $ext;
         $destination = public_path('images');
 
         if (!File::isDirectory($destination)) {
@@ -183,7 +193,7 @@ class ProfileController extends Controller
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json([
                 'status' => 'success',
-                'message' => 'Profile picture updated successfully with automatic aspect ratio fitting!',
+                'message' => 'Profile picture updated successfully and saved permanently!',
                 'image_url' => $imageUrl,
                 'photo_url' => $imageUrl,
             ]);
