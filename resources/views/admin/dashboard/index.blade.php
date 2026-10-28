@@ -18,11 +18,11 @@
         </p>
         <div class="pillar-hub-tags">
             <a href="{{ route('admin.dashboard') }}" class="pillar-tag active">Dashboard Overview</a>
-            <a href="{{ route('admin.chat.index') }}" class="pillar-tag">
-                Live Chat Console @if($unreadChats > 0)<span class="tag-counter" style="background:#EF4444;">{{ $unreadChats }}</span>@endif
+            <a href="{{ route('admin.feed.index') }}" class="pillar-tag">
+                Posts &amp; Feed
             </a>
-            <a href="{{ route('admin.inquiries.index') }}" class="pillar-tag">
-                Inquiries Inbox @if($unreadInquiries > 0)<span class="tag-counter">{{ $unreadInquiries }}</span>@endif
+            <a href="{{ route('admin.inbox.index') }}" class="pillar-tag">
+                Unified Inbox @if(($unreadChats + $unreadInquiries) > 0)<span class="tag-counter" style="background:#EF4444;">{{ $unreadChats + $unreadInquiries }}</span>@endif
             </a>
         </div>
     </div>
@@ -122,7 +122,7 @@
     <div class="kpi-card">
         <span class="kpi-label">Unread Live Chats</span>
         <span class="kpi-value" style="{{ $unreadChats > 0 ? 'color:#EF4444;' : '' }}">{{ $unreadChats }}</span>
-        <span class="kpi-sub"><a href="{{ route('admin.chat.index') }}" style="color:var(--text-secondary); text-decoration:none;">Open live console &rarr;</a></span>
+        <span class="kpi-sub"><a href="{{ route('admin.inbox.index') }}" style="color:var(--text-secondary); text-decoration:none;">Open in Inbox &rarr;</a></span>
     </div>
 </div>
 
@@ -204,7 +204,7 @@
     <div class="card">
         <div class="card-header">
             <h3 class="card-title">Live Chat Conversations</h3>
-            <a href="{{ route('admin.chat.index') }}" class="btn btn-secondary btn-sm">Open Console</a>
+            <a href="{{ route('admin.inbox.index') }}" class="btn btn-secondary btn-sm">Open in Inbox</a>
         </div>
 
         @if($recentChats->isEmpty())
@@ -235,7 +235,7 @@
                                     {{ $chat->last_message_at ? $chat->last_message_at->diffForHumans() : 'N/A' }}
                                 </td>
                                 <td>
-                                    <a href="{{ route('admin.chat.index', ['conversation_id' => $chat->id]) }}" class="btn btn-primary btn-sm">Reply</a>
+                                    <a href="{{ route('admin.inbox.index', ['conversation_id' => $chat->id]) }}" class="btn btn-primary btn-sm">Reply</a>
                                 </td>
                             </tr>
                         @endforeach

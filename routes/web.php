@@ -7,6 +7,8 @@ use App\Http\Controllers\Admin\ChatConsoleController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EducationController;
 use App\Http\Controllers\Admin\ExperienceController;
+use App\Http\Controllers\Admin\FeedPostController;
+use App\Http\Controllers\Admin\InboxController;
 use App\Http\Controllers\Admin\InquiryController;
 use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
 use App\Http\Controllers\Admin\ProjectController as AdminProjectController;
@@ -16,6 +18,7 @@ use App\Http\Controllers\Admin\ResumeController as AdminResumeController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\SkillController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\FeedController;
 use App\Http\Controllers\PortfolioController;
 use Illuminate\Support\Facades\Route;
 
@@ -32,6 +35,10 @@ Route::post('/track/click', [PortfolioController::class, 'trackClick'])->name('t
 // Public Blog
 Route::get('/blog', [PortfolioController::class, 'blogIndex'])->name('blog.index');
 Route::get('/blog/{slug}', [PortfolioController::class, 'blogShow'])->name('blog.show');
+
+// Public Feed (Dedicated updates view, accessible strictly via header button)
+Route::get('/feed', [FeedController::class, 'index'])->name('feed.index');
+Route::post('/feed/{post}/like', [FeedController::class, 'like'])->name('feed.like');
 
 // PWA Assets
 Route::get('/manifest.json', function () {
@@ -157,13 +164,25 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
         'destroy' => 'admin.blog.destroy',
     ]);
 
-    // Contact Inquiries
+    // Posts & Content Feed Management (Facebook/LinkedIn style updates)
+    Route::get('/feed', [FeedPostController::class, 'index'])->name('admin.feed.index');
+    Route::post('/feed', [FeedPostController::class, 'store'])->name('admin.feed.store');
+    Route::post('/feed/{post}', [FeedPostController::class, 'update'])->name('admin.feed.update');
+    Route::post('/feed/{post}/pin', [FeedPostController::class, 'togglePin'])->name('admin.feed.pin');
+    Route::delete('/feed/{post}', [FeedPostController::class, 'destroy'])->name('admin.feed.destroy');
+
+    // Unified Inbox (Consolidates Live & Random Visitor Chats + Contact Inquiries)
+    Route::get('/inbox', [InboxController::class, 'index'])->name('admin.inbox.index');
+    Route::post('/inbox/chat/reply', [InboxController::class, 'replyChat'])->name('admin.inbox.chat.reply');
+    Route::delete('/inbox/chat/{conversation}', [InboxController::class, 'destroyChat'])->name('admin.inbox.chat.destroy');
+    Route::post('/inbox/inquiry/{inquiry}/status', [InboxController::class, 'updateInquiryStatus'])->name('admin.inbox.inquiry.status');
+    Route::delete('/inbox/inquiry/{inquiry}', [InboxController::class, 'destroyInquiry'])->name('admin.inbox.inquiry.destroy');
+
+    // Legacy Aliases for backwards compatibility with existing links and tests
     Route::get('/inquiries', [InquiryController::class, 'index'])->name('admin.inquiries.index');
     Route::get('/inquiries/{inquiry}', [InquiryController::class, 'show'])->name('admin.inquiries.show');
     Route::post('/inquiries/{inquiry}/status', [InquiryController::class, 'updateStatus'])->name('admin.inquiries.status');
     Route::delete('/inquiries/{inquiry}', [InquiryController::class, 'destroy'])->name('admin.inquiries.destroy');
-
-    // Real-Time Chat Console
     Route::get('/chat', [ChatConsoleController::class, 'index'])->name('admin.chat.index');
     Route::post('/chat/reply', [ChatConsoleController::class, 'reply'])->name('admin.chat.reply');
     Route::get('/chat/poll/{conversation}', [ChatConsoleController::class, 'poll'])->name('admin.chat.poll');

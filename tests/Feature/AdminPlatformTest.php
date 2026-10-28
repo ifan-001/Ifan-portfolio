@@ -474,6 +474,93 @@ class AdminPlatformTest extends TestCase
         $loginResponse->assertSee('viewport-fit=cover', false);
         $loginResponse->assertSee('rel="manifest"', false);
     }
+
+    /**
+     * 18. Unified Inbox: Consolidates live chats and contact inquiries.
+     */
+    public function test_unified_inbox_and_conversation_flow(): void
+    {
+        $admin = $this->getAdminUser();
+
+        // Create anonymous chat conversation
+        $chat = ChatConversation::create([
+            'session_id' => 'session_test_' . uniqid(),
+            'visitor_name' => null,
+            'last_message_at' => now(),
+        ]);
+        ChatMessage::create([
+            'conversation_id' => $chat->id,
+            'sender' => 'visitor',
+            'message' => 'Hey, quick question about your architecture consulting.',
+            'is_read' => false,
+        ]);
+
+        // Create contact inquiry
+        $inquiry = ContactMessage::create([
+            'name' => 'Sara Connor',
+            'email' => 'sara@cyberdyne.tech',
+            'subject' => 'Enterprise System Migration',
+            'message' => 'We are interested in working together on our cloud migration.',
+            'status' => 'unread',
+        ]);
+
+        // 1. Unified Inbox List View
+        $inboxResponse = $this->actingAs($admin)->get('/admin/inbox');
+        $inboxResponse->assertStatus(200);
+        $inboxResponse->assertSee('Unified Inbox');
+        $inboxResponse->assertSee('Live &amp; Random Portfolio Chats', false);
+        $inboxResponse->assertSee('Contact Inquiries &amp; Named Messages', false);
+        $inboxResponse->assertSee('Sara Connor');
+
+        // 2. Chat Conversation View with Back Button
+        $chatViewResponse = $this->actingAs($admin)->get('/admin/inbox?conversation_id=' . $chat->id);
+        $chatViewResponse->assertStatus(200);
+        $chatViewResponse->assertSee('Back to Message List');
+        $chatViewResponse->assertSee('quick question about your architecture consulting');
+
+        // 3. Contact Inquiry View with Back Button
+        $inquiryViewResponse = $this->actingAs($admin)->get('/admin/inbox?inquiry_id=' . $inquiry->id);
+        $inquiryViewResponse->assertStatus(200);
+        $inquiryViewResponse->assertSee('Back to Message List');
+        $inquiryViewResponse->assertSee('sara@cyberdyne.tech');
+    }
+
+    /**
+     * 19. Content & Feed: Admin post publishing and public feed view.
+     */
+    public function test_feed_post_creation_and_public_feed_flow(): void
+    {
+        $admin = $this->getAdminUser();
+
+        // 1. Admin creates a post
+        $postResponse = $this->actingAs($admin)->post('/admin/feed', [
+            'category' => 'industrial',
+            'title' => 'Industrial Automated Systems Deployment',
+            'content' => 'High-availability control systems must withstand network partitioning without state corruption.',
+            'media_type' => 'none',
+            'is_pinned' => true,
+        ]);
+        $postResponse->assertRedirect('/admin/feed');
+
+        $this->assertDatabaseHas('feed_posts', [
+            'title' => 'Industrial Automated Systems Deployment',
+            'category' => 'industrial',
+            'is_pinned' => 1,
+        ]);
+
+        // 2. Public feed page displays the post serially
+        $feedResponse = $this->get('/feed');
+        $feedResponse->assertStatus(200);
+        $feedResponse->assertSee('Industrial Automated Systems Deployment');
+        $feedResponse->assertSee('Back to Portfolio');
+
+        // 3. Public like endpoint
+        $post = \App\Models\FeedPost::where('title', 'Industrial Automated Systems Deployment')->first();
+        $likeResponse = $this->postJson("/feed/{$post->id}/like");
+        $likeResponse->assertStatus(200);
+        $likeResponse->assertJson(['status' => 'success']);
+    }
 }
+
 
 

@@ -1,24 +1,34 @@
+@php
+    $isHome = request()->routeIs('home');
+    $homePrefix = $isHome ? '' : route('home');
+@endphp
 <header class="site-header" id="site-header">
     <div class="container nav-wrapper">
-        <a href="#hero" class="brand-logo" aria-label="Hasnain Al Ifan - Home">
+        <a href="{{ $homePrefix }}#hero" class="brand-logo" aria-label="Hasnain Al Ifan - Home">
             <span class="brand-avatar-frame" aria-hidden="true">
-                <img src="{{ asset(ltrim($portfolio['brand']['profile_image'], '/')) }}" alt="Hasnain Al Ifan" class="brand-avatar-img">
+                <img src="{{ asset(ltrim($portfolio['brand']['profile_image'] ?? '/images/profile.jpg', '/')) }}" alt="Hasnain Al Ifan" class="brand-avatar-img">
             </span>
             <span>IFAN<span class="brand-dot">.</span></span>
         </a>
 
         <nav class="nav-links" aria-label="Main Navigation">
-            <a href="#hero" class="nav-link active">Home</a>
-            <a href="#about" class="nav-link">About</a>
-            <a href="#experience" class="nav-link">Experience</a>
-            <a href="#projects" class="nav-link">Projects</a>
-            <a href="#skills" class="nav-link">Skills</a>
-            <a href="#education" class="nav-link">Education</a>
-            <a href="#research" class="nav-link">Research</a>
-            <a href="#contact" class="nav-link">Contact</a>
+            <a href="{{ $homePrefix }}#hero" class="nav-link {{ $isHome ? 'active' : '' }}">Home</a>
+            <a href="{{ $homePrefix }}#about" class="nav-link">About</a>
+            <a href="{{ $homePrefix }}#experience" class="nav-link">Experience</a>
+            <a href="{{ $homePrefix }}#projects" class="nav-link">Projects</a>
+            <a href="{{ $homePrefix }}#skills" class="nav-link">Skills</a>
+            <a href="{{ $homePrefix }}#education" class="nav-link">Education</a>
+            <a href="{{ $homePrefix }}#research" class="nav-link">Research</a>
+            <a href="{{ $homePrefix }}#contact" class="nav-link">Contact</a>
         </nav>
 
         <div class="nav-actions">
+            {{-- Dedicated Header Button for Posts & Updates Feed --}}
+            <a href="{{ route('feed.index') }}" class="nav-feed-pill {{ request()->routeIs('feed.*') ? 'active' : '' }}" title="View Professional Feed & Project Updates">
+                <span class="feed-pulse-dot" aria-hidden="true"></span>
+                <span>Feed</span>
+            </a>
+
             <a href="{{ route('resume.download') }}" class="btn btn-sm btn-secondary" target="_blank" rel="noopener noreferrer" title="Open Hasnain Al Ifan Resume (PDF)">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -29,7 +39,7 @@
                 <span>Resume</span>
             </a>
 
-            <a href="#contact" class="btn btn-sm btn-primary">
+            <a href="{{ $homePrefix }}#contact" class="btn btn-sm btn-primary">
                 Let's Talk
             </a>
 
@@ -63,14 +73,22 @@
 
     {{-- Mobile Navigation Drawer --}}
     <div id="mobile-drawer" class="mobile-nav-drawer" role="dialog" aria-modal="true" aria-label="Mobile Navigation">
-        <a href="#hero" class="mobile-nav-link active">Home</a>
-        <a href="#about" class="mobile-nav-link">About</a>
-        <a href="#experience" class="mobile-nav-link">Experience</a>
-        <a href="#projects" class="mobile-nav-link">Projects</a>
-        <a href="#skills" class="mobile-nav-link">Skills</a>
-        <a href="#education" class="mobile-nav-link">Education</a>
-        <a href="#research" class="mobile-nav-link">Research</a>
-        <a href="#contact" class="mobile-nav-link">Contact</a>
+        <a href="{{ route('feed.index') }}" class="mobile-nav-link {{ request()->routeIs('feed.*') ? 'active' : '' }}" style="display:flex; align-items:center; justify-content:space-between; background:rgba(59,130,246,0.08); border-radius:8px; padding:10px 14px; margin-bottom:8px;">
+            <span style="display:flex; align-items:center; gap:8px; font-weight:600; color:var(--text-primary);">
+                <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#3B82F6;"></span>
+                <span>Feed / Updates</span>
+            </span>
+            <span style="font-size:0.7rem; background:var(--accent-blue); color:#fff; padding:2px 8px; border-radius:10px; font-weight:600;">NEW</span>
+        </a>
+
+        <a href="{{ $homePrefix }}#hero" class="mobile-nav-link {{ $isHome ? 'active' : '' }}">Home</a>
+        <a href="{{ $homePrefix }}#about" class="mobile-nav-link">About</a>
+        <a href="{{ $homePrefix }}#experience" class="mobile-nav-link">Experience</a>
+        <a href="{{ $homePrefix }}#projects" class="mobile-nav-link">Projects</a>
+        <a href="{{ $homePrefix }}#skills" class="mobile-nav-link">Skills</a>
+        <a href="{{ $homePrefix }}#education" class="mobile-nav-link">Education</a>
+        <a href="{{ $homePrefix }}#research" class="mobile-nav-link">Research</a>
+        <a href="{{ $homePrefix }}#contact" class="mobile-nav-link">Contact</a>
 
         <div class="mobile-nav-actions">
             {{-- Mobile Theme Toggle --}}
@@ -89,7 +107,7 @@
                 </svg>
                 <span>Open Resume (PDF)</span>
             </a>
-            <a href="#contact" class="btn btn-primary" style="width: 100%;">
+            <a href="{{ $homePrefix }}#contact" class="btn btn-primary" style="width: 100%;">
                 Let's Connect
             </a>
         </div>
