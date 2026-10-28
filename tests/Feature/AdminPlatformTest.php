@@ -523,6 +523,26 @@ class AdminPlatformTest extends TestCase
         $inquiryViewResponse->assertStatus(200);
         $inquiryViewResponse->assertSee('Back to Message List');
         $inquiryViewResponse->assertSee('sara@cyberdyne.tech');
+
+        // 4. Verify that providing a name or email moves user from Random to Identified Direct Conversations
+        $identifiedChat = ChatConversation::create([
+            'session_id' => 'session_identified_' . uniqid(),
+            'visitor_name' => 'Tarek Rahman',
+            'visitor_email' => 'tarek@gmail.com',
+            'last_message_at' => now(),
+        ]);
+        ChatMessage::create([
+            'conversation_id' => $identifiedChat->id,
+            'sender' => 'visitor',
+            'message' => 'Hello Hasnain, I have a Laravel project for you.',
+            'is_read' => false,
+        ]);
+
+        $inboxAfterIdentify = $this->actingAs($admin)->get('/admin/inbox');
+        $inboxAfterIdentify->assertStatus(200);
+        $inboxAfterIdentify->assertSee('Identified Direct Conversations');
+        $inboxAfterIdentify->assertSee('Tarek Rahman');
+        $inboxAfterIdentify->assertSee('tarek@gmail.com');
     }
 
     /**

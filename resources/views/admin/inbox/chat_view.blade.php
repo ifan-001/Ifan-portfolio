@@ -3,22 +3,22 @@
 @section('title', 'Chat Session - ' . ($conversation->visitor_name ?: 'Visitor #' . substr($conversation->session_id, -6)))
 
 @section('content')
-<div style="max-width:900px; margin:0 auto;">
+<div style="max-width:920px; margin:0 auto;">
     {{-- Header with prominent Back Button --}}
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:12px;">
-        <a href="{{ route('admin.inbox.index') }}" class="btn btn-secondary btn-sm" style="display:inline-flex; align-items:center; gap:6px; font-weight:600; padding:8px 14px; border-radius:8px;">
-            <span>&larr;</span>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:12px;">
+        <a href="{{ route('admin.inbox.index') }}" class="btn btn-secondary btn-sm" style="display:inline-flex; align-items:center; gap:8px; font-weight:600; padding:8px 16px; border-radius:var(--radius-full); background:rgba(255,255,255,0.05); border:1px solid var(--border-color);">
+            <span style="font-size:1.1rem; line-height:1;">&larr;</span>
             <span>Back to Message List</span>
         </a>
 
         <div style="display:flex; align-items:center; gap:10px;">
-            <span style="font-size:0.8rem; background:rgba(59,130,246,0.15); color:#3B82F6; padding:3px 10px; border-radius:12px; font-weight:600;">
+            <span style="font-size:0.75rem; background:rgba(59,130,246,0.15); color:#60A5FA; border:1px solid rgba(59,130,246,0.3); padding:4px 12px; border-radius:var(--radius-full); font-weight:700; letter-spacing:0.04em;">
                 LIVE CHAT CONSOLE
             </span>
             <form action="{{ route('admin.inbox.chat.destroy', $conversation->id) }}" method="POST" onsubmit="return confirm('Permanently delete this chat conversation?');" style="display:inline;">
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="btn btn-secondary btn-sm" style="color:#EF4444;" title="Delete this conversation">
+                <button type="submit" class="btn btn-secondary btn-sm" style="color:#EF4444; border-color:rgba(239,68,68,0.3); border-radius:var(--radius-full); padding:6px 14px; display:inline-flex; align-items:center; gap:6px;" title="Delete this conversation">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                     <span>Delete</span>
                 </button>
@@ -27,35 +27,47 @@
     </div>
 
     @if(session('status'))
-        <div style="background:rgba(16,185,129,0.15); border:1px solid #10B981; color:#10B981; padding:10px 14px; border-radius:8px; margin-bottom:16px; font-size:0.85rem;">
-            {{ session('status') }}
+        <div style="background:rgba(16,185,129,0.15); border:1px solid #10B981; color:#10B981; padding:12px 18px; border-radius:10px; margin-bottom:16px; font-size:0.875rem; font-weight:600;">
+            ✓ {{ session('status') }}
         </div>
     @endif
 
+    @php
+        $isNamed = !empty($conversation->visitor_name) || !empty($conversation->visitor_email);
+        $displayName = $conversation->visitor_name ?: ($conversation->visitor_email ?: ('Visitor #' . substr($conversation->session_id, -6)));
+        $avatarLetter = $isNamed ? strtoupper(substr($displayName, 0, 1)) : '⚡';
+    @endphp
+
     {{-- Chat Box Card --}}
-    <div style="background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:12px; overflow:hidden; display:flex; flex-direction:column; height:calc(85vh - 120px); min-height:500px;">
+    <div style="background:var(--bg-surface); border:1px solid var(--border-color); border-radius:var(--radius-lg); overflow:hidden; display:flex; flex-direction:column; height:calc(85vh - 120px); min-height:520px; box-shadow:0 8px 30px rgba(0,0,0,0.35);">
         {{-- Chat Box Header --}}
-        <div style="padding:14px 20px; border-bottom:1px solid var(--border-color); background:rgba(0,0,0,0.15); display:flex; align-items:center; justify-content:space-between; gap:12px;">
-            <div style="display:flex; align-items:center; gap:12px;">
-                <div style="width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg, #1E3A8A, #3B82F6); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700;">
-                    💬
+        <div style="padding:16px 22px; border-bottom:1px solid var(--border-color); background:rgba(0,0,0,0.2); display:flex; align-items:center; justify-content:space-between; gap:12px;">
+            <div style="display:flex; align-items:center; gap:14px;">
+                <div style="width:44px; height:44px; border-radius:50%; background:{{ $isNamed ? 'linear-gradient(135deg, #065F46, #10B981)' : 'linear-gradient(135deg, #1E3A8A, #3B82F6)' }}; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:1.05rem; box-shadow:0 0 12px rgba(59,130,246,0.3);">
+                    {{ $avatarLetter }}
                 </div>
                 <div>
-                    <h2 style="font-size:1rem; font-weight:700; color:var(--text-primary); margin:0;">
-                        {{ $conversation->visitor_name ?: ('Visitor #' . substr($conversation->session_id, -6)) }}
-                    </h2>
-                    <div style="font-size:0.75rem; color:var(--text-secondary); display:flex; gap:8px;">
-                        <span>Session: {{ substr($conversation->session_id, 0, 16) }}...</span>
-                        @if($conversation->visitor_email)
-                            <span>&bull; {{ $conversation->visitor_email }}</span>
+                    <h2 style="font-size:1.05rem; font-weight:800; color:var(--text-primary); margin:0; display:flex; align-items:center; gap:8px;">
+                        <span>{{ $displayName }}</span>
+                        @if($isNamed)
+                            <span style="font-size:0.68rem; background:rgba(16,185,129,0.15); color:#34D399; border:1px solid rgba(16,185,129,0.3); padding:1px 7px; border-radius:10px; font-weight:700;">IDENTIFIED</span>
+                        @else
+                            <span style="font-size:0.68rem; background:rgba(59,130,246,0.15); color:#60A5FA; border:1px solid rgba(59,130,246,0.3); padding:1px 7px; border-radius:10px; font-weight:700;">ANONYMOUS</span>
                         @endif
+                    </h2>
+                    <div style="font-size:0.78rem; color:var(--text-secondary); display:flex; gap:8px; margin-top:2px;">
+                        @if($conversation->visitor_email)
+                            <span style="color:var(--accent-blue); font-weight:500;">✉ {{ $conversation->visitor_email }}</span>
+                            <span>&bull;</span>
+                        @endif
+                        <span>Session: {{ substr($conversation->session_id, 0, 14) }}...</span>
                     </div>
                 </div>
             </div>
 
-            <div style="display:flex; align-items:center; gap:6px;">
-                <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#10B981;"></span>
-                <span style="font-size:0.8rem; color:var(--text-secondary);">Active Session</span>
+            <div style="display:flex; align-items:center; gap:8px; background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.25); padding:5px 12px; border-radius:var(--radius-full);">
+                <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#10B981; box-shadow:0 0 6px #10B981;"></span>
+                <span style="font-size:0.78rem; font-weight:600; color:#34D399;">Active Live Session</span>
             </div>
         </div>
 

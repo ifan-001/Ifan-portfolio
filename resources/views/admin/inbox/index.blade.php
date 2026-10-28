@@ -3,269 +3,333 @@
 @section('title', 'Unified Inbox')
 
 @section('content')
-<div class="content-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; margin-bottom:20px;">
-    <div>
-        <h1 style="font-size:1.5rem; font-weight:700; color:var(--text-primary); margin:0 0 4px 0; display:flex; align-items:center; gap:8px;">
-            <span>📬 Unified Inbox</span>
-            @if(!empty($counts['unread']) && $counts['unread'] > 0)
-                <span class="nav-badge" style="background:#EF4444; font-size:0.75rem; padding:2px 8px;">{{ $counts['unread'] }} Unread</span>
-            @endif
-        </h1>
-        <p style="color:var(--text-secondary); font-size:0.875rem; margin:0;">
-            All live visitor chats and portfolio contact inquiries consolidated in one place.
-        </p>
-    </div>
+<div class="inbox-wrapper">
+    {{-- Top Header Box --}}
+    <div class="inbox-header-box">
+        <div>
+            <h1 class="inbox-header-title">
+                <span>📬 Unified Inbox</span>
+                @if(!empty($counts['unread']) && $counts['unread'] > 0)
+                    <span class="inbox-unread-chip">{{ $counts['unread'] }} Unread</span>
+                @endif
+            </h1>
+            <p style="color:var(--text-secondary); font-size:0.875rem; margin:0;">
+                Consolidated real-time visitor chats and direct portfolio contact inquiries.
+            </p>
+        </div>
 
-    <div style="display:flex; gap:10px; align-items:center;">
-        <form method="GET" action="{{ route('admin.inbox.index') }}" style="display:flex; gap:6px;">
-            <input type="text" name="q" value="{{ $search ?? '' }}" placeholder="Search messages, names, email..."
-                   style="background:var(--bg-secondary); border:1px solid var(--border-color); color:var(--text-primary); padding:7px 12px; border-radius:6px; font-size:0.85rem; width:220px;">
+        <form method="GET" action="{{ route('admin.inbox.index') }}" class="inbox-search-form">
+            <span class="inbox-search-icon">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </span>
+            <input type="text" name="q" value="{{ $search ?? '' }}" placeholder="Search messages, names, email..." class="inbox-search-input">
             @if(!empty($search))
-                <a href="{{ route('admin.inbox.index') }}" class="btn btn-secondary btn-sm" title="Clear search">✕</a>
+                <a href="{{ route('admin.inbox.index') }}" class="btn btn-secondary btn-sm" style="border-radius:var(--radius-full); padding:7px 11px;" title="Clear search">✕</a>
             @endif
-            <button type="submit" class="btn btn-primary btn-sm">Search</button>
+            <button type="submit" class="btn btn-primary btn-sm" style="border-radius:var(--radius-full); padding:7px 15px;">Search</button>
         </form>
     </div>
-</div>
 
-@if(session('status'))
-    <div style="background:rgba(16,185,129,0.15); border:1px solid #10B981; color:#10B981; padding:12px 16px; border-radius:8px; margin-bottom:20px; font-size:0.9rem;">
-        {{ session('status') }}
-    </div>
-@endif
-
-{{-- Filter Tabs --}}
-<div class="inbox-filter-bar" style="display:flex; gap:8px; margin-bottom:24px; flex-wrap:wrap;">
-    <a href="{{ route('admin.inbox.index', ['filter' => 'all']) }}" 
-       class="btn btn-sm {{ ($filter ?? 'all') === 'all' ? 'btn-primary' : 'btn-secondary' }}" 
-       style="border-radius:20px; padding:6px 14px;">
-        All Messages ({{ $counts['all'] }})
-    </a>
-    <a href="{{ route('admin.inbox.index', ['filter' => 'random']) }}" 
-       class="btn btn-sm {{ ($filter ?? '') === 'random' ? 'btn-primary' : 'btn-secondary' }}" 
-       style="border-radius:20px; padding:6px 14px;">
-        ⚡ Live / Random Chats ({{ $counts['random'] }})
-    </a>
-    <a href="{{ route('admin.inbox.index', ['filter' => 'inquiries']) }}" 
-       class="btn btn-sm {{ ($filter ?? '') === 'inquiries' ? 'btn-primary' : 'btn-secondary' }}" 
-       style="border-radius:20px; padding:6px 14px;">
-        📬 Inquiries &amp; Named ({{ $counts['inquiries'] }})
-    </a>
-    <a href="{{ route('admin.inbox.index', ['filter' => 'unread']) }}" 
-       class="btn btn-sm {{ ($filter ?? '') === 'unread' ? 'btn-primary' : 'btn-secondary' }}" 
-       style="border-radius:20px; padding:6px 14px;">
-        🔴 Unread ({{ $counts['unread'] }})
-    </a>
-</div>
-
-{{-- SECTION 1: TOP - Random & Live Visitor Chats --}}
-@if(($filter ?? 'all') === 'all' || ($filter ?? '') === 'random' || ($filter ?? '') === 'unread')
-    @php
-        $filteredRandom = $randomChats;
-        if (($filter ?? '') === 'unread') {
-            $filteredRandom = $randomChats->filter(function($c) {
-                return $c->messages->where('sender', 'visitor')->where('is_read', false)->count() > 0;
-            });
-        }
-    @endphp
-
-    @if($filteredRandom->isNotEmpty())
-        <div style="margin-bottom:30px;">
-            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
-                <h2 style="font-size:1.05rem; font-weight:600; color:var(--text-primary); margin:0; display:flex; align-items:center; gap:8px;">
-                    <span style="color:#3B82F6;">⚡</span>
-                    <span>Live &amp; Random Portfolio Chats</span>
-                    <span style="font-size:0.75rem; background:rgba(59,130,246,0.15); color:#3B82F6; padding:2px 8px; border-radius:12px; font-weight:500;">Top Section · Real-Time</span>
-                </h2>
-                <span style="font-size:0.8rem; color:var(--text-secondary);">{{ $filteredRandom->count() }} active sessions</span>
-            </div>
-
-            <div style="display:flex; flex-direction:column; gap:10px;">
-                @foreach($filteredRandom as $chat)
-                    @php
-                        $lastMsg = $chat->messages->first();
-                        $unreadCount = $chat->messages->where('sender', 'visitor')->where('is_read', false)->count();
-                        $visitorLabel = $chat->visitor_name ?: ('Visitor #' . substr($chat->session_id, -6));
-                    @endphp
-                    <div class="inbox-card" style="background:var(--bg-secondary); border:1px solid {{ $unreadCount > 0 ? '#3B82F6' : 'var(--border-color)' }}; border-radius:10px; padding:14px 18px; display:flex; align-items:center; justify-content:space-between; gap:16px; transition:transform 0.15s, border-color 0.15s; cursor:pointer;"
-                         onclick="window.location='{{ route('admin.inbox.index', ['conversation_id' => $chat->id]) }}'">
-                        
-                        <div style="display:flex; align-items:center; gap:14px; min-width:0; flex:1;">
-                            {{-- Monogram Avatar --}}
-                            <div style="width:42px; height:42px; border-radius:50%; background:linear-gradient(135deg, #1E3A8A, #3B82F6); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.95rem; flex-shrink:0; position:relative;">
-                                💬
-                                @if($unreadCount > 0)
-                                    <span style="position:absolute; top:-2px; right:-2px; width:12px; height:12px; background:#EF4444; border:2px solid var(--bg-secondary); border-radius:50%;"></span>
-                                @endif
-                            </div>
-
-                            <div style="min-width:0; flex:1;">
-                                <div style="display:flex; align-items:center; gap:8px; margin-bottom:3px; flex-wrap:wrap;">
-                                    <span style="font-weight:600; color:var(--text-primary); font-size:0.95rem;">{{ $visitorLabel }}</span>
-                                    <span style="font-size:0.7rem; background:rgba(59,130,246,0.12); color:#3B82F6; padding:1px 6px; border-radius:4px; font-weight:600;">LIVE CHAT</span>
-                                    @if($unreadCount > 0)
-                                        <span style="font-size:0.7rem; background:#EF4444; color:#fff; padding:1px 6px; border-radius:4px; font-weight:600;">{{ $unreadCount }} NEW</span>
-                                    @endif
-                                    <span style="font-size:0.75rem; color:var(--text-secondary); margin-left:auto;">
-                                        {{ $chat->last_message_at ? $chat->last_message_at->diffForHumans() : $chat->created_at->diffForHumans() }}
-                                    </span>
-                                </div>
-                                <div style="font-size:0.85rem; color:var(--text-secondary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                                    {{ $lastMsg ? $lastMsg->message : 'Session started. No messages yet.' }}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;" onclick="event.stopPropagation();">
-                            <a href="{{ route('admin.inbox.index', ['conversation_id' => $chat->id]) }}" class="btn btn-primary btn-sm" style="display:inline-flex; align-items:center; gap:4px;">
-                                <span>Open Chat</span>
-                                <span>&rarr;</span>
-                            </a>
-                            <form action="{{ route('admin.inbox.chat.destroy', $chat->id) }}" method="POST" onsubmit="return confirm('Delete this chat session?');" style="display:inline;">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-secondary btn-sm" style="color:#EF4444; padding:6px 10px;" title="Delete chat">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    @elseif(($filter ?? '') === 'random')
-        <div style="text-align:center; padding:40px 20px; background:var(--bg-secondary); border-radius:10px; margin-bottom:30px; border:1px dashed var(--border-color);">
-            <p style="color:var(--text-secondary); margin:0;">No live or random visitor chat sessions found.</p>
+    @if(session('status'))
+        <div style="background:rgba(16,185,129,0.15); border:1px solid #10B981; color:#10B981; padding:12px 18px; border-radius:10px; margin-bottom:20px; font-size:0.875rem; font-weight:600; display:flex; align-items:center; gap:8px;">
+            <span>✓</span>
+            <span>{{ session('status') }}</span>
         </div>
     @endif
-@endif
 
-{{-- SECTION 2: BOTTOM - Contact Inquiries & Named Direct Messages --}}
-@if(($filter ?? 'all') === 'all' || ($filter ?? '') === 'inquiries' || ($filter ?? '') === 'unread')
-    @php
-        $filteredInquiries = $inquiries;
-        if (($filter ?? '') === 'unread') {
-            $filteredInquiries = $inquiries->where('status', 'unread');
-        }
-    @endphp
-
-    <div>
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
-            <h2 style="font-size:1.05rem; font-weight:600; color:var(--text-primary); margin:0; display:flex; align-items:center; gap:8px;">
-                <span style="color:#10B981;">📬</span>
-                <span>Contact Inquiries &amp; Named Messages</span>
-                <span style="font-size:0.75rem; background:rgba(16,185,129,0.15); color:#10B981; padding:2px 8px; border-radius:12px; font-weight:500;">Direct Inquiries</span>
-            </h2>
-            <span style="font-size:0.8rem; color:var(--text-secondary);">{{ $filteredInquiries->count() }} messages</span>
-        </div>
-
-        @if($filteredInquiries->isNotEmpty() || $namedChats->isNotEmpty())
-            <div style="display:flex; flex-direction:column; gap:10px;">
-                {{-- Named Direct Chats --}}
-                @foreach($namedChats as $chat)
-                    @php
-                        $lastMsg = $chat->messages->first();
-                        $unreadCount = $chat->messages->where('sender', 'visitor')->where('is_read', false)->count();
-                    @endphp
-                    <div class="inbox-card" style="background:var(--bg-secondary); border:1px solid {{ $unreadCount > 0 ? '#10B981' : 'var(--border-color)' }}; border-radius:10px; padding:14px 18px; display:flex; align-items:center; justify-content:space-between; gap:16px; cursor:pointer;"
-                         onclick="window.location='{{ route('admin.inbox.index', ['conversation_id' => $chat->id]) }}'">
-                        <div style="display:flex; align-items:center; gap:14px; min-width:0; flex:1;">
-                            <div style="width:42px; height:42px; border-radius:50%; background:linear-gradient(135deg, #047857, #10B981); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.95rem; flex-shrink:0;">
-                                {{ strtoupper(substr($chat->visitor_name ?? 'U', 0, 1)) }}
-                            </div>
-                            <div style="min-width:0; flex:1;">
-                                <div style="display:flex; align-items:center; gap:8px; margin-bottom:3px; flex-wrap:wrap;">
-                                    <span style="font-weight:600; color:var(--text-primary); font-size:0.95rem;">{{ $chat->visitor_name }}</span>
-                                    @if($chat->visitor_email)
-                                        <span style="font-size:0.8rem; color:var(--text-secondary);">&bull; {{ $chat->visitor_email }}</span>
-                                    @endif
-                                    <span style="font-size:0.7rem; background:rgba(16,185,129,0.12); color:#10B981; padding:1px 6px; border-radius:4px; font-weight:600;">IDENTIFIED CHAT</span>
-                                    <span style="font-size:0.75rem; color:var(--text-secondary); margin-left:auto;">
-                                        {{ $chat->last_message_at ? $chat->last_message_at->diffForHumans() : $chat->created_at->diffForHumans() }}
-                                    </span>
-                                </div>
-                                <div style="font-size:0.85rem; color:var(--text-secondary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                                    {{ $lastMsg ? $lastMsg->message : 'Direct conversation started.' }}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;" onclick="event.stopPropagation();">
-                            <a href="{{ route('admin.inbox.index', ['conversation_id' => $chat->id]) }}" class="btn btn-secondary btn-sm" style="display:inline-flex; align-items:center; gap:4px;">
-                                <span>Open</span>
-                                <span>&rarr;</span>
-                            </a>
-                        </div>
-                    </div>
-                @endforeach
-
-                {{-- Contact Inquiries --}}
-                @foreach($filteredInquiries as $inquiry)
-                    @php
-                        $isUnread = $inquiry->status === 'unread';
-                        $statusColor = match($inquiry->status) {
-                            'unread' => '#EF4444',
-                            'replied' => '#10B981',
-                            'archived' => '#6B7280',
-                            default => '#3B82F6',
-                        };
-                    @endphp
-                    <div class="inbox-card" style="background:var(--bg-secondary); border:1px solid {{ $isUnread ? 'var(--accent-blue)' : 'var(--border-color)' }}; border-radius:10px; padding:14px 18px; display:flex; align-items:center; justify-content:space-between; gap:16px; cursor:pointer;"
-                         onclick="window.location='{{ route('admin.inbox.index', ['inquiry_id' => $inquiry->id]) }}'">
-                        
-                        <div style="display:flex; align-items:center; gap:14px; min-width:0; flex:1;">
-                            <div style="width:42px; height:42px; border-radius:50%; background:linear-gradient(135deg, #1E3A8A, #3B82F6); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.95rem; flex-shrink:0;">
-                                {{ strtoupper(substr($inquiry->name, 0, 1)) }}
-                            </div>
-
-                            <div style="min-width:0; flex:1;">
-                                <div style="display:flex; align-items:center; gap:8px; margin-bottom:3px; flex-wrap:wrap;">
-                                    <span style="font-weight:600; color:var(--text-primary); font-size:0.95rem;">{{ $inquiry->name }}</span>
-                                    <span style="font-size:0.8rem; color:var(--text-secondary);">&bull; {{ $inquiry->email }}</span>
-                                    <span style="font-size:0.7rem; background:rgba(255,255,255,0.06); color:{{ $statusColor }}; border:1px solid {{ $statusColor }}; padding:1px 6px; border-radius:4px; font-weight:600;">
-                                        {{ strtoupper($inquiry->status) }}
-                                    </span>
-                                    <span style="font-size:0.75rem; color:var(--text-secondary); margin-left:auto;">
-                                        {{ $inquiry->created_at->diffForHumans() }}
-                                    </span>
-                                </div>
-                                <div style="font-size:0.85rem; color:var(--text-primary); font-weight:500; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                                    {{ $inquiry->subject ?: 'General Portfolio Inquiry' }}
-                                </div>
-                                <div style="font-size:0.8rem; color:var(--text-secondary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                                    {{ $inquiry->message }}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;" onclick="event.stopPropagation();">
-                            <a href="{{ route('admin.inbox.index', ['inquiry_id' => $inquiry->id]) }}" class="btn btn-secondary btn-sm" style="display:inline-flex; align-items:center; gap:4px;">
-                                <span>Open</span>
-                                <span>&rarr;</span>
-                            </a>
-                            <form action="{{ route('admin.inbox.inquiry.destroy', $inquiry->id) }}" method="POST" onsubmit="return confirm('Delete this inquiry?');" style="display:inline;">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-secondary btn-sm" style="color:#EF4444; padding:6px 10px;" title="Delete inquiry">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        @else
-            <div style="text-align:center; padding:40px 20px; background:var(--bg-secondary); border-radius:10px; border:1px dashed var(--border-color);">
-                <p style="color:var(--text-secondary); margin:0;">No contact inquiries found matching this criteria.</p>
-            </div>
-        @endif
+    {{-- Filter Tabs Bar --}}
+    <div class="inbox-tabs-bar">
+        <a href="{{ route('admin.inbox.index', ['filter' => 'all']) }}" 
+           class="inbox-tab-pill {{ ($filter ?? 'all') === 'all' ? 'active' : '' }}">
+            <span>All Messages</span>
+            <span class="tab-count">{{ $counts['all'] }}</span>
+        </a>
+        <a href="{{ route('admin.inbox.index', ['filter' => 'random']) }}" 
+           class="inbox-tab-pill {{ ($filter ?? '') === 'random' ? 'active' : '' }}">
+            <span>⚡ Anonymous Chats</span>
+            <span class="tab-count">{{ $counts['random'] }}</span>
+        </a>
+        <a href="{{ route('admin.inbox.index', ['filter' => 'named']) }}" 
+           class="inbox-tab-pill {{ ($filter ?? '') === 'named' ? 'active' : '' }}">
+            <span>👤 Named Conversations</span>
+            <span class="tab-count">{{ $counts['named'] }}</span>
+        </a>
+        <a href="{{ route('admin.inbox.index', ['filter' => 'inquiries']) }}" 
+           class="inbox-tab-pill {{ ($filter ?? '') === 'inquiries' ? 'active' : '' }}">
+            <span>📬 Contact Inquiries</span>
+            <span class="tab-count">{{ $counts['inquiries'] }}</span>
+        </a>
+        <a href="{{ route('admin.inbox.index', ['filter' => 'unread']) }}" 
+           class="inbox-tab-pill {{ ($filter ?? '') === 'unread' ? 'active' : '' }}">
+            <span>🔴 Unread</span>
+            <span class="tab-count">{{ $counts['unread'] }}</span>
+        </a>
     </div>
-@endif
 
-<style>
-.inbox-card:hover {
-    transform: translateY(-1px);
-    border-color: var(--accent-blue) !important;
-}
-</style>
+    {{-- =====================================================================
+         SECTION 1: TOP SECTION — ⚡ Live & Random Portfolio Chats
+         (Always displayed at the very top for anonymous & quick chats)
+         ===================================================================== --}}
+    @if(($filter ?? 'all') === 'all' || ($filter ?? '') === 'random' || ($filter ?? '') === 'unread')
+        @php
+            $filteredRandom = $randomChats;
+            if (($filter ?? '') === 'unread') {
+                $filteredRandom = $randomChats->filter(function($c) {
+                    return $c->messages->where('sender', 'visitor')->where('is_read', false)->count() > 0;
+                });
+            }
+        @endphp
+
+        <div class="inbox-random-section">
+            <div class="inbox-section-head">
+                <h2>
+                    <span style="color:#3B82F6;">⚡</span>
+                    <span>Live &amp; Random Portfolio Chats</span>
+                    <span class="inbox-badge-top">Top Section &bull; Anonymous Visitors</span>
+                </h2>
+                <span class="inbox-badge-count">{{ $filteredRandom->count() }} active session{{ $filteredRandom->count() === 1 ? '' : 's' }}</span>
+            </div>
+
+            @if($filteredRandom->isNotEmpty())
+                <div class="inbox-card-list">
+                    @foreach($filteredRandom as $chat)
+                        @php
+                            $lastMsg = $chat->messages->first();
+                            $unreadCount = $chat->messages->where('sender', 'visitor')->where('is_read', false)->count();
+                            $displayTitle = 'Anonymous Visitor #' . substr($chat->session_id, -6);
+                        @endphp
+                        <div class="inbox-item-card {{ $unreadCount > 0 ? 'is-unread' : '' }}"
+                             onclick="window.location='{{ route('admin.inbox.index', ['conversation_id' => $chat->id]) }}'">
+                            
+                            <div style="display:flex; align-items:center; gap:14px; min-width:0; flex:1;">
+                                <div class="inbox-avatar-circle inbox-avatar-random">
+                                    <span>⚡</span>
+                                    @if($unreadCount > 0)
+                                        <span class="inbox-unread-dot" title="{{ $unreadCount }} new messages"></span>
+                                    @endif
+                                </div>
+
+                                <div style="min-width:0; flex:1;">
+                                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px; flex-wrap:wrap;">
+                                        <span class="inbox-meta-title">{{ $displayTitle }}</span>
+                                        <span class="inbox-badge-top">QUICK CHAT</span>
+                                        @if($unreadCount > 0)
+                                            <span style="font-size:0.7rem; background:#EF4444; color:#fff; padding:1px 7px; border-radius:10px; font-weight:700;">{{ $unreadCount }} NEW</span>
+                                        @endif
+                                        <span class="inbox-meta-time">
+                                            {{ $chat->last_message_at ? $chat->last_message_at->diffForHumans() : $chat->created_at->diffForHumans() }}
+                                        </span>
+                                    </div>
+                                    <div class="inbox-meta-snippet">
+                                        {{ $lastMsg ? $lastMsg->message : 'Session started. Waiting for message...' }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;" onclick="event.stopPropagation();">
+                                <a href="{{ route('admin.inbox.index', ['conversation_id' => $chat->id]) }}" class="inbox-btn-open">
+                                    <span>Open Live Chat</span>
+                                    <span>&rarr;</span>
+                                </a>
+                                <form action="{{ route('admin.inbox.chat.destroy', $chat->id) }}" method="POST" onsubmit="return confirm('Delete this anonymous chat session?');" style="display:inline;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="inbox-btn-delete" title="Delete conversation">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div class="inbox-empty-card">
+                    <span class="inbox-empty-icon">💬</span>
+                    <strong>No Anonymous Chats Right Now</strong>
+                    <p>When portfolio visitors drop in and send quick live messages without providing a name or email, their real-time chat sessions appear right here at the very top.</p>
+                </div>
+            @endif
+        </div>
+    @endif
+
+    {{-- =====================================================================
+         SECTION 2: 👤 Identified Direct Conversations (User Provided Name/Gmail)
+         ===================================================================== --}}
+    @if(($filter ?? 'all') === 'all' || ($filter ?? '') === 'named' || ($filter ?? '') === 'unread')
+        @php
+            $filteredNamed = $namedChats;
+            if (($filter ?? '') === 'unread') {
+                $filteredNamed = $namedChats->filter(function($c) {
+                    return $c->messages->where('sender', 'visitor')->where('is_read', false)->count() > 0;
+                });
+            }
+        @endphp
+
+        <div class="inbox-section-block">
+            <div class="inbox-section-head">
+                <h2>
+                    <span style="color:#10B981;">👤</span>
+                    <span>Identified Direct Conversations</span>
+                    <span class="inbox-badge-named">Name &amp; Email Identified</span>
+                </h2>
+                <span class="inbox-badge-count">{{ $filteredNamed->count() }} conversation{{ $filteredNamed->count() === 1 ? '' : 's' }}</span>
+            </div>
+
+            @if($filteredNamed->isNotEmpty())
+                <div class="inbox-card-list">
+                    @foreach($filteredNamed as $chat)
+                        @php
+                            $lastMsg = $chat->messages->first();
+                            $unreadCount = $chat->messages->where('sender', 'visitor')->where('is_read', false)->count();
+                            $displayName = $chat->visitor_name ?: $chat->visitor_email;
+                            $monogram = strtoupper(substr($displayName, 0, 1));
+                        @endphp
+                        <div class="inbox-item-card {{ $unreadCount > 0 ? 'is-unread' : '' }}"
+                             onclick="window.location='{{ route('admin.inbox.index', ['conversation_id' => $chat->id]) }}'">
+                            
+                            <div style="display:flex; align-items:center; gap:14px; min-width:0; flex:1;">
+                                <div class="inbox-avatar-circle inbox-avatar-named">
+                                    <span>{{ $monogram }}</span>
+                                    @if($unreadCount > 0)
+                                        <span class="inbox-unread-dot" title="{{ $unreadCount }} new messages"></span>
+                                    @endif
+                                </div>
+
+                                <div style="min-width:0; flex:1;">
+                                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px; flex-wrap:wrap;">
+                                        <span class="inbox-meta-title">{{ $displayName }}</span>
+                                        @if($chat->visitor_email && $chat->visitor_name)
+                                            <span class="inbox-meta-email">&bull; {{ $chat->visitor_email }}</span>
+                                        @endif
+                                        <span class="inbox-badge-named">IDENTIFIED USER</span>
+                                        @if($unreadCount > 0)
+                                            <span style="font-size:0.7rem; background:#EF4444; color:#fff; padding:1px 7px; border-radius:10px; font-weight:700;">{{ $unreadCount }} NEW</span>
+                                        @endif
+                                        <span class="inbox-meta-time">
+                                            {{ $chat->last_message_at ? $chat->last_message_at->diffForHumans() : $chat->created_at->diffForHumans() }}
+                                        </span>
+                                    </div>
+                                    <div class="inbox-meta-snippet">
+                                        {{ $lastMsg ? $lastMsg->message : 'Direct conversation started.' }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;" onclick="event.stopPropagation();">
+                                <a href="{{ route('admin.inbox.index', ['conversation_id' => $chat->id]) }}" class="inbox-btn-open">
+                                    <span>Open Conversation</span>
+                                    <span>&rarr;</span>
+                                </a>
+                                <form action="{{ route('admin.inbox.chat.destroy', $chat->id) }}" method="POST" onsubmit="return confirm('Delete this conversation?');" style="display:inline;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="inbox-btn-delete" title="Delete conversation">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @elseif(($filter ?? '') === 'named')
+                <div class="inbox-empty-card">
+                    <span class="inbox-empty-icon">👤</span>
+                    <strong>No Named Conversations Found</strong>
+                    <p>When visitors provide their Name or Gmail address, their personal conversation box will appear here.</p>
+                </div>
+            @endif
+        </div>
+    @endif
+
+    {{-- =====================================================================
+         SECTION 3: 📬 Contact Inquiries & Named Messages
+         ===================================================================== --}}
+    @if(($filter ?? 'all') === 'all' || ($filter ?? '') === 'inquiries' || ($filter ?? '') === 'unread')
+        @php
+            $filteredInquiries = $inquiries;
+            if (($filter ?? '') === 'unread') {
+                $filteredInquiries = $inquiries->where('status', 'unread');
+            }
+        @endphp
+
+        <div class="inbox-section-block">
+            <div class="inbox-section-head">
+                <h2>
+                    <span style="color:#A855F7;">📬</span>
+                    <span>Contact Inquiries &amp; Named Messages</span>
+                    <span class="inbox-badge-inquiry">Portfolio Contact Form</span>
+                </h2>
+                <span class="inbox-badge-count">{{ $filteredInquiries->count() }} message{{ $filteredInquiries->count() === 1 ? '' : 's' }}</span>
+            </div>
+
+            @if($filteredInquiries->isNotEmpty())
+                <div class="inbox-card-list">
+                    @foreach($filteredInquiries as $inquiry)
+                        @php
+                            $isUnread = $inquiry->status === 'unread';
+                            $statusColor = match($inquiry->status) {
+                                'unread' => '#EF4444',
+                                'replied' => '#10B981',
+                                'archived' => '#6B7280',
+                                default => '#3B82F6',
+                            };
+                            $monogram = strtoupper(substr($inquiry->name, 0, 1));
+                        @endphp
+                        <div class="inbox-item-card {{ $isUnread ? 'is-unread' : '' }}"
+                             onclick="window.location='{{ route('admin.inbox.index', ['inquiry_id' => $inquiry->id]) }}'">
+                            
+                            <div style="display:flex; align-items:center; gap:14px; min-width:0; flex:1;">
+                                <div class="inbox-avatar-circle inbox-avatar-inquiry">
+                                    <span>{{ $monogram }}</span>
+                                    @if($isUnread)
+                                        <span class="inbox-unread-dot" title="Unread inquiry"></span>
+                                    @endif
+                                </div>
+
+                                <div style="min-width:0; flex:1;">
+                                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px; flex-wrap:wrap;">
+                                        <span class="inbox-meta-title">{{ $inquiry->name }}</span>
+                                        <span class="inbox-meta-email">&bull; {{ $inquiry->email }}</span>
+                                        <span style="font-size:0.68rem; background:rgba(255,255,255,0.06); color:{{ $statusColor }}; border:1px solid {{ $statusColor }}; padding:1px 7px; border-radius:10px; font-weight:700;">
+                                            {{ strtoupper($inquiry->status) }}
+                                        </span>
+                                        <span class="inbox-meta-time">
+                                            {{ $inquiry->created_at->diffForHumans() }}
+                                        </span>
+                                    </div>
+                                    <div style="font-size:0.85rem; color:var(--text-primary); font-weight:600; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                        {{ $inquiry->subject ?: 'General Portfolio Inquiry' }}
+                                    </div>
+                                    <div class="inbox-meta-snippet">
+                                        {{ $inquiry->message }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;" onclick="event.stopPropagation();">
+                                <a href="{{ route('admin.inbox.index', ['inquiry_id' => $inquiry->id]) }}" class="inbox-btn-open">
+                                    <span>View Inquiry</span>
+                                    <span>&rarr;</span>
+                                </a>
+                                <form action="{{ route('admin.inbox.inquiry.destroy', $inquiry->id) }}" method="POST" onsubmit="return confirm('Delete this inquiry?');" style="display:inline;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="inbox-btn-delete" title="Delete inquiry">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @elseif(($filter ?? '') === 'inquiries')
+                <div class="inbox-empty-card">
+                    <span class="inbox-empty-icon">📬</span>
+                    <strong>No Contact Inquiries Found</strong>
+                    <p>Contact messages sent from the main portfolio contact form will be listed here.</p>
+                </div>
+            @endif
+        </div>
+    @endif
+</div>
 @endsection

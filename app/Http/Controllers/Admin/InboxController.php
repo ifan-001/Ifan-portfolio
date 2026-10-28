@@ -45,31 +45,47 @@ class InboxController extends Controller
         }
 
         // 3. Default: Unified Inbox List View
-        $filter = $request->query('filter', 'all'); // all, random, inquiries, unread
+        $filter = $request->query('filter', 'all'); // all, random, named, inquiries, unread
         $search = $request->query('q');
 
-        // Top Section: Random & Anonymous Portfolio Chats
+        // Top Section: Random & Anonymous Portfolio Chats (No Name AND No Email)
         $randomChatsQuery = ChatConversation::with(['messages' => function ($q) {
             $q->latest()->limit(1);
         }])
         ->where(function ($q) {
             $q->whereNull('visitor_name')
                 ->orWhere('visitor_name', '')
-                ->orWhere('visitor_name', 'like', 'Visitor%');
+                ->orWhere('visitor_name', 'like', 'Visitor%')
+                ->orWhere('visitor_name', 'like', 'Anonymous%')
+                ->orWhere('visitor_name', 'like', 'Guest%');
+        })
+        ->where(function ($q) {
+            $q->whereNull('visitor_email')
+                ->orWhere('visitor_email', '');
         })
         ->orderByDesc('last_message_at');
 
-        // Named Inquiries
-        $inquiriesQuery = ContactMessage::orderByDesc('created_at');
-
-        // Named Direct Chats
+        // Named Direct Chats (User provided their Name OR their Email/Gmail)
         $namedChatsQuery = ChatConversation::with(['messages' => function ($q) {
             $q->latest()->limit(1);
         }])
-        ->whereNotNull('visitor_name')
-        ->where('visitor_name', '!=', '')
-        ->where('visitor_name', 'not like', 'Visitor%')
+        ->where(function ($q) {
+            $q->where(function ($sub) {
+                $sub->whereNotNull('visitor_name')
+                    ->where('visitor_name', '!=', '')
+                    ->where('visitor_name', 'not like', 'Visitor%')
+                    ->where('visitor_name', 'not like', 'Anonymous%')
+                    ->where('visitor_name', 'not like', 'Guest%');
+            })
+            ->orWhere(function ($sub) {
+                $sub->whereNotNull('visitor_email')
+                    ->where('visitor_email', '!=', '');
+            });
+        })
         ->orderByDesc('last_message_at');
+
+        // Named Contact Inquiries
+        $inquiriesQuery = ContactMessage::orderByDesc('created_at');
 
         if (!empty($search)) {
             $inquiriesQuery->where(function ($q) use ($search) {
@@ -85,7 +101,10 @@ class InboxController extends Controller
 
             $namedChatsQuery->where(function ($q) use ($search) {
                 $q->where('visitor_name', 'like', "%{$search}%")
-                    ->orWhere('visitor_email', 'like', "%{$search}%");
+                    ->orWhere('visitor_email', 'like', "%{$search}%")
+                    ->orWhereHas('messages', function ($sub) use ($search) {
+                        $sub->where('message', 'like', "%{$search}%");
+                    });
             });
         }
 
@@ -99,7 +118,8 @@ class InboxController extends Controller
         $counts = [
             'all' => $randomChats->count() + $inquiries->count() + $namedChats->count(),
             'random' => $randomChats->count(),
-            'inquiries' => $inquiries->count() + $namedChats->count(),
+            'named' => $namedChats->count(),
+            'inquiries' => $inquiries->count(),
             'unread' => $unreadChatCount + $unreadInquiryCount,
         ];
 

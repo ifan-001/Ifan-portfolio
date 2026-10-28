@@ -253,6 +253,13 @@ document.addEventListener('DOMContentLoaded', function () {
   let chatSessionId = localStorage.getItem('portfolio_chat_session_id') || ('sess_' + Math.random().toString(36).substring(2, 15));
   localStorage.setItem('portfolio_chat_session_id', chatSessionId);
 
+  if (chatVisitorName && !chatVisitorName.value) {
+    chatVisitorName.value = localStorage.getItem('portfolio_chat_name') || '';
+  }
+  if (chatVisitorEmail && !chatVisitorEmail.value) {
+    chatVisitorEmail.value = localStorage.getItem('portfolio_chat_email') || '';
+  }
+
   let isChatOpen = false;
   let chatPollInterval = null;
   let lastMessageCount = 0;
@@ -406,6 +413,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
       const vName = chatVisitorName ? chatVisitorName.value.trim() : '';
       const vEmail = chatVisitorEmail ? chatVisitorEmail.value.trim() : '';
+
+      if (vName) localStorage.setItem('portfolio_chat_name', vName);
+      if (vEmail) localStorage.setItem('portfolio_chat_email', vEmail);
 
       // Optimistic UI update
       appendMessageToUI('visitor', text, 'Just now', true);
