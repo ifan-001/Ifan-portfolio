@@ -20,8 +20,13 @@ class AnalyticsEvent extends Model
     /**
      * Anonymously track a page view or interaction.
      */
-    public static function track(string $eventType, ?string $pageUrl = null, ?string $target = null, ?string $referrer = null, ?string $ip = null, ?string $userAgent = null, array $metadata = []): self
+    public static function track(string $eventType, ?string $pageUrl = null, ?string $target = null, ?string $referrer = null, ?string $ip = null, ?string $userAgent = null, array $metadata = []): ?self
     {
+        // Do not count crawlers and link-preview bots as visitors.
+        if ($userAgent && preg_match('/bot|crawl|spider|slurp|facebookexternalhit|preview|headless|curl|wget/i', $userAgent)) {
+            return null;
+        }
+
         $ipHash = $ip ? hash('sha256', $ip . date('Y-m-d') . config('app.key')) : null;
         
         $deviceType = 'desktop';

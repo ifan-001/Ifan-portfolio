@@ -193,4 +193,37 @@ class ExampleTest extends TestCase
         $this->actingAs($admin)->postJson('/admin/profile/photo', ['profile_image' => $svg])
             ->assertStatus(422)->assertJsonValidationErrors('profile_image');
     }
+
+    public function test_security_headers_and_admin_noindex(): void
+    {
+        $home = $this->get('/');
+        $this->assertSame('nosniff', $home->headers->get('X-Content-Type-Options'));
+        $this->assertSame('SAMEORIGIN', $home->headers->get('X-Frame-Options'));
+        $this->assertNull($home->headers->get('X-Robots-Tag'));
+
+        $login = $this->get('/portal/login');
+        $this->assertStringContainsString('noindex', $login->headers->get('X-Robots-Tag'));
+    }
+
+    public function test_dynamic_sitemap_lists_published_posts(): void
+    {
+        \App\Models\BlogPost::create([
+            'title' => 'Sitemap Post', 'slug' => 'sitemap-post', 'content' => 'Body', 'status' => 'published',
+            'published_at' => now(),
+        ]);
+
+        $res = $this->get('/sitemap.xml')->assertOk();
+        $this->assertStringContainsString('<urlset', $res->getContent());
+        $this->assertStringContainsString('/blog/sitemap-post', $res->getContent());
+        $this->assertStringStartsWith('<?xml', trim($res->getContent()));
+    }
+
+    public function test_crawler_visits_are_not_counted_as_analytics(): void
+    {
+        $this->withHeader('User-Agent', 'Googlebot/2.1')->get('/')->assertOk();
+        $this->assertSame(0, \App\Models\AnalyticsEvent::count());
+
+        $this->withHeader('User-Agent', 'Mozilla/5.0 (Windows NT 10.0) Chrome/120')->get('/')->assertOk();
+        $this->assertSame(1, \App\Models\AnalyticsEvent::count());
+    }
 }

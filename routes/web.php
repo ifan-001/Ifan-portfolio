@@ -30,6 +30,19 @@ use Illuminate\Support\Facades\Route;
 */
 Route::get('/', [PortfolioController::class, 'index'])->name('home');
 Route::post('/contact', [PortfolioController::class, 'contact'])->middleware('throttle:10,1')->name('contact.submit');
+Route::get('/sitemap.xml', function () {
+    $urls = [
+        ['loc' => url('/'), 'priority' => '1.0'],
+        ['loc' => url('/blog'), 'priority' => '0.8'],
+        ['loc' => url('/feed'), 'priority' => '0.7'],
+        ['loc' => url('/apps'), 'priority' => '0.6'],
+    ];
+    foreach (\App\Models\BlogPost::published()->get() as $post) {
+        $urls[] = ['loc' => url('/blog/' . $post->slug), 'priority' => '0.7', 'lastmod' => optional($post->updated_at)->toDateString()];
+    }
+    $xml = view('sitemap', compact('urls'))->render();
+    return response($xml, 200, ['Content-Type' => 'application/xml']);
+})->name('sitemap');
 Route::get('/resume/download', [PortfolioController::class, 'downloadResume'])->name('resume.download');
 Route::post('/track/click', [PortfolioController::class, 'trackClick'])->middleware('throttle:60,1')->name('track.click');
 

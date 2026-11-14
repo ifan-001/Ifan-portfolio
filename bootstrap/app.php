@@ -16,6 +16,8 @@ return Application::configure(basePath: dirname(__DIR__))
             $middleware->trustProxies(at: $proxies === '*' ? '*' : array_map('trim', explode(',', $proxies)));
         }
 
+        $middleware->appendToGroup('web', \App\Http\Middleware\SecurityHeaders::class);
+
         $middleware->redirectGuestsTo(fn () => route('admin.login'));
 
         $middleware->validateCsrfTokens(except: [
