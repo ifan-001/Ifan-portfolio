@@ -75,11 +75,15 @@ Route::get('/offline.html', function () {
 */
 Route::prefix('api/chat')->group(function () {
     Route::get('/status', [ChatController::class, 'getStatus'])->name('chat.status');
-    Route::post('/status', [ChatController::class, 'toggleStatus'])->name('chat.status.toggle');
-    Route::get('/messages', [ChatController::class, 'getMessages'])->name('chat.messages');
+    Route::get('/messages', [ChatController::class, 'getMessages'])->middleware('throttle:60,1')->name('chat.messages');
     Route::post('/send', [ChatController::class, 'sendMessage'])->middleware('throttle:30,1')->name('chat.send');
-    Route::post('/reply', [ChatController::class, 'adminReply'])->name('chat.reply');
-    Route::get('/conversations', [ChatController::class, 'listConversations'])->name('chat.conversations');
+
+    // Admin-only chat controls (require an authenticated administrator session)
+    Route::middleware('auth')->group(function () {
+        Route::post('/status', [ChatController::class, 'toggleStatus'])->name('chat.status.toggle');
+        Route::post('/reply', [ChatController::class, 'adminReply'])->name('chat.reply');
+        Route::get('/conversations', [ChatController::class, 'listConversations'])->name('chat.conversations');
+    });
 });
 
 /*

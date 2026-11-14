@@ -29,15 +29,17 @@ class PortfolioDatabaseSeeder extends Seeder
 
         // 1. Seed or Update Admin User
         $adminEmail = $cfg['brand']['email'] ?? 'hasnainalifan23@gmail.com';
-        $adminPassword = env('ADMIN_INITIAL_PASSWORD', 'Ifan@Admin2026!');
+        $adminPassword = env('ADMIN_INITIAL_PASSWORD');
+        if (empty($adminPassword) && ! User::where('email', $adminEmail)->exists()) {
+            throw new \RuntimeException('Set ADMIN_INITIAL_PASSWORD in .env before seeding a new admin user.');
+        }
 
-        User::updateOrCreate(
-            ['email' => $adminEmail],
-            [
-                'name' => $cfg['brand']['full_name'] ?? 'Hasnain Al Ifan',
-                'password' => Hash::make($adminPassword),
-            ]
-        );
+        // Never overwrite an existing admin password unless one is explicitly provided.
+        $adminAttributes = ['name' => $cfg['brand']['full_name'] ?? 'Hasnain Al Ifan'];
+        if (! empty($adminPassword)) {
+            $adminAttributes['password'] = Hash::make($adminPassword);
+        }
+        User::updateOrCreate(['email' => $adminEmail], $adminAttributes);
 
         // 2. Profile Singleton
         if (isset($cfg['brand'])) {

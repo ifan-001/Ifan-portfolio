@@ -15,7 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->validateCsrfTokens(except: [
             'contact',
-            'api/chat/*',
+            'api/chat/send',
             'track/click',
         ]);
     })

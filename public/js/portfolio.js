@@ -250,8 +250,8 @@ document.addEventListener('DOMContentLoaded', function () {
   const chatVisitorName = document.getElementById('chat-visitor-name');
   const chatVisitorEmail = document.getElementById('chat-visitor-email');
 
-  let chatSessionId = localStorage.getItem('portfolio_chat_session_id') || ('sess_' + Math.random().toString(36).substring(2, 15));
-  localStorage.setItem('portfolio_chat_session_id', chatSessionId);
+  // Session token is issued by the server on the first message; never generated client-side.
+  let chatSessionId = localStorage.getItem('portfolio_chat_session_id') || '';
 
   if (chatVisitorName && !chatVisitorName.value) {
     chatVisitorName.value = localStorage.getItem('portfolio_chat_name') || '';
@@ -302,6 +302,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function fetchMessages() {
+    if (!chatSessionId) return;
     fetch(`/api/chat/messages?session_id=${encodeURIComponent(chatSessionId)}`)
       .then(res => res.json())
       .then(data => {
@@ -394,6 +395,7 @@ document.addEventListener('DOMContentLoaded', function () {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+          'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') || {}).content || '',
         },
       })
         .then(res => res.json())
@@ -437,7 +439,10 @@ document.addEventListener('DOMContentLoaded', function () {
       })
         .then(res => res.json())
         .then(data => {
-          console.debug('Chat message sent:', data);
+          if (data && data.session_id && data.session_id !== chatSessionId) {
+            chatSessionId = data.session_id;
+            localStorage.setItem('portfolio_chat_session_id', chatSessionId);
+          }
         })
         .catch(err => {
           console.error('Error sending chat message:', err);

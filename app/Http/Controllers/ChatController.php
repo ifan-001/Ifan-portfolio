@@ -56,21 +56,26 @@ class ChatController extends Controller
      */
     public function getMessages(Request $request)
     {
-        $sessionId = $request->input('session_id') ?: $request->cookie('portfolio_chat_session');
-        if (!$sessionId) {
-            $sessionId = Str::uuid()->toString();
-        }
+        $sessionId = (string) $request->input('session_id', '');
+        $status = ChatStatus::current();
 
-        $conversation = ChatConversation::firstOrCreate(
-            ['session_id' => $sessionId],
-            ['last_message_at' => now()]
-        );
+        // Read-only: never create a conversation from a GET with a client-chosen ID.
+        $conversation = $sessionId !== ''
+            ? ChatConversation::where('session_id', $sessionId)->first()
+            : null;
+
+        if (!$conversation) {
+            return response()->json([
+                'session_id' => null,
+                'is_online' => (bool) $status->is_online,
+                'status_text' => $status->status_text,
+                'messages' => [],
+            ]);
+        }
 
         $messages = $conversation->messages()
             ->orderBy('created_at', 'asc')
             ->get(['id', 'sender', 'message', 'created_at']);
-
-        $status = ChatStatus::current();
 
         return response()->json([
             'session_id' => $conversation->session_id,
@@ -84,7 +89,7 @@ class ChatController extends Controller
                     'time' => $msg->created_at->format('h:i A'),
                 ];
             }),
-        ])->cookie('portfolio_chat_session', $sessionId, 60 * 24 * 30);
+        ]);
     }
 
     /**
@@ -94,19 +99,24 @@ class ChatController extends Controller
     {
         $validated = $request->validate([
             'message' => 'required|string|min:1|max:2000',
-            'session_id' => 'required|string',
+            'session_id' => 'nullable|string|max:100',
             'visitor_name' => 'nullable|string|max:100',
             'visitor_email' => 'nullable|email|max:150',
         ]);
 
-        $conversation = ChatConversation::firstOrCreate(
-            ['session_id' => $validated['session_id']],
-            [
+        // Only continue an existing thread; otherwise the server issues a fresh, unguessable token.
+        $conversation = !empty($validated['session_id'])
+            ? ChatConversation::where('session_id', $validated['session_id'])->first()
+            : null;
+
+        if (!$conversation) {
+            $conversation = ChatConversation::create([
+                'session_id' => Str::random(48),
                 'visitor_name' => $validated['visitor_name'] ?? null,
                 'visitor_email' => $validated['visitor_email'] ?? null,
                 'last_message_at' => now(),
-            ]
-        );
+            ]);
+        }
 
         if (!empty($validated['visitor_name'])) {
             $conversation->visitor_name = $validated['visitor_name'];
@@ -126,6 +136,7 @@ class ChatController extends Controller
 
         return response()->json([
             'status' => 'success',
+            'session_id' => $conversation->session_id,
             'message_id' => $message->id,
             'message' => $message->message,
             'time' => $message->created_at->format('h:i A'),

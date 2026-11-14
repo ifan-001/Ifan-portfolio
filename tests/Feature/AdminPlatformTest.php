@@ -12,19 +12,22 @@ use App\Models\Skill;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class AdminPlatformTest extends TestCase
 {
-    use DatabaseTransactions;
+    use RefreshDatabase;
+
+    private const ADMIN_PASSWORD = 'Test-Only-Pass#9271';
+
     protected function getAdminUser(): User
     {
         return User::updateOrCreate(
             ['email' => 'hasnainalifan23@gmail.com'],
             [
                 'name' => 'Hasnain Al Ifan',
-                'password' => Hash::make('Ifan@Admin2026!'),
+                'password' => Hash::make(self::ADMIN_PASSWORD),
             ]
         );
     }
@@ -62,7 +65,7 @@ class AdminPlatformTest extends TestCase
         // Successful authentication
         $loginResponse = $this->post('/portal/login', [
             'email' => $admin->email,
-            'password' => 'Ifan@Admin2026!',
+            'password' => self::ADMIN_PASSWORD,
         ]);
         $loginResponse->assertRedirect('/admin');
         $this->assertAuthenticatedAs($admin);
@@ -456,6 +459,12 @@ class AdminPlatformTest extends TestCase
     public function test_mobile_viewport_and_responsive_shell_integration(): void
     {
         $admin = $this->getAdminUser();
+        ContactMessage::create([
+            'name' => 'Layout Fixture',
+            'email' => 'fixture@example.com',
+            'message' => 'Fixture so the dashboard renders its inquiries table.',
+            'status' => 'unread',
+        ]);
 
         // Admin shell layout must include mobile viewport-fit and bottom navigation
         $adminResponse = $this->actingAs($admin)->get('/admin');
