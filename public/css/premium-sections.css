@@ -154,3 +154,51 @@
 }
 
 @media (max-width: 640px) { .ph-chip:nth-child(n+4) { display: none; } }
+
+/* ======================= Two bubbles: AI + live chat ======================= */
+.pw-ai { position: fixed; right: 24px; bottom: 100px; z-index: 998; }
+.pw-live { z-index: 999; }
+.pw-launcher-ai { position: relative; width: 56px; height: 56px; border-radius: 18px; border: 0; cursor: pointer; display: grid; place-items: center; color: #fff;
+  background: linear-gradient(135deg, #7C3AED, #A855F7 55%, #EC4899); box-shadow: 0 16px 34px -12px rgba(168, 85, 247, .8), inset 0 1px 0 rgba(255, 255, 255, .25); transition: transform .3s var(--pp-ease), border-radius .3s ease; }
+.pw-launcher-ai:hover { transform: translateY(-3px) scale(1.05); }
+.pw-ai.is-open .pw-launcher-ai { border-radius: 50%; }
+.pw-launcher-ai .pw-ic-close { display: none; }
+.pw-ai.is-open .pw-launcher-ai .pw-ic-open, .pw-ai.is-open .pw-ai-badge { display: none; }
+.pw-ai.is-open .pw-launcher-ai .pw-ic-close { display: block; }
+.pw-ai-badge { position: absolute; top: -7px; left: -7px; padding: 2px 6px; border-radius: 7px; background: #fff; color: #7C3AED; font-size: .66rem; font-weight: 900; letter-spacing: .04em; box-shadow: 0 4px 10px rgba(0, 0, 0, .3); }
+.pw-ai .pw-launcher-hint, .pw-live .pw-launcher-hint { right: 70px; }
+.pw-ai.show-hint .pw-launcher-hint, .pw-launcher-ai:hover .pw-launcher-hint { opacity: 1; transform: translateY(-50%); }
+.pw-ai.is-open .pw-launcher-hint { opacity: 0 !important; }
+
+/* Live chat bubble shows Hasnain's photo + green dot so it reads as "a real person" */
+.pw-launcher-live { overflow: visible; }
+.pw-launcher-photo { width: 44px; height: 44px; border-radius: 14px; object-fit: cover; object-position: center 20%; border: 2px solid rgba(255, 255, 255, .7); }
+.pw-launcher-live #chat-icon-open { position: absolute; bottom: -4px; left: -4px; width: 22px; height: 22px; padding: 4px; border-radius: 50%; background: #10B981; color: #fff; box-shadow: 0 4px 10px rgba(0, 0, 0, .35); }
+.pw-launcher-live[aria-expanded="true"] .pw-launcher-photo { display: none; }
+.pw-launcher-live .chat-status-indicator { top: -3px !important; right: -3px !important; }
+.pw-live.is-away .pw-launcher-live #chat-icon-open { background: #64748B; }
+
+/* AI panel */
+.pw-panel-ai { position: absolute; right: 0; bottom: 70px; display: flex; flex-direction: column; }
+.pw-panel-ai[hidden] { display: none !important; }
+.pw-header-ai { background: linear-gradient(135deg, #6D28D9, #A855F7 55%, #DB2777) !important; }
+.pw-ai-avatar { width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; font-weight: 900; color: #7C3AED; background: #fff; font-size: .9rem; position: relative; }
+.pw-sub { font-size: .76rem; color: rgba(255, 255, 255, .85); }
+.pw-send-ai { background: linear-gradient(135deg, #7C3AED, #EC4899) !important; }
+.pw-panel-ai .pw-bot-icon { background: linear-gradient(135deg, #7C3AED, #EC4899); }
+.pw-panel-ai .pw-msg.user .pw-bubble { background: linear-gradient(135deg, #7C3AED, #A855F7); }
+.pw-panel-ai .pw-chip:hover { border-color: #A855F7; color: #A855F7; }
+
+/* "who am I talking to" notes */
+.pw-note { padding: 8px 14px; font-size: .76rem; line-height: 1.5; color: var(--text-secondary); background: rgba(168, 85, 247, .08); border-bottom: 1px solid var(--pp-line); }
+.pw-note-live { background: rgba(16, 185, 129, .08); }
+.pw-link { background: none; border: 0; padding: 0; font: inherit; font-weight: 700; color: var(--pp-blue); cursor: pointer; text-decoration: underline; }
+
+@media (max-width: 640px) {
+  .pw-ai { right: 16px; bottom: 92px; }
+  .pw-launcher-ai { width: 52px; height: 52px; border-radius: 16px; }
+  .pw-panel-ai { position: fixed; left: 8px; right: 8px; bottom: 154px; width: auto !important; height: calc(100dvh - 180px) !important; }
+}
+.pw-panel-ai { height: min(580px, calc(100vh - 270px)) !important; }
+.pw-dock.live-open .pw-ai { opacity: 0; pointer-events: none; transform: translateY(10px); }
+.pw-ai { transition: opacity .25s ease, transform .25s ease; }

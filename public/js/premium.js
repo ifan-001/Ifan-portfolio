@@ -287,52 +287,80 @@
 
   /* ---------------- AI assistant widget ---------------- */
   function initAssistant() {
-    var widget = $('.pw-widget');
-    if (!widget) return;
-    var launcher = $('#chat-bubble-btn');
-    var panel = $('#chat-window');
-    var tabs = $$('.pw-tab', widget);
-    var panes = $$('.pw-pane', widget);
+    var aiWidget = $('#ai-widget');
+    var liveWidget = $('#live-chat-widget');
+    if (!aiWidget && !liveWidget) return;
+    var liveLauncher = $('#chat-bubble-btn');
+    var livePanel = $('#chat-window');
+    var aiLauncher = $('#ai-bubble-btn');
+    var aiPanel = $('#ai-window');
     var body = $('#assist-body');
     var form = $('#assist-form');
     var input = $('#assist-input');
     var busy = false;
 
-    function setTab(name) {
-      tabs.forEach(function (t) {
-        var on = t.getAttribute('data-pw-tab') === name;
-        t.classList.toggle('active', on);
-        t.setAttribute('aria-selected', on ? 'true' : 'false');
-      });
-      panes.forEach(function (p) { p.classList.toggle('active', p.getAttribute('data-pw-pane') === name); });
-      var focusEl = name === 'assist' ? input : $('#chat-text-input');
-      if (focusEl && window.innerWidth > 640) setTimeout(function () { focusEl.focus(); }, 60);
+    function liveOpen() { return livePanel && livePanel.style.display !== 'none'; }
+    function aiOpen() { return aiPanel && !aiPanel.hidden; }
+    function setAi(open) {
+      if (!aiPanel) return;
+      aiPanel.hidden = !open;
+      aiWidget.classList.toggle('is-open', open);
+      aiLauncher.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (open && window.innerWidth > 640) setTimeout(function () { input.focus(); }, 60);
     }
-    tabs.forEach(function (t) { t.addEventListener('click', function () { setTab(t.getAttribute('data-pw-tab')); }); });
+    // Only one panel at a time
+    if (aiLauncher) aiLauncher.addEventListener('click', function () {
+      aiWidget.classList.remove('show-hint');
+      var open = !aiOpen();
+      if (open && liveOpen()) liveLauncher.click();
+      setAi(open);
+    });
+    var aiClose = $('#ai-close-btn');
+    if (aiClose) aiClose.addEventListener('click', function () { setAi(false); });
+    if (liveLauncher) liveLauncher.addEventListener('click', function () {
+      liveWidget.classList.remove('show-hint');
+      if (aiOpen()) setAi(false);
+    });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && aiOpen()) setAi(false); });
 
-    function isOpen() { return panel && panel.style.display !== 'none'; }
-    if (launcher) launcher.addEventListener('click', function () { widget.classList.remove('show-hint'); });
-    function openWidget(tab) {
-      if (!isOpen() && launcher) launcher.click();
-      setTab(tab || 'assist');
+    function openWidget(which) {
+      if (which === 'live') {
+        if (aiOpen()) setAi(false);
+        if (!liveOpen() && liveLauncher) liveLauncher.click();
+      } else {
+        if (liveOpen() && liveLauncher) liveLauncher.click();
+        setAi(true);
+      }
     }
     window.__pwOpen = openWidget;
 
-    // Mirror online / away state to the tab dot
+    // Hide the AI bubble while the live chat panel is open (they share the corner)
+    var dock = $('.pw-dock');
+    if (dock && livePanel && 'MutationObserver' in window) {
+      var syncDock = function () { dock.classList.toggle('live-open', liveOpen()); };
+      new MutationObserver(syncDock).observe(livePanel, { attributes: true, attributeFilter: ['style'] });
+      syncDock();
+    }
+
+    // Mirror online / away state onto the live bubble
     var indicator = $('#chat-status-indicator');
-    if (indicator && 'MutationObserver' in window) {
-      var sync = function () { widget.classList.toggle('is-away', indicator.classList.contains('offline')); };
+    if (indicator && liveWidget && 'MutationObserver' in window) {
+      var sync = function () { liveWidget.classList.toggle('is-away', indicator.classList.contains('offline')); };
       new MutationObserver(sync).observe(indicator, { attributes: true, attributeFilter: ['class'] });
       sync();
     }
 
-    // Gentle hint after a few seconds, once per visit
+    // Gentle hints once per visit: first the live chat, then the AI
     try {
       if (!sessionStorage.getItem('pw_hint')) {
-        setTimeout(function () {
-          if (!isOpen()) { widget.classList.add('show-hint'); setTimeout(function () { widget.classList.remove('show-hint'); }, 5000); }
-          sessionStorage.setItem('pw_hint', '1');
-        }, 6000);
+        var hint = function (w, delay) {
+          setTimeout(function () {
+            if (!liveOpen() && !aiOpen() && w) { w.classList.add('show-hint'); setTimeout(function () { w.classList.remove('show-hint'); }, 4500); }
+          }, delay);
+        };
+        hint(liveWidget, 5000);
+        hint(aiWidget, 10000);
+        sessionStorage.setItem('pw_hint', '1');
       }
     } catch (e) {}
 
@@ -441,7 +469,7 @@
     body.addEventListener('click', function (e) {
       var chip = e.target.closest('.pw-chip');
       if (chip) {
-        if (chip.textContent === 'Message Hasnain now') { setTab('live'); return; }
+        if (chip.textContent === 'Message Hasnain now') { openWidget('live'); return; }
         ask(chip.textContent);
         return;
       }
@@ -450,7 +478,7 @@
         var href = link.getAttribute('href') || '';
         var pm = href.match(/^#project-([a-z0-9-]+)$/);
         if (pm && window.__ppOpenProject) { e.preventDefault(); window.__ppOpenProject(pm[1]); return; }
-        if (href.charAt(0) === '#' && window.innerWidth <= 640 && launcher) launcher.click();
+        if (href.charAt(0) === '#' && window.innerWidth <= 640) setAi(false);
       }
     });
 
