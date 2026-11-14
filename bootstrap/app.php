@@ -11,6 +11,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Behind a reverse proxy/load balancer, set TRUSTED_PROXIES (comma-separated IPs or "*") in .env.
+        if ($proxies = env('TRUSTED_PROXIES')) {
+            $middleware->trustProxies(at: $proxies === '*' ? '*' : array_map('trim', explode(',', $proxies)));
+        }
+
         $middleware->redirectGuestsTo(fn () => route('admin.login'));
 
         $middleware->validateCsrfTokens(except: [

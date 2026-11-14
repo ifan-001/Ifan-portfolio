@@ -52,6 +52,10 @@ class SettingController extends Controller
             SiteSetting::set($k, $request->boolean($k));
         }
 
+        $request->validate([
+            'primary_accent_color' => ['nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+        ]);
+
         if ($request->filled('primary_accent_color')) {
             SiteSetting::set('primary_accent_color', $request->input('primary_accent_color'));
         }
@@ -73,7 +77,7 @@ class SettingController extends Controller
     public function toggleSection(Request $request)
     {
         $validated = $request->validate([
-            'section' => 'required|string',
+            'section' => 'required|string|in:show_hero,show_about,show_experience,show_projects,show_skills,show_education,show_research,show_blog,show_contact,live_chat_enabled',
             'enabled' => 'required|boolean',
         ]);
 

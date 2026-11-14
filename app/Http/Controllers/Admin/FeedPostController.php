@@ -55,7 +55,7 @@ class FeedPostController extends Controller
 
         if ($request->hasFile('media_file')) {
             $file = $request->file('media_file');
-            $extension = strtolower($file->getClientOriginalExtension());
+            $extension = strtolower($file->guessExtension() ?: 'bin');
             $fileName = 'post_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $extension;
 
             $file->move(public_path('uploads/feed'), $fileName);
@@ -112,7 +112,7 @@ class FeedPostController extends Controller
             }
 
             $file = $request->file('media_file');
-            $extension = strtolower($file->getClientOriginalExtension());
+            $extension = strtolower($file->guessExtension() ?: 'bin');
             $fileName = 'post_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $extension;
 
             $file->move(public_path('uploads/feed'), $fileName);

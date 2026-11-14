@@ -31,7 +31,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [PortfolioController::class, 'index'])->name('home');
 Route::post('/contact', [PortfolioController::class, 'contact'])->middleware('throttle:10,1')->name('contact.submit');
 Route::get('/resume/download', [PortfolioController::class, 'downloadResume'])->name('resume.download');
-Route::post('/track/click', [PortfolioController::class, 'trackClick'])->name('track.click');
+Route::post('/track/click', [PortfolioController::class, 'trackClick'])->middleware('throttle:60,1')->name('track.click');
 
 // Public Blog
 Route::get('/blog', [PortfolioController::class, 'blogIndex'])->name('blog.index');
@@ -39,8 +39,8 @@ Route::get('/blog/{slug}', [PortfolioController::class, 'blogShow'])->name('blog
 
 // Public Feed (Dedicated updates view, accessible strictly via header button)
 Route::get('/feed', [FeedController::class, 'index'])->name('feed.index');
-Route::post('/feed/{post}/like', [FeedController::class, 'like'])->name('feed.like');
-Route::post('/feed/{post}/comment', [FeedController::class, 'storeComment'])->name('feed.comment');
+Route::post('/feed/{post}/like', [FeedController::class, 'like'])->middleware('throttle:30,1')->name('feed.like');
+Route::post('/feed/{post}/comment', [FeedController::class, 'storeComment'])->middleware('throttle:5,1')->name('feed.comment');
 
 // Interactive Apps & Tools (Live Resume Builder, Playable Games, QR Generator)
 Route::get('/apps', [InteractiveAppController::class, 'index'])->name('apps.index');

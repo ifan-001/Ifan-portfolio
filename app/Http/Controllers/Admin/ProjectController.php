@@ -46,7 +46,7 @@ class ProjectController extends Controller
         $thumbnailPath = null;
         if ($request->hasFile('thumbnail_image')) {
             $file = $request->file('thumbnail_image');
-            $fileName = 'project_' . time() . '_' . Str::slug($validated['title']) . '.' . $file->getClientOriginalExtension();
+            $fileName = 'project_' . time() . '_' . Str::slug($validated['title']) . '.' . ($file->guessExtension() ?: 'jpg');
             $file->move(public_path('images/projects'), $fileName);
             $thumbnailPath = '/images/projects/' . $fileName;
         }
@@ -106,7 +106,7 @@ class ProjectController extends Controller
 
         if ($request->hasFile('thumbnail_image')) {
             $file = $request->file('thumbnail_image');
-            $fileName = 'project_' . time() . '_' . Str::slug($validated['title']) . '.' . $file->getClientOriginalExtension();
+            $fileName = 'project_' . time() . '_' . Str::slug($validated['title']) . '.' . ($file->guessExtension() ?: 'jpg');
             $dest = public_path('images/projects');
             if (!File::isDirectory($dest)) {
                 File::makeDirectory($dest, 0755, true);

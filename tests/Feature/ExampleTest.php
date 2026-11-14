@@ -153,4 +153,44 @@ class ExampleTest extends TestCase
         $this->get('/')->assertDontSee('id="admin-status-toggle"', false);
         $this->actingAs(\App\Models\User::factory()->create())->get('/')->assertSee('id="admin-status-toggle"', false);
     }
+
+    public function test_public_feed_actions_are_throttled(): void
+    {
+        $post = \App\Models\FeedPost::create([
+            'author_name' => 'Hasnain Al Ifan', 'category' => 'professional',
+            'content' => 'Throttle test post', 'status' => 'published', 'published_at' => now(),
+        ]);
+
+        for ($i = 0; $i < 5; $i++) {
+            $this->postJson("/feed/{$post->id}/comment", ['user_name' => 'Tester', 'comment' => 'Nice post ' . $i])->assertStatus(200);
+        }
+        $this->postJson("/feed/{$post->id}/comment", ['user_name' => 'Tester', 'comment' => 'One too many'])->assertStatus(429);
+    }
+
+    public function test_track_click_rejects_oversized_slug(): void
+    {
+        $this->postJson('/track/click', ['project_slug' => str_repeat('a', 101), 'click_type' => 'demo'])
+            ->assertStatus(422);
+    }
+
+    public function test_settings_reject_invalid_accent_color_and_unknown_section(): void
+    {
+        $admin = \App\Models\User::factory()->create();
+
+        $this->actingAs($admin)->postJson('/admin/settings', ['primary_accent_color' => 'red;}</style>'])
+            ->assertStatus(422);
+        $this->actingAs($admin)->postJson('/admin/settings/toggle-section', ['section' => 'evil_key', 'enabled' => true])
+            ->assertStatus(422);
+        $this->actingAs($admin)->postJson('/admin/settings', ['primary_accent_color' => '#3B82F6'])
+            ->assertStatus(200);
+    }
+
+    public function test_profile_photo_rejects_svg(): void
+    {
+        $admin = \App\Models\User::factory()->create();
+        $svg = \Illuminate\Http\UploadedFile::fake()->createWithContent('x.svg', '<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>');
+
+        $this->actingAs($admin)->postJson('/admin/profile/photo', ['profile_image' => $svg])
+            ->assertStatus(422)->assertJsonValidationErrors('profile_image');
+    }
 }

@@ -33,7 +33,7 @@ class ProfileController extends Controller
             'short_bio' => 'nullable|string|max:2000',
             'detailed_bio_text' => 'nullable|string|max:6000',
             'positioning' => 'nullable|string|max:1000',
-            'profile_image' => 'nullable|file|mimes:jpeg,png,jpg,webp,gif,svg,bmp,avif|max:20480',
+            'profile_image' => 'nullable|file|mimes:jpeg,png,jpg,webp,gif,bmp,avif|max:20480',
         ], [
             'profile_image.mimes' => 'The photo must be an image file (JPEG, PNG, WEBP, GIF, BMP, or AVIF).',
             'profile_image.max' => 'The photo size cannot exceed 20MB.',
@@ -63,13 +63,14 @@ class ProfileController extends Controller
         // Process profile image upload
         if ($request->hasFile('profile_image')) {
             $file = $request->file('profile_image');
-            $ext = strtolower($file->getClientOriginalExtension() ?: 'jpg');
+            $ext = strtolower($file->guessExtension() ?: 'jpg');
             $fileName = 'profile_' . time() . '_' . Str::random(5) . '.' . $ext;
             $destination = public_path('images');
             if (!File::isDirectory($destination)) {
                 File::makeDirectory($destination, 0755, true);
             }
             if (!app()->environment('testing')) {
+                $this->deleteOldProfileImage($profile->profile_image);
                 $file->move($destination, $fileName);
                 $profile->profile_image = '/images/' . $fileName;
                 @copy($destination . '/' . $fileName, $destination . '/profile.jpg');
@@ -160,7 +161,7 @@ class ProfileController extends Controller
     public function updatePhoto(Request $request)
     {
         $request->validate([
-            'profile_image' => 'required|file|mimes:jpeg,png,jpg,webp,gif,svg,bmp,avif|max:20480',
+            'profile_image' => 'required|file|mimes:jpeg,png,jpg,webp,gif,bmp,avif|max:20480',
         ], [
             'profile_image.required' => 'Please select an image file to upload.',
             'profile_image.file' => 'The uploaded file is invalid.',
@@ -170,7 +171,7 @@ class ProfileController extends Controller
 
         $profile = Profile::current();
         $file = $request->file('profile_image');
-        $ext = strtolower($file->getClientOriginalExtension() ?: 'jpg');
+        $ext = strtolower($file->guessExtension() ?: 'jpg');
         $fileName = 'profile_' . time() . '_' . Str::random(5) . '.' . $ext;
         $destination = public_path('images');
 
@@ -179,6 +180,7 @@ class ProfileController extends Controller
         }
 
         if (!app()->environment('testing')) {
+            $this->deleteOldProfileImage($profile->profile_image);
             $file->move($destination, $fileName);
             $profile->profile_image = '/images/' . $fileName;
             @copy($destination . '/' . $fileName, $destination . '/profile.jpg');
@@ -228,5 +230,15 @@ class ProfileController extends Controller
         }
 
         return back()->with('status', 'Social links updated successfully!');
+    }
+
+    /**
+     * Remove a previously uploaded timestamped profile image (never the shared profile.jpg alias).
+     */
+    private function deleteOldProfileImage(?string $path): void
+    {
+        if ($path && preg_match('#^/images/profile_[A-Za-z0-9_]+\.[a-z0-9]+$#', $path)) {
+            File::delete(public_path($path));
+        }
     }
 }

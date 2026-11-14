@@ -42,7 +42,7 @@ class BlogController extends Controller
         $coverPath = null;
         if ($request->hasFile('cover_image')) {
             $file = $request->file('cover_image');
-            $fileName = 'blog_' . time() . '_' . Str::slug($validated['title']) . '.' . $file->getClientOriginalExtension();
+            $fileName = 'blog_' . time() . '_' . Str::slug($validated['title']) . '.' . ($file->guessExtension() ?: 'jpg');
             $dest = public_path('images/blog');
             if (!File::isDirectory($dest)) {
                 File::makeDirectory($dest, 0755, true);
@@ -103,7 +103,7 @@ class BlogController extends Controller
 
         if ($request->hasFile('cover_image')) {
             $file = $request->file('cover_image');
-            $fileName = 'blog_' . time() . '_' . Str::slug($validated['title']) . '.' . $file->getClientOriginalExtension();
+            $fileName = 'blog_' . time() . '_' . Str::slug($validated['title']) . '.' . ($file->guessExtension() ?: 'jpg');
             $dest = public_path('images/blog');
             if (!File::isDirectory($dest)) {
                 File::makeDirectory($dest, 0755, true);

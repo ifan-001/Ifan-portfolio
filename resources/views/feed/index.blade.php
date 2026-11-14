@@ -360,14 +360,15 @@ function submitComment(e, postId) {
 
             if (countEl) countEl.textContent = data.comments_count;
 
-            const c = data.comment;
+            const esc = (v) => { const d = document.createElement('div'); d.textContent = String(v == null ? '' : v); return d.innerHTML; };
+            const c = Object.assign({}, data.comment, { user_name: esc(data.comment.user_name), comment: esc(data.comment.comment), created_at: esc(data.comment.created_at) });
             const item = document.createElement('div');
             item.className = 'comment-item';
             item.style.cssText = 'background:rgba(0,0,0,0.1); border:1px solid var(--border-card); border-radius:10px; padding:10px 14px; animation:fadeIn 0.3s ease;';
             item.innerHTML = `
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
                     <div style="display:flex; align-items:center; gap:8px;">
-                        ${c.is_admin ? '<img src="/images/profile.jpg" alt="Author" style="width:24px; height:24px; border-radius:50%; object-fit:cover; border:1px solid var(--accent-blue);"><span style="font-weight:700; color:var(--text-primary); font-size:0.85rem;">' + c.user_name + '</span><span style="font-size:0.65rem; background:var(--accent-blue); color:#fff; padding:1px 5px; border-radius:4px; font-weight:600;">AUTHOR</span>' : '<span style="width:24px; height:24px; border-radius:50%; background:linear-gradient(135deg, #3B82F6, #1E3A8A); color:#fff; display:inline-flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:700;">' + (c.user_name.charAt(0).toUpperCase()) + '</span><span style="font-weight:600; color:var(--text-primary); font-size:0.85rem;">' + c.user_name + '</span>'}
+                        ${c.is_admin ? '<img src="/images/profile.jpg" alt="Author" style="width:24px; height:24px; border-radius:50%; object-fit:cover; border:1px solid var(--accent-blue);"><span style="font-weight:700; color:var(--text-primary); font-size:0.85rem;">' + c.user_name + '</span><span style="font-size:0.65rem; background:var(--accent-blue); color:#fff; padding:1px 5px; border-radius:4px; font-weight:600;">AUTHOR</span>' : '<span style="width:24px; height:24px; border-radius:50%; background:linear-gradient(135deg, #3B82F6, #1E3A8A); color:#fff; display:inline-flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:700;">' + (String(data.comment.user_name || '?').charAt(0).toUpperCase().replace(/[<>&"']/g, '?')) + '</span><span style="font-weight:600; color:var(--text-primary); font-size:0.85rem;">' + c.user_name + '</span>'}
                     </div>
                     <span style="font-size:0.75rem; color:var(--text-secondary);">${c.created_at}</span>
                 </div>

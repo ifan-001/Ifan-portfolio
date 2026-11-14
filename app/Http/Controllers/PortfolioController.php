@@ -220,7 +220,7 @@ class PortfolioController extends Controller
     public function trackClick(Request $request)
     {
         $validated = $request->validate([
-            'project_slug' => 'required|string',
+            'project_slug' => 'required|string|max:100',
             'click_type' => 'required|string|in:demo,github,external',
         ]);
 
