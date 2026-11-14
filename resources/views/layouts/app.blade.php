@@ -7,8 +7,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     {{-- SEO Meta Tags --}}
-    <title>@hasSection('title')@yield('title')@else{{ $portfolio['meta']['title'] ?? 'Hasnain Al Ifan | Junior Software Engineer' }}@endif</title>
-    <meta name="description" content="@hasSection('meta_description')@yield('meta_description')@else{{ $portfolio['meta']['description'] ?? 'Personal portfolio of Hasnain Al Ifan, Junior Software Engineer at APPIFLY BD LIMITED.' }}@endif">
+    <title>@hasSection('title')@yield('title')@else{{ $portfolio['texts']['seo_title'] ?? ($portfolio['meta']['title'] ?? 'Hasnain Al Ifan | Junior Software Engineer') }}@endif</title>
+    <meta name="description" content="@hasSection('meta_description')@yield('meta_description')@else{{ $portfolio['texts']['seo_description'] ?? ($portfolio['meta']['description'] ?? 'Personal portfolio of Hasnain Al Ifan, Junior Software Engineer at APPIFLY BD LIMITED.') }}@endif">
     <meta name="keywords" content="{{ $portfolio['meta']['keywords'] ?? 'Hasnain Al Ifan, Software Engineer, Laravel, PHP, Web Application' }}">
     <meta name="author" content="{{ $portfolio['brand']['full_name'] }}">
     <meta name="robots" content="index, follow">
@@ -52,6 +52,7 @@
     {{-- Production Stylesheet --}}
     <link rel="stylesheet" href="{{ asset('css/portfolio.css') }}?v={{ filemtime(public_path('css/portfolio.css')) }}">
     <link rel="stylesheet" href="{{ asset('css/premium.css') }}?v={{ filemtime(public_path('css/premium.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/premium-sections.css') }}?v={{ filemtime(public_path('css/premium-sections.css')) }}">
 
     {{-- Schema.org JSON-LD Structured Data --}}
     <script type="application/ld+json">
@@ -74,11 +75,7 @@
             "addressLocality": "Dhaka",
             "addressCountry": "Bangladesh"
         },
-        "sameAs": [
-            "{{ $portfolio['socials']['github']['url'] }}",
-            "{{ $portfolio['socials']['linkedin']['url'] }}",
-            "{{ $portfolio['socials']['kaggle']['url'] }}"
-        ]
+        "sameAs": {!! json_encode(collect($portfolio['socials'] ?? [])->pluck('url')->filter(fn ($u) => str_starts_with((string) $u, 'http'))->values(), JSON_UNESCAPED_SLASHES | JSON_HEX_TAG) !!}
     }
     </script>
     @stack('styles')

@@ -1,4 +1,5 @@
 @extends('admin.layouts.admin')
+@section('page_title', 'Feed posts')
 
 @section('title', 'Posts & Feed Management')
 

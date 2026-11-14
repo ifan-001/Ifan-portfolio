@@ -1,4 +1,5 @@
 @extends('admin.layouts.admin')
+@section('page_title', 'Conversation')
 
 @section('title', 'Chat Session - ' . ($conversation->visitor_name ?: 'Visitor #' . substr($conversation->session_id, -6)))
 

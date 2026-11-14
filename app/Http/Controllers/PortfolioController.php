@@ -164,6 +164,8 @@ class PortfolioController extends Controller
             return response()->file($resumePath, [
                 'Content-Type' => 'application/pdf',
                 'Content-Disposition' => 'inline; filename="Hasnain-Al-Ifan-CV.pdf"',
+                'Cache-Control' => 'no-cache, no-store, must-revalidate',
+                'Pragma' => 'no-cache',
             ]);
         }
 

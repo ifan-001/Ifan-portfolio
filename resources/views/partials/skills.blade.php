@@ -22,12 +22,12 @@
         <div class="pp-section-head reveal">
             <span class="pp-eyebrow"><span class="pp-eyebrow-line"></span>Tech Stack</span>
             <div class="pp-head-row">
-                <h2 class="pp-title">Skills &amp; <span class="pp-grad">engineering practice</span></h2>
+                <h2 class="pp-title">{{ $portfolio['texts']['skills_title'] ?? 'Skills & engineering practice' }}</h2>
                 @auth
                     <button type="button" class="admin-edit-trigger" onclick="openAddSkillModal()" title="Add a new technical competency">+ Add New Skill</button>
                 @endauth
             </div>
-            <p class="pp-lead">Tools I use in production at APPIFLY and across academic projects. Hover a group to see where it fits.</p>
+            <p class="pp-lead">{{ $portfolio['texts']['skills_lead'] ?? '' }}</p>
         </div>
 
         <div class="ps-grid">

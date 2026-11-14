@@ -1,75 +1,56 @@
-<section class="section" id="experience">
+@php $t = $portfolio['texts'] ?? []; @endphp
+<section class="section pe-exp" id="experience">
     <div class="container">
-        <div class="section-header">
-            <span class="section-eyebrow">Work History</span>
-            <div style="display:flex; align-items:center; justify-content:flex-start; gap:12px; flex-wrap:wrap;">
-                <h2 class="section-title" style="margin-bottom:0;">Professional Experience</h2>
+        <div class="pp-section-head reveal">
+            <span class="pp-eyebrow"><span class="pp-eyebrow-line"></span>Experience</span>
+            <div class="pp-head-row">
+                <h2 class="pp-title">{{ $t['experience_title'] ?? 'Where I work' }}</h2>
                 @auth
-                    <button type="button" class="admin-edit-trigger" onclick="openAddExperienceModal()" title="Add professional work experience">
-                        + Add Work Experience
-                    </button>
+                    <button type="button" class="admin-edit-trigger" onclick="openAddExperienceModal()" title="Add professional work experience">+ Add experience</button>
                 @endauth
             </div>
-            <p class="section-desc" style="margin-top:16px;">
-                Continuous tenure at APPIFLY BD LIMITED advancing from software engineering intern to Junior Software Engineer, building real-world web applications and enterprise workflows.
-            </p>
+            <p class="pp-lead">{{ $t['experience_lead'] ?? '' }}</p>
         </div>
 
-        <div class="experience-wrapper">
+        <div class="pe-timeline">
             @foreach($portfolio['experience'] as $exp)
-                <div class="company-card">
-                    <div class="company-header">
-                        <div>
-                            <div style="display:flex; align-items:center; gap:10px;">
-                                <h3 class="company-name">{{ $exp['company'] }}</h3>
-                                @auth
-                                    @if(!empty($exp['id']))
-                                        <button type="button" class="admin-btn-mini" onclick="openEditExperienceModal({{ $exp['id'] }}, '{{ addslashes($exp['company']) }}', '{{ addslashes($exp['location'] ?? '') }}', '{{ addslashes($exp['roles'][0]['designation'] ?? '') }}', '{{ addslashes($exp['timeline_label']) }}', '{{ addslashes($exp['roles'][0]['type'] ?? 'Full-time') }}', '{{ addslashes($exp['roles'][0]['summary'] ?? '') }}', '{{ addslashes(implode("\n", $exp['highlights'] ?? [])) }}', {{ ($exp['roles'][0]['current'] ?? false) ? 1 : 0 }})">
-                                            ✎ Edit
-                                        </button>
-                                    @endif
-                                @endauth
+                <article class="pe-company reveal">
+                    <div class="pe-rail" aria-hidden="true"><span class="pe-node"></span></div>
+                    <div class="pe-card">
+                        <header class="pe-head">
+                            <div class="pe-logo" aria-hidden="true">{{ \Illuminate\Support\Str::of($exp['company'])->substr(0, 2)->upper() }}</div>
+                            <div class="pe-head-text">
+                                <h3>{{ $exp['company'] }}</h3>
+                                <span>{{ $exp['location'] }}@if(!empty($exp['website'])) · <a href="{{ $exp['website'] }}" target="_blank" rel="noopener noreferrer">{{ preg_replace('#^https?://(www\.)?#', '', rtrim($exp['website'], '/')) }}</a>@endif</span>
                             </div>
-                            <div class="company-loc">{{ $exp['location'] }}</div>
-                        </div>
-                        <div class="company-timeline-pill">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                <line x1="16" y1="2" x2="16" y2="6"></line>
-                                <line x1="8" y1="2" x2="8" y2="6"></line>
-                                <line x1="3" y1="10" x2="21" y2="10"></line>
-                            </svg>
-                            <span>{{ $exp['timeline_label'] }}</span>
-                        </div>
-                    </div>
+                            <span class="pe-period">{{ $exp['timeline_label'] }}</span>
+                            @auth
+                                @if(!empty($exp['id']))
+                                    <button type="button" class="admin-btn-mini" onclick="openEditExperienceModal({{ $exp['id'] }}, @js($exp['company']), @js($exp['location'] ?? ''), @js($exp['roles'][0]['designation'] ?? ''), @js($exp['timeline_label']), @js($exp['roles'][0]['type'] ?? 'Full-time'), @js($exp['roles'][0]['summary'] ?? ''), @js(implode("\n", $exp['highlights'] ?? [])), {{ ($exp['roles'][0]['current'] ?? false) ? 1 : 0 }})">✎ Edit</button>
+                                @endif
+                            @endauth
+                        </header>
 
-                    {{-- Nested Roles Timeline --}}
-                    <div class="roles-timeline">
                         @foreach($exp['roles'] as $role)
-                            <div class="role-entry {{ $role['current'] ? 'current' : '' }}">
-                                <div class="role-dot"></div>
-                                <div class="role-header">
-                                    <div class="role-title">
-                                        {{ $role['designation'] }}
-                                        @if($role['current'])
-                                            <span class="role-title-badge">Current Role</span>
-                                        @endif
-                                    </div>
-                                    <div class="role-period">{{ $role['period'] }}</div>
+                            <div class="pe-role">
+                                <div class="pe-role-top">
+                                    <strong>{{ $role['designation'] }}</strong>
+                                    @if($role['current'])<span class="pe-now"><i></i>Current</span>@endif
+                                    @if(!empty($role['type']))<span class="pe-type">{{ $role['type'] }}</span>@endif
                                 </div>
-                                <p class="role-summary">{{ $role['summary'] }}</p>
+                                @if(!empty($role['summary']))<p>{{ $role['summary'] }}</p>@endif
                             </div>
                         @endforeach
-                    </div>
 
-                    {{-- Verified Key Highlights --}}
-                    <div class="experience-highlights-title">Key Contributions & Engineering Responsibilities</div>
-                    <ul class="highlights-list">
-                        @foreach($exp['highlights'] as $highlight)
-                            <li class="highlight-item">{{ $highlight }}</li>
-                        @endforeach
-                    </ul>
-                </div>
+                        @if(!empty($exp['highlights']))
+                            <ul class="pe-wins">
+                                @foreach($exp['highlights'] as $h)
+                                    <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg><span>{{ $h }}</span></li>
+                                @endforeach
+                            </ul>
+                        @endif
+                    </div>
+                </article>
             @endforeach
         </div>
     </div>

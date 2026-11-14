@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\PushController;
 use App\Http\Controllers\Admin\ResearchController;
 use App\Http\Controllers\Admin\ResumeController as AdminResumeController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\SiteContentController;
 use App\Http\Controllers\Admin\SkillController;
 use App\Http\Controllers\AssistantController;
 use App\Http\Controllers\ChatController;
@@ -63,6 +64,9 @@ Route::get('/apps/resume-builder', [InteractiveAppController::class, 'resumeBuil
 Route::get('/apps/cyber-game', [InteractiveAppController::class, 'cyberGame'])->name('apps.cyber-game');
 Route::get('/apps/qr-medical', [InteractiveAppController::class, 'qrMedical'])->name('apps.qr-medical');
 Route::get('/apps/toolkit', [InteractiveAppController::class, 'toolkit'])->name('apps.toolkit');
+Route::get('/apps/cover-letter', [InteractiveAppController::class, 'coverLetter'])->name('apps.cover-letter');
+Route::get('/apps/invoice', [InteractiveAppController::class, 'invoice'])->name('apps.invoice');
+Route::get('/apps/image-resizer', [InteractiveAppController::class, 'imageTool'])->name('apps.image-tool');
 Route::get('/apps/games/{game}', [InteractiveAppController::class, 'game'])->where('game', '[a-z0-9-]+')->name('apps.game');
 
 // PWA Assets
@@ -223,6 +227,19 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
 
     // Privacy-Conscious Telemetry & Analytics
     Route::get('/analytics', [AnalyticsController::class, 'index'])->name('admin.analytics.index');
+
+    // Site content: texts & SEO, About focus cards, highlights, social links
+    Route::get('/site-content', [SiteContentController::class, 'index'])->name('admin.site-content');
+    Route::post('/site-content/texts', [SiteContentController::class, 'updateTexts'])->name('admin.site-content.texts');
+    Route::post('/site-content/focus', [SiteContentController::class, 'storeFocus'])->name('admin.site-content.focus.store');
+    Route::put('/site-content/focus/{focus}', [SiteContentController::class, 'updateFocus'])->name('admin.site-content.focus.update');
+    Route::delete('/site-content/focus/{focus}', [SiteContentController::class, 'destroyFocus'])->name('admin.site-content.focus.destroy');
+    Route::post('/site-content/highlights', [SiteContentController::class, 'storeHighlight'])->name('admin.site-content.highlight.store');
+    Route::put('/site-content/highlights/{highlight}', [SiteContentController::class, 'updateHighlight'])->name('admin.site-content.highlight.update');
+    Route::delete('/site-content/highlights/{highlight}', [SiteContentController::class, 'destroyHighlight'])->name('admin.site-content.highlight.destroy');
+    Route::post('/site-content/socials', [SiteContentController::class, 'storeSocial'])->name('admin.site-content.social.store');
+    Route::put('/site-content/socials/{social}', [SiteContentController::class, 'updateSocial'])->name('admin.site-content.social.update');
+    Route::delete('/site-content/socials/{social}', [SiteContentController::class, 'destroySocial'])->name('admin.site-content.social.destroy');
 
     // Platform Settings & Security
     Route::get('/settings', [SettingController::class, 'index'])->name('admin.settings.index');

@@ -1,4 +1,5 @@
 @extends('admin.layouts.admin')
+@section('page_title', 'Inquiry')
 
 @section('title', 'Inquiry from ' . $inquiry->name)
 

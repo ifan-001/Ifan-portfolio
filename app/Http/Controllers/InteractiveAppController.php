@@ -67,6 +67,21 @@ class InteractiveAppController extends Controller
         return view('apps.game', ['game' => $game, 'meta' => $games[$game], 'games' => $games, 'portfolio' => $portfolio]);
     }
 
+    public function coverLetter()
+    {
+        return view('apps.cover_letter', ['portfolio' => $this->portfolioService->getPortfolioData()]);
+    }
+
+    public function invoice()
+    {
+        return view('apps.invoice', ['portfolio' => $this->portfolioService->getPortfolioData()]);
+    }
+
+    public function imageTool()
+    {
+        return view('apps.image_tool', ['portfolio' => $this->portfolioService->getPortfolioData()]);
+    }
+
     public function toolkit()
     {
         $portfolio = $this->portfolioService->getPortfolioData();

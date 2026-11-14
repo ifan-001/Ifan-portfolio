@@ -1,4 +1,5 @@
 @extends('admin.layouts.admin')
+@section('page_title', 'Inbox & live chat')
 
 @section('title', 'Unified Inbox')
 

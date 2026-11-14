@@ -170,3 +170,16 @@
   .ax-game-layout { grid-template-columns: 1fr; }
   .ax-rules { position: static; }
 }
+
+/* Simpler apps hub */
+.ax-jump { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 22px; }
+.ax-jump a { padding: 10px 16px; border-radius: 999px; border: 1px solid var(--pp-line-strong); background: var(--pp-surface); color: var(--text-primary); text-decoration: none; font-weight: 700; font-size: .9rem; transition: all .2s ease; }
+.ax-jump a:hover { border-color: var(--pp-blue); transform: translateY(-2px); }
+.ax-grid-4 { grid-template-columns: repeat(4, 1fr); }
+.ax-maker { flex-direction: column; gap: 6px; padding: 22px; position: relative; }
+.ax-maker::after { content: ""; position: absolute; inset: 0 0 auto 0; height: 3px; background: var(--c); }
+.ax-maker-icon { width: 54px; height: 54px; border-radius: 16px; display: grid; place-items: center; font-size: 1.6rem; background: color-mix(in srgb, var(--c) 16%, transparent); border: 1px solid color-mix(in srgb, var(--c) 35%, transparent); margin-bottom: 6px; }
+.ax-maker .ax-tag { position: absolute; top: 18px; right: 18px; }
+.ax-tool small { color: var(--text-muted); font-size: .8rem; }
+@media (max-width: 1000px) { .ax-grid-4 { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .ax-grid-4 { grid-template-columns: 1fr; } .ax-grid-tools { grid-template-columns: repeat(2, 1fr); } }

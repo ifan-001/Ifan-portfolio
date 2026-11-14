@@ -14,6 +14,9 @@ class Project extends Model
 
     protected $casts = [
         'technologies' => 'array',
+        'showcase' => 'array',
+        'gallery' => 'array',
+        'mobile_gallery' => 'array',
         'is_featured' => 'boolean',
         'order' => 'integer',
     ];

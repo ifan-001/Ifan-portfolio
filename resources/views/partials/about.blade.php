@@ -1,34 +1,38 @@
-<section class="section section-alt" id="about">
+@php $t = $portfolio['texts'] ?? []; $b = $portfolio['brand']; @endphp
+<section class="section pa-about" id="about">
     <div class="container">
-        <div class="section-header">
-            <span class="section-eyebrow">Background & Engineering Focus</span>
-            <div style="display:flex; align-items:center; justify-content:flex-start; gap:12px; flex-wrap:wrap;">
-                <h2 class="section-title" style="margin-bottom:0;">About Me</h2>
+        <div class="pp-section-head reveal">
+            <span class="pp-eyebrow"><span class="pp-eyebrow-line"></span>About</span>
+            <div class="pp-head-row">
+                <h2 class="pp-title">{{ $t['about_title'] ?? 'About me' }}</h2>
                 @auth
-                    <button type="button" class="admin-edit-trigger" onclick="openAdminModal('aboutBioModal')" title="Edit, add, or delete bio paragraphs">
-                        ✎ Edit Bio Paragraphs
-                    </button>
+                    <button type="button" class="admin-edit-trigger" onclick="openAdminModal('aboutBioModal')" title="Edit, add, or delete bio paragraphs">✎ Edit bio</button>
+                    <a class="admin-edit-trigger" href="{{ route('admin.site-content', ['tab' => 'about']) }}">✎ Edit cards</a>
                 @endauth
             </div>
-            <p class="section-desc" style="margin-top:16px;">
-                Early-career software engineer dedicated to building practical applications, understanding complete system workflows, and writing maintainable code.
-            </p>
+            <p class="pp-lead">{{ $t['about_lead'] ?? '' }}</p>
         </div>
 
-        <div class="about-grid">
-            <div class="bio-card">
-                @foreach($portfolio['brand']['detailed_bio'] as $paragraph)
-                    <p class="bio-paragraph">{{ $paragraph }}</p>
+        <div class="pa-grid">
+            <div class="pa-story reveal">
+                @foreach($b['detailed_bio'] as $i => $paragraph)
+                    <p class="{{ $i === 0 ? 'pa-first' : '' }}">{{ $paragraph }}</p>
                 @endforeach
+                <dl class="pa-facts">
+                    <div><dt>Based in</dt><dd>{{ $b['location'] }}</dd></div>
+                    <div><dt>Role</dt><dd>{{ $b['title'] }}</dd></div>
+                    @if(!empty($portfolio['experience'][0]['company']))<div><dt>Company</dt><dd>{{ $portfolio['experience'][0]['company'] }}</dd></div>@endif
+                    @if(!empty($portfolio['education'][0]['institution']))<div><dt>Study</dt><dd>{{ \Illuminate\Support\Str::before($portfolio['education'][0]['institution'], ' (') }}</dd></div>@endif
+                </dl>
             </div>
 
-            <div class="focus-cards-grid">
-                @foreach($portfolio['focus_areas'] as $focus)
-                    <div class="focus-card">
-                        <div class="focus-num">{{ $focus['number'] }}</div>
-                        <h3 class="focus-title">{{ $focus['title'] }}</h3>
-                        <p class="focus-desc">{{ $focus['description'] }}</p>
-                    </div>
+            <div class="pa-focus">
+                @foreach($portfolio['focus_areas'] as $i => $focus)
+                    <article class="pa-card reveal" style="--reveal-delay: {{ $i * 80 }}ms">
+                        <span class="pa-num">{{ $focus['number'] }}</span>
+                        <h3>{{ $focus['title'] }}</h3>
+                        <p>{{ $focus['description'] }}</p>
+                    </article>
                 @endforeach
             </div>
         </div>

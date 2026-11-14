@@ -18,7 +18,10 @@
     <link rel="icon" type="image/png" href="/icons/icon-192.png">
 
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/admin.css') }}?v={{ filemtime(public_path('css/admin.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/admin-premium.css') }}?v={{ filemtime(public_path('css/admin-premium.css')) }}">
     @stack('styles')
 </head>
 <body>
@@ -34,113 +37,52 @@
     $totalInboxUnreadCount = $unreadChatCount + $unreadInquiriesCount;
 @endphp
     <div class="admin-shell">
-        <!-- Desktop Sidebar -->
-        <aside class="admin-sidebar" aria-label="Admin Navigation">
-            <div class="sidebar-header">
+        <div class="ad-drawer-backdrop" onclick="document.body.classList.remove('ad-drawer-open')"></div>
+        <aside class="admin-sidebar ad-sidebar" aria-label="Admin navigation">
+            <div class="sidebar-header ad-brand">
                 <a href="{{ route('admin.dashboard') }}" class="sidebar-logo">
-                    <span style="display:inline-block; width:10px; height:10px; background:var(--accent-blue); border-radius:50%;"></span>
-                    <span>IFAN<span style="color:var(--accent-blue);">.</span> ADMIN</span>
+                    <span class="ad-logo-mark">IF</span>
+                    <span class="ad-logo-text"><b>{{ $appInfo['name'] ?? 'Hasnain Portfolio Manager' }}</b><small>Admin panel</small></span>
                 </a>
             </div>
 
-            <!-- 3 Pillars Switcher Section -->
-            <div class="sidebar-pillar-menu pillar-nav-switcher">
-                <a href="{{ route('admin.dashboard') }}" class="sidebar-pillar-btn pillar-nav-btn {{ $currentPillar === 'operations' ? 'active' : '' }}" title="Core Operations">
-                    <span class="pillar-icon-box">⚡</span>
-                    <div class="pillar-text-box">
-                        <span class="pillar-title">Core Operations</span>
-                        <span class="pillar-sub">Dashboard, Chat, Inquiries</span>
-                    </div>
-                    @if($currentPillar === 'operations')
-                        <span class="pillar-badge-indicator">Active</span>
-                    @endif
-                </a>
+            <a href="{{ route('admin.content') }}" class="ad-visual-btn" title="Edit the live portfolio page directly">
+                <span>✦</span> Open visual editor <em>↗</em>
+            </a>
 
-                <a href="{{ route('admin.content') }}" class="sidebar-pillar-btn pillar-nav-btn {{ $currentPillar === 'content' ? 'active' : '' }}" title="Content Management (Visual Portfolio Editor)">
-                    <span class="pillar-icon-box" style="color:var(--accent-blue);">✦</span>
-                    <div class="pillar-text-box">
-                        <span class="pillar-title">Content Management</span>
-                        <span class="pillar-sub">Live Visual Editor (On Site)</span>
-                    </div>
-                    <span class="pillar-badge-indicator">Open ↗</span>
-                </a>
-
-                <a href="{{ route('admin.analytics.index') }}" class="sidebar-pillar-btn pillar-nav-btn {{ $currentPillar === 'insights' ? 'active' : '' }}" title="System & Insights">
-                    <span class="pillar-icon-box">⚙</span>
-                    <div class="pillar-text-box">
-                        <span class="pillar-title">System &amp; Insights</span>
-                        <span class="pillar-sub">Analytics &amp; Platform Settings</span>
-                    </div>
-                    @if($currentPillar === 'insights')
-                        <span class="pillar-badge-indicator">Active</span>
-                    @endif
-                </a>
-            </div>
-
-            <nav class="sidebar-nav">
-                @if($currentPillar === 'insights')
-                    {{-- Pillar 3: System & Insights --}}
-                    <div class="nav-section-title">System &amp; Insights Features</div>
-                    <a href="{{ route('admin.analytics.index') }}" class="nav-link {{ request()->routeIs('admin.analytics.*') ? 'active' : '' }}">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
-                        <span>Analytics &amp; Telemetry</span>
-                    </a>
-
-                    <a href="{{ route('admin.settings.index') }}" class="nav-link {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                        <span>Platform Settings</span>
-                    </a>
-                @else
-                    {{-- Pillar 1: Core Operations (Default) --}}
-                    <div class="nav-section-title">Core Operations Features</div>
-                    <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                        <span>Dashboard Overview</span>
-                    </a>
-
-                    <a href="{{ route('admin.feed.index') }}" class="nav-link {{ request()->routeIs('admin.feed.*') ? 'active' : '' }}">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
-                        <span>Posts &amp; Feed</span>
-                    </a>
-
-                    <a href="{{ route('admin.inbox.index') }}" class="nav-link {{ request()->routeIs('admin.inbox.*', 'admin.inquiries.*', 'admin.chat.*') ? 'active' : '' }}">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                        <span>Unified Inbox</span>
-                        @if($totalInboxUnreadCount > 0)
-                            <span class="nav-badge" style="background:#EF4444;">{{ $totalInboxUnreadCount }}</span>
-                        @endif
-                    </a>
-
-                    <button type="button" class="nav-link" onclick="openQrInstallModal()" style="background:none; border:none; text-align:left; width:100%; cursor:pointer; font-family:inherit;">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
-                        <span>Install on Phone</span>
-                        <span class="nav-badge" style="background:rgba(59,130,246,0.2); color:#3B82F6;">QR</span>
-                    </button>
-                @endif
+            <nav class="sidebar-nav ad-nav">
+                <div class="nav-section-title">Overview</div>
+                <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg><span>Dashboard</span></a>
+                <a href="{{ route('admin.inbox.index') }}" class="nav-link {{ request()->routeIs('admin.inbox.*', 'admin.inquiries.*', 'admin.chat.*') ? 'active' : '' }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Inbox & live chat</span>@if($totalInboxUnreadCount > 0)<span class="nav-badge">{{ $totalInboxUnreadCount }}</span>@endif</a>
+                <a href="{{ route('admin.feed.index') }}" class="nav-link {{ request()->routeIs('admin.feed.*') ? 'active' : '' }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg><span>Feed posts</span></a>
+                <div class="nav-section-title">Portfolio content</div>
+                <a href="{{ route('admin.projects.index') }}" class="nav-link {{ request()->routeIs('admin.projects.*') ? 'active' : '' }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg><span>Projects</span></a>
+                <a href="{{ route('admin.profile.edit') }}" class="nav-link {{ request()->routeIs('admin.profile.*') ? 'active' : '' }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Profile & bio</span></a>
+                <a href="{{ route('admin.site-content') }}" class="nav-link {{ request()->routeIs('admin.site-content*') ? 'active' : '' }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg><span>Texts, cards & links</span></a>
+                <a href="{{ route('admin.skills.index') }}" class="nav-link {{ request()->routeIs('admin.skills.*') ? 'active' : '' }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><span>Skills</span></a>
+                <a href="{{ route('admin.experience.index') }}" class="nav-link {{ request()->routeIs('admin.experience.*') ? 'active' : '' }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg><span>Experience</span></a>
+                <a href="{{ route('admin.education.index') }}" class="nav-link {{ request()->routeIs('admin.education.*') ? 'active' : '' }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg><span>Education</span></a>
+                <a href="{{ route('admin.research.index') }}" class="nav-link {{ request()->routeIs('admin.research.*') ? 'active' : '' }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span>Research</span></a>
+                <a href="{{ route('admin.blog.index') }}" class="nav-link {{ request()->routeIs('admin.blog.*') ? 'active' : '' }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg><span>Blog articles</span></a>
+                <a href="{{ route('admin.resume.index') }}" class="nav-link {{ request()->routeIs('admin.resume.*') ? 'active' : '' }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span>Resume / CV</span></a>
+                <div class="nav-section-title">Site</div>
+                <a href="{{ route('admin.settings.index') }}" class="nav-link {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 1v3M12 20v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M1 12h3M20 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg><span>Settings & sections</span></a>
+                <a href="{{ route('admin.analytics.index') }}" class="nav-link {{ request()->routeIs('admin.analytics.*') ? 'active' : '' }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span>Analytics</span></a>
+                <button type="button" class="nav-link" onclick="openQrInstallModal()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg><span>Install on phone</span><span class="nav-badge nav-badge-soft">QR</span></button>
             </nav>
 
-            <div style="padding: 10px 16px; border-top: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 8px;">
-                <button type="button" onclick="openAppVersionModal()" class="app-version-badge" title="View Web App Version Details" style="width:100%; justify-content:space-between;">
-                    <span style="display:flex; align-items:center; gap:6px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
-                        <span style="font-size:0.75rem;">⚡</span>
-                        <span>{{ $appInfo['name'] ?? 'Hasnain Portfolio Manager' }}</span>
-                    </span>
-                    <span style="background:var(--accent-blue); color:#fff; padding:1px 5px; border-radius:4px; font-size:0.65rem;">{{ $appInfo['version'] ?? 'v1.0.0' }}</span>
+            <div class="ad-side-foot">
+                <button type="button" onclick="openAppVersionModal()" class="app-version-badge" title="Web app version">
+                    <span>⚡ {{ $appInfo['name'] ?? 'Hasnain Portfolio Manager' }}</span>
+                    <span class="ad-ver">{{ $appInfo['version'] ?? 'v1.0.0' }}</span>
                 </button>
-            </div>
-
-            <div class="sidebar-footer">
-                <a href="{{ route('home') }}" target="_blank" class="btn btn-secondary btn-sm" title="View Public Portfolio">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-                    <span>View Site</span>
-                </a>
-
-                <form action="{{ route('admin.logout') }}" method="POST">
-                    @csrf
-                    <button type="submit" class="btn btn-danger btn-sm" title="Sign Out">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-                    </button>
-                </form>
+                <div class="sidebar-footer">
+                    <a href="{{ route('home') }}" target="_blank" class="btn btn-secondary btn-sm" title="View public portfolio">View site ↗</a>
+                    <form action="{{ route('admin.logout') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="btn btn-danger btn-sm" title="Sign out">Sign out</button>
+                    </form>
+                </div>
             </div>
         </aside>
 
@@ -213,34 +155,30 @@
     </div>
 
     <!-- Mobile Bottom Navigation (PWA on Samsung Galaxy A54) -->
-    <nav class="mobile-bottom-nav" aria-label="Mobile Navigation">
+    <nav class="mobile-bottom-nav" aria-label="Mobile navigation">
         <a href="{{ route('admin.dashboard') }}" class="bottom-nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
             <span>Home</span>
         </a>
-
-        <a href="{{ route('admin.feed.index') }}" class="bottom-nav-item {{ request()->routeIs('admin.feed.*') ? 'active' : '' }}">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
-            <span>Feed</span>
-        </a>
-
         <a href="{{ route('admin.inbox.index') }}" class="bottom-nav-item {{ request()->routeIs('admin.inbox.*', 'admin.inquiries.*', 'admin.chat.*') ? 'active' : '' }}">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
             <span>Inbox</span>
             @if(!empty($totalInboxUnreadCount) && $totalInboxUnreadCount > 0)
                 <span class="bottom-nav-badge">{{ $totalInboxUnreadCount }}</span>
             @endif
         </a>
-
-        <a href="{{ route('admin.content') }}" class="bottom-nav-item {{ request()->routeIs('admin.content*') ? 'active' : '' }}">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
-            <span>Visual CMS</span>
+        <a href="{{ route('admin.projects.index') }}" class="bottom-nav-item {{ request()->routeIs('admin.projects.*') ? 'active' : '' }}">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+            <span>Projects</span>
         </a>
-
-        <a href="{{ route('admin.analytics.index') }}" class="bottom-nav-item {{ request()->routeIs('admin.analytics.*', 'admin.settings.*') ? 'active' : '' }}">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-            <span>Insights</span>
+        <a href="{{ route('admin.feed.index') }}" class="bottom-nav-item {{ request()->routeIs('admin.feed.*') ? 'active' : '' }}">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+            <span>Feed</span>
         </a>
+        <button type="button" class="bottom-nav-item" onclick="document.body.classList.toggle('ad-drawer-open')" aria-label="Open full menu">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            <span>Menu</span>
+        </button>
     </nav>
 
     <!-- PWA Service Worker Registration -->

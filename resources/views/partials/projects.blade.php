@@ -19,12 +19,12 @@
         <div class="pp-section-head reveal">
             <span class="pp-eyebrow"><span class="pp-eyebrow-line"></span>Selected Work</span>
             <div class="pp-head-row">
-                <h2 class="pp-title">Projects I've <span class="pp-grad">engineered</span></h2>
+                <h2 class="pp-title">{{ $portfolio['texts']['projects_title'] ?? "Projects I've engineered" }}</h2>
                 @auth
                     <button type="button" class="admin-edit-trigger" onclick="openAddProjectModal()" title="Create and showcase a new software project">+ Add New Project</button>
                 @endauth
             </div>
-            <p class="pp-lead">Production SaaS, a white-label news platform, Android security tooling and academic research. Open any project for the full case study, screenshots and features.</p>
+            <p class="pp-lead">{{ $portfolio['texts']['projects_lead'] ?? '' }}</p>
         </div>
 
         <div class="pp-filters reveal" role="tablist" aria-label="Project categories">
@@ -96,7 +96,7 @@
                             @if(!empty($s['status']))<span class="pp-status">{{ $s['status'] }}</span>@endif
                             @auth
                                 @if(!empty($p['db_id']))
-                                    <button type="button" class="admin-edit-trigger" onclick="openEditProjectModal({{ $p['db_id'] }}, @js($p['title']), @js($p['slug']), @js($p['category']), @js($p['role'] ?? ''), @js($p['summary']), '', @js(implode(', ', $p['tech_stack'] ?? [])), @js($p['live_url'] ?? ''), @js($p['repo_url'] ?? ''), {{ $isFeatured ? 1 : 0 }})">✎ Edit</button>
+                                    <a class="admin-edit-trigger" href="{{ route('admin.projects.edit', $p['db_id']) }}" title="Edit text, screenshots and features">✎ Edit project</a>
                                 @endif
                             @endauth
                         </div>

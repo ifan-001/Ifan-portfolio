@@ -46,7 +46,14 @@ class PortfolioDataService
 
         $projects = array_map(function (array $p) use ($show, $configProjects) {
             $slug = $p['slug'] ?? ($p['id'] ?? '');
-            $s = $show[$slug] ?? [];
+            // Database values (edited in admin) win over config/showcase.php defaults
+            $s = array_merge($show[$slug] ?? [], array_filter($p['showcase_db'] ?? [], fn ($v) => $v !== null && $v !== '' && $v !== []));
+            if (is_array($p['gallery_db'] ?? null)) {
+                $s['gallery'] = $p['gallery_db'];
+            }
+            if (is_array($p['mobile_gallery_db'] ?? null)) {
+                $s['mobile_gallery'] = $p['mobile_gallery_db'];
+            }
             $c = $configProjects->get($slug, []);
 
             $features = $s['features'] ?? null;
@@ -195,6 +202,9 @@ class PortfolioDataService
                     'title' => $p->title,
                     'slug' => $p->slug,
                     'thumbnail' => $p->thumbnail,
+                    'showcase_db' => $p->showcase,
+                    'gallery_db' => $p->gallery,
+                    'mobile_gallery_db' => $p->mobile_gallery,
                     'category' => $p->category,
                     'category_label' => $p->tagline ?: ucfirst($p->category),
                     'featured' => (bool) $p->is_featured,
@@ -278,6 +288,7 @@ class PortfolioDataService
             $socials = [];
             foreach ($dbSocial as $s) {
                 $socials[$s->platform] = [
+                    'id' => $s->id,
                     'name' => $s->name,
                     'url' => $s->url,
                     'handle' => $s->handle ?: $s->name,
@@ -306,7 +317,17 @@ class PortfolioDataService
             'live_chat_enabled' => (bool) SiteSetting::get('live_chat_enabled', true),
         ];
 
+        // 13. Editable texts (white-label): defaults from config/site_texts.php, overrides from settings
+        $texts = [];
+        foreach (config('site_texts', []) as $fields) {
+            foreach ($fields as $key => $def) {
+                $val = SiteSetting::get('text_' . $key);
+                $texts[$key] = is_string($val) && trim($val) !== '' ? $val : $def[1];
+            }
+        }
+
         return [
+            'texts' => $texts,
             'brand' => $brand,
             'resume' => $resume,
             'focus_areas' => $focusAreas,

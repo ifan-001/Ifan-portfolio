@@ -1,25 +1,43 @@
 @extends('layouts.app')
 
-@section('title', 'Apps, Tools & Games | Hasnain Al Ifan')
-@section('meta_description', 'Free tools and games built by Hasnain Al Ifan: CV builder with professional templates, developer toolkit, and LinkedIn-style puzzles like Queens, Tango and Zip.')
+@section('title', 'Free Apps, Tools & Games | Hasnain Al Ifan')
+@section('meta_description', 'Free tools anyone can use: CV builder, cover letter, invoice maker, photo resizer, QR codes and puzzle games like Queens, Tango and Zip. No sign-up, nothing uploaded.')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/apps.css') }}?v={{ filemtime(public_path('css/apps.css')) }}">
 @endpush
 
+@php
+    $makers = [
+        ['route' => 'apps.resume-builder', 'icon' => '📄', 'name' => 'CV Builder', 'desc' => 'Pick a design, type your details, download a PDF.', 'tag' => 'Most popular', 'color' => '#3B82F6'],
+        ['route' => 'apps.cover-letter', 'icon' => '✉️', 'name' => 'Cover Letter', 'desc' => 'Answer a few questions, get a ready letter.', 'tag' => 'New', 'color' => '#8B5CF6'],
+        ['route' => 'apps.invoice', 'icon' => '🧾', 'name' => 'Invoice Maker', 'desc' => 'Bill a client in BDT or USD with auto totals.', 'tag' => 'New', 'color' => '#10B981'],
+        ['route' => 'apps.qr-medical', 'icon' => '🩺', 'name' => 'Medical ID Card', 'desc' => 'Emergency card with a scannable QR code.', 'tag' => null, 'color' => '#EF4444'],
+    ];
+    $quick = [
+        ['url' => route('apps.image-tool'), 'icon' => '🖼️', 'name' => 'Photo resizer', 'desc' => 'Make photos smaller'],
+        ['url' => route('apps.toolkit') . '#qr', 'icon' => '▦', 'name' => 'QR code maker', 'desc' => 'Link or text to QR'],
+        ['url' => route('apps.toolkit') . '#password', 'icon' => '🔐', 'name' => 'Password maker', 'desc' => 'Strong, random passwords'],
+        ['url' => route('apps.toolkit') . '#words', 'icon' => '¶', 'name' => 'Word counter', 'desc' => 'Words and reading time'],
+        ['url' => route('apps.toolkit') . '#json', 'icon' => '{ }', 'name' => 'JSON formatter', 'desc' => 'For developers'],
+        ['url' => route('apps.toolkit') . '#contrast', 'icon' => '◐', 'name' => 'Colour checker', 'desc' => 'Is text readable?'],
+    ];
+@endphp
+
 @section('content')
-<div class="ax-page">
+<div class="ax-page ax-simple">
     <a href="{{ route('home') }}" class="ax-back">&larr; Back to portfolio</a>
 
     <header class="ax-hero">
         <div class="ax-hero-copy">
-            <span class="ax-kicker">Interactive Lab</span>
-            <h1>Apps, tools &amp; <span class="pp-grad">games</span></h1>
-            <p>Real software you can use right now. Build a professional CV, use everyday developer tools or take a puzzle break. Free, fast and private: nothing you type is uploaded.</p>
-            <div class="ax-hero-links">
-                <a href="#create" class="cvb-btn cvb-btn-primary">Build a CV</a>
-                <a href="#games" class="cvb-btn">Play a puzzle</a>
-            </div>
+            <span class="ax-kicker">Free · No sign-up · Private</span>
+            <h1>Handy tools, <span class="pp-grad">ready in one click</span></h1>
+            <p>Make a CV, write a cover letter, send an invoice, shrink a photo, or take a quick puzzle break. Everything works in your browser and nothing you type is uploaded.</p>
+            <nav class="ax-jump" aria-label="Jump to">
+                <a href="#create">📄 Make a document</a>
+                <a href="#quick">⚡ Quick tools</a>
+                <a href="#games">🎮 Games</a>
+            </nav>
         </div>
         <div class="ax-hero-art" aria-hidden="true">
             <div class="ax-mini-q">@for($i = 0; $i < 25; $i++)<span class="{{ in_array($i, [1, 8, 10, 17, 24]) ? 'q' : '' }}" style="background: {{ ['#FDE68A','#BFDBFE','#FBCFE8','#BBF7D0','#DDD6FE'][intdiv($i, 5) % 5] }}"></span>@endfor</div>
@@ -27,49 +45,40 @@
     </header>
 
     <section class="ax-section" id="create">
-        <div class="ax-section-head"><h2>Create</h2><p>Make something you can download and use.</p></div>
-        <div class="ax-grid ax-grid-2">
-            <a class="ax-card ax-card-feature" href="{{ route('apps.resume-builder') }}">
-                <div class="ax-card-art ax-art-cv" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
-                <div class="ax-card-body">
-                    <span class="ax-tag">Most used</span>
-                    <h3>CV Builder</h3>
-                    <p>Six professional templates (Modern, Executive, Minimal, Creative, Tech, ATS). Add your photo, pick an accent colour and download a print-ready A4 PDF.</p>
-                    <span class="ax-cta">Open CV Builder &rarr;</span>
-                </div>
-            </a>
-            <a class="ax-card ax-card-feature" href="{{ route('apps.qr-medical') }}">
-                <div class="ax-card-art ax-art-qr" aria-hidden="true"><span>QR</span></div>
-                <div class="ax-card-body">
-                    <span class="ax-tag">From DoctorQR</span>
-                    <h3>Emergency Medical ID</h3>
-                    <p>Create a scannable medical ID card with blood group, allergies and emergency contacts, inspired by the DoctorQR platform.</p>
-                    <span class="ax-cta">Make a medical ID &rarr;</span>
-                </div>
-            </a>
+        <div class="ax-section-head"><h2>Make a document</h2><p>Fill a simple form, see it live, download a PDF.</p></div>
+        <div class="ax-grid ax-grid-4">
+            @foreach($makers as $m)
+                <a class="ax-card ax-maker" href="{{ route($m['route']) }}" style="--c: {{ $m['color'] }}">
+                    <span class="ax-maker-icon" aria-hidden="true">{{ $m['icon'] }}</span>
+                    @if($m['tag'])<span class="ax-tag">{{ $m['tag'] }}</span>@endif
+                    <h3>{{ $m['name'] }}</h3>
+                    <p>{{ $m['desc'] }}</p>
+                    <span class="ax-cta">Start →</span>
+                </a>
+            @endforeach
         </div>
     </section>
 
-    <section class="ax-section" id="tools">
-        <div class="ax-section-head"><h2>Developer toolkit</h2><p>Quick utilities that run entirely in your browser.</p></div>
+    <section class="ax-section" id="quick">
+        <div class="ax-section-head"><h2>Quick tools</h2><p>Small jobs, done in seconds.</p></div>
         <div class="ax-grid ax-grid-tools">
-            @foreach($tools as $id => $t)
-                <a class="ax-card ax-tool" href="{{ route('apps.toolkit') }}#{{ $id }}">
-                    <span class="ax-tool-icon" aria-hidden="true">{{ $t['icon'] }}</span>
-                    <strong>{{ $t['name'] }}</strong>
+            @foreach($quick as $q)
+                <a class="ax-card ax-tool" href="{{ $q['url'] }}">
+                    <span class="ax-tool-icon" aria-hidden="true">{{ $q['icon'] }}</span>
+                    <strong>{{ $q['name'] }}</strong>
+                    <small>{{ $q['desc'] }}</small>
                 </a>
             @endforeach
         </div>
     </section>
 
     <section class="ax-section" id="games">
-        <div class="ax-section-head"><h2>Games &amp; puzzles</h2><p>LinkedIn-style daily puzzles, generated fresh every time, plus a few classics.</p></div>
+        <div class="ax-section-head"><h2>Games &amp; puzzles</h2><p>LinkedIn-style daily puzzles, a new one every time.</p></div>
         <div class="ax-grid ax-grid-3">
             @foreach($games as $slug => $g)
                 <a class="ax-card ax-game" href="{{ route('apps.game', $slug) }}">
                     <span class="ax-game-icon" aria-hidden="true">{{ $g['icon'] }}</span>
                     <div>
-                        <span class="ax-kicker-sm">{{ $g['kind'] }}</span>
                         <h3>{{ $g['name'] }}</h3>
                         <p>{{ $g['tagline'] }}</p>
                     </div>
@@ -78,9 +87,8 @@
             <a class="ax-card ax-game" href="{{ route('apps.cyber-game') }}">
                 <span class="ax-game-icon" aria-hidden="true">🛡️</span>
                 <div>
-                    <span class="ax-kicker-sm">Arcade</span>
-                    <h3>Code Breaker: Cyber Defense</h3>
-                    <p>Defend the server from incoming exploits in this canvas arcade game.</p>
+                    <h3>Cyber Defense</h3>
+                    <p>Arcade game: stop the attacks before they reach the server.</p>
                 </div>
             </a>
         </div>

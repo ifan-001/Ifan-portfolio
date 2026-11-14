@@ -1,58 +1,33 @@
 @if(!empty($portfolio['blog_posts']) && count($portfolio['blog_posts']) > 0)
-<section class="section section-alt" id="blog">
+<section class="section section-alt pb-blog" id="blog">
     <div class="container">
-        <div class="section-header" style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:16px;">
+        <div class="pp-section-head pb-head reveal">
             <div>
-                <span class="section-eyebrow">Technical Writings</span>
-                <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
-                    <h2 class="section-title" style="margin-bottom:0;">Engineering Articles</h2>
+                <span class="pp-eyebrow"><span class="pp-eyebrow-line"></span>Writing</span>
+                <div class="pp-head-row">
+                    <h2 class="pp-title">Engineering notes</h2>
                     @auth
-                        <button type="button" class="admin-edit-trigger" onclick="openAddBlogModal()" title="Write a new engineering post">
-                            + Write New Article
-                        </button>
+                        <button type="button" class="admin-edit-trigger" onclick="openAddBlogModal()" title="Write a new post">+ New article</button>
                     @endauth
                 </div>
-                <p class="section-desc" style="margin-top:10px;">Practical architectural walkthroughs, deep dives, and code solutions.</p>
             </div>
-            <a href="{{ route('blog.index') }}" class="btn btn-secondary btn-sm">View All Articles &rarr;</a>
+            <a href="{{ route('blog.index') }}" class="pp-btn">All articles →</a>
         </div>
 
-        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:24px; margin-top:32px;">
-            @foreach($portfolio['blog_posts'] as $post)
-                <article style="background:var(--bg-primary); border:1px solid var(--border-subtle); border-radius:var(--radius-lg); padding:24px; display:flex; flex-direction:column; justify-content:space-between; transition:all var(--transition-fast);">
-                    <div>
-                        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
-                            @if(!empty($post->tags))
-                                <div style="display:flex; flex-wrap:wrap; gap:6px;">
-                                    @foreach(array_slice($post->tags, 0, 2) as $t)
-                                        <span style="font-size:0.7rem; font-weight:700; text-transform:uppercase; color:var(--accent-blue); background:rgba(59, 130, 246, 0.1); padding:2px 6px; border-radius:4px;">{{ $t }}</span>
-                                    @endforeach
-                                </div>
-                            @else
-                                <div></div>
-                            @endif
-
-                            @auth
-                                <button type="button" class="admin-btn-mini" onclick="openEditBlogModal({{ $post->id }}, '{{ addslashes($post->title) }}', '{{ $post->slug }}', '{{ addslashes(implode(', ', $post->tags ?? [])) }}', '{{ $post->status }}', '{{ addslashes($post->excerpt ?? '') }}', '{{ addslashes($post->content) }}')">
-                                    ✎ Edit
-                                </button>
-                            @endauth
-                        </div>
-
-                        <h3 style="font-size:1.15rem; font-weight:700; color:var(--text-primary); margin-bottom:8px; line-height:1.4;">
-                            <a href="{{ route('blog.show', $post->slug) }}" style="color:var(--text-primary); text-decoration:none;">
-                                {{ $post->title }}
-                            </a>
-                        </h3>
-
-                        <p style="font-size:0.875rem; color:var(--text-light); line-height:1.6; margin-bottom:16px;">
-                            {{ $post->excerpt }}
-                        </p>
+        <div class="pb-grid">
+            @foreach($portfolio['blog_posts'] as $i => $post)
+                <article class="pb-card reveal" style="--reveal-delay: {{ $i * 80 }}ms">
+                    <div class="pb-meta">
+                        @foreach(array_slice($post->tags ?? [], 0, 2) as $tag)<span>{{ $tag }}</span>@endforeach
+                        @auth
+                            <button type="button" class="admin-btn-mini" onclick="openEditBlogModal({{ $post->id }}, @js($post->title), @js($post->slug), @js(implode(', ', $post->tags ?? [])), @js($post->status), @js($post->excerpt ?? ''), @js($post->content))">✎</button>
+                        @endauth
                     </div>
-
-                    <div style="display:flex; align-items:center; justify-content:space-between; font-size:0.78rem; color:var(--text-muted); border-top:1px solid rgba(255,255,255,0.05); padding-top:12px;">
-                        <span>{{ $post->published_at ? $post->published_at->format('M d, Y') : '' }} &middot; {{ $post->read_time }} min read</span>
-                        <a href="{{ route('blog.show', $post->slug) }}" style="color:var(--accent-blue); font-weight:600; text-decoration:none;">Read &rarr;</a>
+                    <h3><a href="{{ route('blog.show', $post->slug) }}">{{ $post->title }}</a></h3>
+                    <p>{{ $post->excerpt }}</p>
+                    <div class="pb-foot">
+                        <span>{{ $post->published_at ? $post->published_at->format('M d, Y') : '' }} · {{ $post->read_time }} min read</span>
+                        <a href="{{ route('blog.show', $post->slug) }}" aria-label="Read {{ $post->title }}">Read →</a>
                     </div>
                 </article>
             @endforeach

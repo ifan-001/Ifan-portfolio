@@ -368,7 +368,7 @@ document.addEventListener('DOMContentLoaded', function () {
       chatIconOpen.style.display = 'none';
       chatIconClose.style.display = 'block';
       fetchMessages();
-      chatTextInput.focus();
+      if (window.innerWidth > 640) chatTextInput.focus();
       chatPollInterval = setInterval(fetchMessages, 3500);
     } else {
       chatIconOpen.style.display = 'block';

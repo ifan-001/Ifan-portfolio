@@ -652,7 +652,9 @@ class AdminPlatformTest extends TestCase
         $dirResponse = $this->get('/apps');
         $dirResponse->assertStatus(200);
         $dirResponse->assertSee('CV Builder');
-        $dirResponse->assertSee('Developer toolkit');
+        $dirResponse->assertSee('Quick tools');
+        $dirResponse->assertSee('Cover Letter');
+        $dirResponse->assertSee('Invoice Maker');
         $dirResponse->assertSee('Queens');
 
         $resumeResponse = $this->get('/apps/resume-builder');
@@ -674,6 +676,9 @@ class AdminPlatformTest extends TestCase
         $this->get('/apps/games/unknown-game')->assertNotFound();
 
         $this->get('/apps/toolkit')->assertOk()->assertSee('JSON formatter');
+        $this->get('/apps/cover-letter')->assertOk()->assertSee('Cover Letter Builder');
+        $this->get('/apps/invoice')->assertOk()->assertSee('Invoice Generator');
+        $this->get('/apps/image-resizer')->assertOk()->assertSee('Resize');
     }
 
     /**
@@ -725,5 +730,97 @@ class AdminPlatformTest extends TestCase
     {
         $admin = $this->getAdminUser();
         $this->actingAs($admin)->getJson('/admin/notifications/check')->assertOk()->assertJsonStructure(['total_unread']);
+    }
+
+    /**
+     * 28. Full project editor: case study, galleries, features and stats are saved.
+     */
+    public function test_project_editor_saves_showcase_and_galleries(): void
+    {
+        $admin = $this->getAdminUser();
+
+        $this->actingAs($admin)->post('/admin/projects', [
+            'title' => 'Showcase Test', 'slug' => 'showcase-test', 'category' => 'mobile', 'summary' => 'Summary',
+            'showcase_form' => 1,
+            'sc' => ['tagline' => 'A tagline', 'status' => 'Live', 'accent' => '#FF0000', 'icon' => 'phone'],
+            'features' => [['title' => 'Offline mode', 'desc' => 'Works offline'], ['title' => '', 'desc' => 'dropped']],
+            'stats' => [['value' => '10k', 'label' => 'Users']],
+            'gallery_new' => [\Illuminate\Http\UploadedFile::fake()->createWithContent('web.png', base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=='))],
+            'mobile_new' => [\Illuminate\Http\UploadedFile::fake()->createWithContent('app.png', base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=='))],
+        ])->assertRedirect('/admin/projects');
+
+        $p = Project::where('slug', 'showcase-test')->firstOrFail();
+        $this->assertSame('A tagline', $p->showcase['tagline']);
+        $this->assertCount(1, $p->showcase['features']);
+        $this->assertCount(1, $p->gallery);
+        $this->assertCount(1, $p->mobile_gallery);
+        $this->assertSame($p->gallery[0]['src'], $p->thumbnail);
+
+        $this->actingAs($admin)->put('/admin/projects/' . $p->id, [
+            'title' => 'Showcase Test', 'slug' => 'showcase-test', 'category' => 'mobile', 'summary' => 'Summary',
+            'showcase_form' => 1,
+            'gallery' => [['src' => $p->gallery[0]['src'], 'caption' => 'x', 'remove' => 1]],
+            'mobile_gallery' => [['src' => $p->mobile_gallery[0]['src'], 'caption' => 'Home screen']],
+        ])->assertRedirect('/admin/projects');
+        $p->refresh();
+        $this->assertCount(0, $p->gallery);
+        $this->assertSame('Home screen', $p->mobile_gallery[0]['caption']);
+
+        $this->get('/')->assertSee('Home screen');
+
+        // Quick in-place edit must not wipe the case study
+        $this->actingAs($admin)->putJson('/admin/projects/' . $p->id, ['title' => 'Renamed', 'slug' => 'showcase-test', 'category' => 'mobile', 'summary' => 'New summary'])->assertOk();
+        $this->assertSame('Home screen', $p->fresh()->mobile_gallery[0]['caption']);
+
+        $this->actingAs($admin)->get('/admin/projects')->assertOk()->assertSee('Renamed');
+        $this->actingAs($admin)->get('/admin/projects/' . $p->id . '/edit')->assertOk()->assertSee('App / mobile screenshots');
+    }
+
+    /**
+     * 29. Site content: texts, focus cards, highlights and social links are fully editable.
+     */
+    public function test_site_content_is_white_label_editable(): void
+    {
+        $admin = $this->getAdminUser();
+        $this->actingAs($admin)->get('/admin/site-content')->assertOk()->assertSee('Texts &amp; SEO', false);
+
+        $this->actingAs($admin)->post('/admin/site-content/texts', ['texts' => ['projects_title' => 'My Custom Work', 'seo_title' => 'Custom SEO Title']])->assertRedirect();
+        $this->get('/')->assertSee('My Custom Work')->assertSee('<title>Custom SEO Title</title>', false);
+
+        $this->actingAs($admin)->post('/admin/site-content/focus', ['title' => 'Focus Card XYZ', 'description' => 'Desc'])->assertRedirect();
+        $this->get('/')->assertSee('Focus Card XYZ');
+        $focus = \App\Models\FocusArea::where('title', 'Focus Card XYZ')->first();
+        $this->actingAs($admin)->delete('/admin/site-content/focus/' . $focus->id)->assertRedirect();
+        $this->assertDatabaseMissing('focus_areas', ['id' => $focus->id]);
+
+        $this->actingAs($admin)->post('/admin/site-content/highlights', ['category' => 'Label', 'title' => 'Highlight XYZ'])->assertRedirect();
+        $hl = \App\Models\Achievement::where('title', 'Highlight XYZ')->first();
+        $this->actingAs($admin)->put('/admin/site-content/highlights/' . $hl->id, ['category' => 'Label', 'title' => 'Highlight Edited'])->assertRedirect();
+        $this->assertDatabaseHas('achievements', ['id' => $hl->id, 'title' => 'Highlight Edited']);
+
+        $this->actingAs($admin)->post('/admin/site-content/socials', ['name' => 'YouTube', 'url' => 'https://youtube.com/@me', 'icon' => 'youtube'])->assertRedirect();
+        $this->get('/')->assertSee('https://youtube.com/@me', false);
+        $this->actingAs($admin)->post('/admin/site-content/socials', ['name' => 'Bad', 'url' => 'javascript:alert(1)', 'icon' => 'link'])->assertSessionHasErrors('url');
+    }
+
+    /**
+     * 30. Live chat end to end: visitor message reaches the admin inbox and the reply reaches the visitor.
+     */
+    public function test_live_chat_visitor_to_admin_and_back(): void
+    {
+        $admin = $this->getAdminUser();
+
+        $send = $this->postJson('/api/chat/send', ['message' => 'Hi, are you available for a call?', 'visitor_name' => 'Recruiter Rina'])->assertOk();
+        $token = $send->json('session_id');
+
+        $this->actingAs($admin)->getJson('/admin/notifications/check')->assertJson(['chat_unread' => 1]);
+        $this->actingAs($admin)->get('/admin/inbox')->assertSee('Recruiter Rina');
+
+        $conv = ChatConversation::where('session_id', $token)->firstOrFail();
+        $this->actingAs($admin)->get('/admin/inbox?conversation_id=' . $conv->id)->assertSee('are you available for a call');
+        $this->actingAs($admin)->postJson('/admin/inbox/chat/reply', ['conversation_id' => $conv->id, 'message' => 'Yes, tomorrow at 3pm works.'])->assertOk();
+
+        auth()->logout();
+        $this->getJson('/api/chat/messages?session_id=' . $token)->assertOk()->assertSee('tomorrow at 3pm');
     }
 }
