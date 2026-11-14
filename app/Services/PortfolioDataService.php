@@ -20,7 +20,23 @@ class PortfolioDataService
     /**
      * Get the consolidated portfolio data for public display.
      */
+    public const CACHE_KEY = 'portfolio.data.v1';
+
+    /**
+     * Cached portfolio data. The cache is cleared whenever a CMS model changes
+     * (see AppServiceProvider) so admin edits show up immediately.
+     */
     public function getPortfolioData(): array
+    {
+        return Cache::remember(self::CACHE_KEY, 600, fn () => $this->buildPortfolioData());
+    }
+
+    public static function flush(): void
+    {
+        Cache::forget(self::CACHE_KEY);
+    }
+
+    protected function buildPortfolioData(): array
     {
         $cfg = config('portfolio');
         $profile = Profile::first();

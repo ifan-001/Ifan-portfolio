@@ -222,6 +222,8 @@ class ProfileController extends Controller
             ]);
         }
 
+        \App\Services\PortfolioDataService::flush();
+
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json([
                 'status' => 'success',

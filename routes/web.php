@@ -62,7 +62,7 @@ Route::get('/manifest.json', function () {
     return response()->json($manifest);
 });
 Route::get('/sw.js', function () {
-    return response(file_get_contents(public_path('sw.js')), 200, ['Content-Type' => 'application/javascript']);
+    return response(file_get_contents(public_path('sw.js')), 200, ['Content-Type' => 'application/javascript', 'Cache-Control' => 'no-cache, max-age=0']);
 });
 Route::get('/offline.html', function () {
     return response(file_get_contents(public_path('offline.html')), 200, ['Content-Type' => 'text/html']);
@@ -190,20 +190,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::delete('/inbox/chat/{conversation}', [InboxController::class, 'destroyChat'])->name('admin.inbox.chat.destroy');
     Route::post('/inbox/inquiry/{inquiry}/status', [InboxController::class, 'updateInquiryStatus'])->name('admin.inbox.inquiry.status');
     Route::delete('/inbox/inquiry/{inquiry}', [InboxController::class, 'destroyInquiry'])->name('admin.inbox.inquiry.destroy');
-    Route::get('/notifications/check', function () {
-        $chatUnread = \App\Models\ChatMessage::where('sender', 'visitor')->where('is_read', false)->count();
-        $inquiryUnread = \App\Models\ContactMessage::where('status', 'unread')->count();
-        $latestChat = \App\Models\ChatMessage::where('sender', 'visitor')->where('is_read', false)->latest()->first();
-        $latestInquiry = \App\Models\ContactMessage::where('status', 'unread')->latest()->first();
-
-        return response()->json([
-            'total_unread' => $chatUnread + $inquiryUnread,
-            'chat_unread' => $chatUnread,
-            'inquiry_unread' => $inquiryUnread,
-            'latest_preview' => $latestChat ? $latestChat->message : ($latestInquiry ? $latestInquiry->message : null),
-            'latest_sender' => $latestInquiry ? $latestInquiry->name : 'Live Visitor',
-        ]);
-    })->name('admin.notifications.check');
+    Route::get('/notifications/check', [InboxController::class, 'notificationsCheck'])->name('admin.notifications.check');
 
     // Legacy Aliases for backwards compatibility with existing links and tests
     Route::get('/inquiries', [InquiryController::class, 'index'])->name('admin.inquiries.index');

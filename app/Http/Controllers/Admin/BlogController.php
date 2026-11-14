@@ -23,6 +23,11 @@ class BlogController extends Controller
 
     public function store(Request $request)
     {
+        // Normalise the slug first so uniqueness is checked against the stored value.
+        if ($request->filled('slug')) {
+            $request->merge(['slug' => Str::slug($request->input('slug'))]);
+        }
+
         $validated = $request->validate([
             'title' => 'required|string|max:200',
             'slug' => 'nullable|string|max:200|unique:blog_posts,slug',
@@ -85,6 +90,11 @@ class BlogController extends Controller
 
     public function update(Request $request, BlogPost $blog)
     {
+        // Normalise the slug first so uniqueness is checked against the stored value.
+        if ($request->filled('slug')) {
+            $request->merge(['slug' => Str::slug($request->input('slug'))]);
+        }
+
         $validated = $request->validate([
             'title' => 'required|string|max:200',
             'slug' => 'required|string|max:200|unique:blog_posts,slug,' . $blog->id,

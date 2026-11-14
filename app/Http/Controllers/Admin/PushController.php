@@ -77,9 +77,10 @@ class PushController extends Controller
         return response()->json([
             'status' => 'success',
             'active_devices' => $count,
-            'message' => $count > 0 
-                ? "Notification test triggered for {$count} registered device(s)." 
-                : "No registered devices yet. Please tap 'Enable Notifications' on your Samsung phone PWA.",
+            'delivered' => false,
+            'message' => $count > 0
+                ? "{$count} device(s) registered. Background push delivery is not configured yet (VAPID keys and a push library are required), so no notification was sent."
+                : "No registered devices yet. Open the admin app on your phone and tap 'Enable on This Device'.",
         ]);
     }
 }

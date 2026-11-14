@@ -1,6 +1,6 @@
 # Hasnain Al Ifan — Professional Software Engineering Portfolio
 
-> **Production-Grade Personal Portfolio Website built with PHP 8.2+ and Laravel 11.**  
+> **Production-Grade Personal Portfolio Website built with PHP 8.2+ and Laravel 12.**  
 > Official Visual Identity: **Dark Navy** (`#0B1120`), **Off-White** (`#F5F7FA`), and **Electric Blue** (`#3B82F6`).
 
 ---
@@ -32,7 +32,7 @@ Subtle navy variations (`#0F172A`, `#131D31`, `#1E293B`) provide refined card se
 
 ## 🛠️ Technology Stack & Architecture
 
-- **Backend**: PHP 8.2+ with Laravel 11.x framework
+- **Backend**: PHP 8.2+ with Laravel 12.x framework
 - **Templating**: Laravel Blade (`resources/views/`)
 - **Styling**: Production-grade Vanilla CSS (`public/css/portfolio.css`) with CSS custom properties and responsive grid/flexbox
 - **Frontend Logic**: Lightweight, accessible Vanilla JavaScript (`public/js/portfolio.js`)

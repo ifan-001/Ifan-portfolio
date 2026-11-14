@@ -20,6 +20,11 @@ class PortfolioController extends Controller
         $this->portfolioService = $portfolioService;
     }
 
+    protected function ownerEmail(): string
+    {
+        return $this->portfolioService->getPortfolioData()['brand']['email'] ?? config('portfolio.brand.email', 'hasnainalifan23@gmail.com');
+    }
+
     /**
      * Display the personal portfolio page.
      */
@@ -70,10 +75,12 @@ class PortfolioController extends Controller
             'message' => 'required|string|min:10|max:3000',
         ]);
 
+        $ownerEmail = $this->ownerEmail();
+
         // Construct functional mailto link
         $subject = urlencode($validated['subject'] ?: ('Portfolio Inquiry from ' . $validated['name']));
         $body = urlencode("From: {$validated['name']} ({$validated['email']})\n\n{$validated['message']}");
-        $mailtoUrl = "mailto:hasnainalifan23@gmail.com?subject={$subject}&body={$body}";
+        $mailtoUrl = "mailto:{$ownerEmail}?subject={$subject}&body={$body}";
 
         // 3. Persist to database so no message is ever lost
         $savedMessage = null;
@@ -100,8 +107,8 @@ class PortfolioController extends Controller
                 "Subject: " . ($validated['subject'] ?? 'General Inquiry') . "\n\n" .
                 "Message:\n{$validated['message']}\n\n" .
                 "---\nManage this inquiry in your Admin Dashboard: " . url('/admin/inquiries'),
-                function ($m) use ($validated) {
-                    $m->to('hasnainalifan23@gmail.com')
+                function ($m) use ($validated, $ownerEmail) {
+                    $m->to($ownerEmail)
                       ->replyTo($validated['email'], $validated['name'])
                       ->subject('Portfolio Inquiry: ' . ($validated['subject'] ?: $validated['name']));
                 }
@@ -128,7 +135,7 @@ class PortfolioController extends Controller
             ]);
         }
 
-        return redirect()->back()->with('contact_success', 'Thank you for reaching out! You can also connect directly via hasnainalifan23@gmail.com');
+        return redirect()->back()->with('contact_success', 'Thank you for reaching out! You can also connect directly via ' . $ownerEmail);
     }
 
     /**
@@ -136,6 +143,7 @@ class PortfolioController extends Controller
      */
     public function downloadResume(Request $request)
     {
+        $ownerEmail = $this->ownerEmail();
         $portfolio = $this->portfolioService->getPortfolioData();
         $resumePath = public_path($portfolio['resume']['path']);
 
@@ -159,7 +167,7 @@ class PortfolioController extends Controller
             ]);
         }
 
-        return redirect()->route('home')->with('resume_notice', 'The official CV PDF is currently being updated. Please contact hasnainalifan23@gmail.com.');
+        return redirect()->route('home')->with('resume_notice', 'The official CV PDF is currently being updated. Please contact ' . $ownerEmail . '.');
     }
 
     /**

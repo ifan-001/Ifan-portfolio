@@ -108,18 +108,24 @@ class InboxController extends Controller
             });
         }
 
-        $randomChats = $randomChatsQuery->get();
-        $inquiries = $inquiriesQuery->get();
-        $namedChats = $namedChatsQuery->get();
+        // Cap each list so the inbox stays fast as history grows; counts below use full totals.
+        $limit = 100;
+        $randomTotal = (clone $randomChatsQuery)->count();
+        $namedTotal = (clone $namedChatsQuery)->count();
+        $inquiryTotal = (clone $inquiriesQuery)->count();
+
+        $randomChats = $randomChatsQuery->limit($limit)->get();
+        $inquiries = $inquiriesQuery->limit($limit)->get();
+        $namedChats = $namedChatsQuery->limit($limit)->get();
 
         $unreadChatCount = ChatMessage::where('sender', 'visitor')->where('is_read', false)->count();
         $unreadInquiryCount = ContactMessage::where('status', 'unread')->count();
 
         $counts = [
-            'all' => $randomChats->count() + $inquiries->count() + $namedChats->count(),
-            'random' => $randomChats->count(),
-            'named' => $namedChats->count(),
-            'inquiries' => $inquiries->count(),
+            'all' => $randomTotal + $inquiryTotal + $namedTotal,
+            'random' => $randomTotal,
+            'named' => $namedTotal,
+            'inquiries' => $inquiryTotal,
             'unread' => $unreadChatCount + $unreadInquiryCount,
         ];
 
@@ -131,6 +137,25 @@ class InboxController extends Controller
             'search',
             'counts'
         ));
+    }
+
+    /**
+     * Unread counters and latest preview for the admin alert poller.
+     */
+    public function notificationsCheck()
+    {
+        $chatUnread = ChatMessage::where('sender', 'visitor')->where('is_read', false)->count();
+        $inquiryUnread = ContactMessage::where('status', 'unread')->count();
+        $latestChat = ChatMessage::where('sender', 'visitor')->where('is_read', false)->latest()->first();
+        $latestInquiry = ContactMessage::where('status', 'unread')->latest()->first();
+
+        return response()->json([
+            'total_unread' => $chatUnread + $inquiryUnread,
+            'chat_unread' => $chatUnread,
+            'inquiry_unread' => $inquiryUnread,
+            'latest_preview' => $latestChat ? $latestChat->message : ($latestInquiry ? $latestInquiry->message : null),
+            'latest_sender' => $latestInquiry ? $latestInquiry->name : 'Live Visitor',
+        ]);
     }
 
     /**

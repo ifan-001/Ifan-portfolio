@@ -23,6 +23,11 @@ class ProjectController extends Controller
 
     public function store(Request $request)
     {
+        // Normalise the slug first so uniqueness is checked against the stored value.
+        if ($request->filled('slug')) {
+            $request->merge(['slug' => Str::slug($request->input('slug'))]);
+        }
+
         $validated = $request->validate([
             'title' => 'required|string|max:150',
             'slug' => 'nullable|string|max:150|unique:projects,slug',
@@ -84,6 +89,11 @@ class ProjectController extends Controller
 
     public function update(Request $request, Project $project)
     {
+        // Normalise the slug first so uniqueness is checked against the stored value.
+        if ($request->filled('slug')) {
+            $request->merge(['slug' => Str::slug($request->input('slug'))]);
+        }
+
         $validated = $request->validate([
             'title' => 'required|string|max:150',
             'slug' => 'required|string|max:150|unique:projects,slug,' . $project->id,

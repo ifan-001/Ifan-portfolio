@@ -1,88 +1,77 @@
-// Hasnain Portfolio Management PWA Service Worker
-const CACHE_NAME = 'portfolio-admin-shell-v1.0.0';
+// Hasnain Portfolio PWA Service Worker
+// Bump SW_VERSION on every deployment that changes cached static assets.
+const SW_VERSION = '2.0.0';
+const CACHE_NAME = 'portfolio-static-v' + SW_VERSION;
 const STATIC_ASSETS = [
     '/css/portfolio.css',
+    '/css/admin.css',
     '/js/portfolio.js',
+    '/js/admin-in-place.js',
     '/js/qrcode.min.js',
-    '/manifest.json',
     '/icons/icon.svg',
     '/offline.html'
 ];
+const STATIC_EXTENSIONS = /\.(?:css|js|png|jpe?g|webp|gif|avif|svg|ico|woff2?)$/i;
 
-// Install: Cache App Shell
 self.addEventListener('install', (event) => {
     event.waitUntil(
-        caches.open(CACHE_NAME).then((cache) => {
-            return cache.addAll(STATIC_ASSETS);
-        }).then(() => self.skipWaiting())
+        caches.open(CACHE_NAME)
+            // Tolerate a missing asset so one 404 cannot block installation
+            .then((cache) => Promise.all(STATIC_ASSETS.map((u) => cache.add(u).catch(() => null))))
+            .then(() => self.skipWaiting())
     );
 });
 
-// Activate: Clean old caches
 self.addEventListener('activate', (event) => {
     event.waitUntil(
-        caches.keys().then((keys) => {
-            return Promise.all(
-                keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
-            );
-        }).then(() => self.clients.claim())
+        caches.keys()
+            .then((keys) => Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k))))
+            .then(() => self.clients.claim())
     );
 });
 
-// Fetch: Strict security-conscious strategy
-// NEVER cache private admin pages, API calls, or sensitive message data
 self.addEventListener('fetch', (event) => {
-    const url = new URL(event.request.url);
+    const request = event.request;
+    const url = new URL(request.url);
 
-    // Bypass cache completely for:
-    // 1. Admin authenticated routes
-    // 2. API requests
-    // 3. POST / PUT / DELETE mutations
-    if (
-        event.request.method !== 'GET' ||
-        url.pathname.startsWith('/admin') ||
-        url.pathname.startsWith('/portal') ||
-        url.pathname.startsWith('/api') ||
-        url.pathname.startsWith('/contact')
-    ) {
+    // Never touch non-GET requests or cross-origin requests
+    if (request.method !== 'GET' || url.origin !== self.location.origin) {
+        return;
+    }
+
+    // HTML pages (public, admin, feed, blog...) are NEVER cached: they can contain
+    // admin UI, CSRF tokens and private data. Network only, offline page on failure.
+    if (request.mode === 'navigate') {
         event.respondWith(
-            fetch(event.request).catch(() => {
-                // Return offline page only if user is navigating HTML
-                if (event.request.mode === 'navigate') {
-                    return caches.match('/offline.html');
-                }
-                return new Response(JSON.stringify({ error: 'Network unavailable' }), {
-                    status: 503,
-                    headers: { 'Content-Type': 'application/json' }
-                });
-            })
+            fetch(request).catch(() => caches.match('/offline.html'))
         );
         return;
     }
 
-    // Static assets: Stale-while-revalidate
-    event.respondWith(
-        caches.match(event.request).then((cachedResponse) => {
-            const fetchPromise = fetch(event.request).then((networkResponse) => {
-                if (networkResponse && networkResponse.status === 200) {
-                    const responseToCache = networkResponse.clone();
-                    caches.open(CACHE_NAME).then((cache) => {
-                        cache.put(event.request, responseToCache);
-                    });
-                }
-                return networkResponse;
-            }).catch(() => {
-                if (event.request.mode === 'navigate') {
-                    return caches.match('/offline.html');
-                }
-            });
+    // API, admin, auth and upload endpoints always go to the network
+    if (/^\/(admin|portal|api|contact|track|feed|resume\/download)/.test(url.pathname)) {
+        return;
+    }
 
-            return cachedResponse || fetchPromise;
-        })
-    );
+    // Static assets only: stale-while-revalidate, successful responses only
+    if (STATIC_EXTENSIONS.test(url.pathname)) {
+        event.respondWith(
+            caches.open(CACHE_NAME).then((cache) =>
+                cache.match(request).then((cached) => {
+                    const network = fetch(request).then((response) => {
+                        if (response && response.status === 200 && response.type === 'basic') {
+                            cache.put(request, response.clone());
+                        }
+                        return response;
+                    }).catch(() => cached);
+                    return cached || network;
+                })
+            )
+        );
+    }
 });
 
-// Push Event: Handle server-triggered push notifications
+// Push Event: handle server-triggered push notifications (only fires once server push is configured)
 self.addEventListener('push', (event) => {
     let payload = {
         title: 'Portfolio Notification',
@@ -92,34 +81,31 @@ self.addEventListener('push', (event) => {
 
     if (event.data) {
         try {
-            payload = event.data.json();
+            payload = Object.assign(payload, event.data.json());
         } catch (e) {
             payload.body = event.data.text();
         }
     }
 
-    const options = {
-        body: payload.body,
-        icon: '/icons/icon-192.png',
-        badge: '/icons/icon-192.png',
-        vibrate: [100, 50, 100],
-        data: {
-            url: payload.url || '/admin'
-        },
-        actions: [
-            { action: 'open', title: 'Open Console' }
-        ]
-    };
+    // Only allow same-origin relative targets
+    const target = typeof payload.url === 'string' && payload.url.startsWith('/') && !payload.url.startsWith('//')
+        ? payload.url : '/admin';
 
     event.waitUntil(
-        self.registration.showNotification(payload.title, options)
+        self.registration.showNotification(payload.title, {
+            body: payload.body,
+            icon: '/icons/icon-192.png',
+            badge: '/icons/icon-192.png',
+            vibrate: [100, 50, 100],
+            data: { url: target },
+            actions: [{ action: 'open', title: 'Open Console' }]
+        })
     );
 });
 
-// Notification Click: Focus existing window or open new
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
-    const targetUrl = event.notification.data?.url || '/admin';
+    const targetUrl = (event.notification.data && event.notification.data.url) || '/admin';
 
     event.waitUntil(
         clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {

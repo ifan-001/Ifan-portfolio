@@ -673,8 +673,71 @@ class AdminPlatformTest extends TestCase
         $qrResponse->assertStatus(200);
         $qrResponse->assertSee('DoctorQR Emergency Medical ID Generator');
     }
+
+    /**
+     * 23. Service worker must never cache HTML pages and must be served uncached.
+     */
+    public function test_service_worker_does_not_cache_pages_and_is_versioned(): void
+    {
+        $response = $this->get('/sw.js');
+        $response->assertStatus(200);
+        $this->assertStringContainsString('no-cache', $response->headers->get('Cache-Control'));
+
+        $sw = $response->getContent();
+        $this->assertMatchesRegularExpression("/CACHE_NAME = 'portfolio-static-v/", $sw);
+        $this->assertStringContainsString("request.mode === 'navigate'", $sw);
+        // HTML routes are fetched from the network only; no pages in the precache list
+        $this->assertStringNotContainsString("'/admin", explode('const STATIC_EXTENSIONS', $sw)[0]);
+    }
+
+    /**
+     * 24. Push test endpoint must not claim a notification was delivered.
+     */
+    public function test_push_test_is_honest_about_delivery(): void
+    {
+        $admin = $this->getAdminUser();
+
+        $this->actingAs($admin)->postJson('/admin/push/test')
+            ->assertStatus(200)
+            ->assertJson(['delivered' => false]);
+    }
+
+    /**
+     * 25. Cached portfolio data is refreshed immediately after CMS edits.
+     */
+    public function test_portfolio_cache_is_invalidated_on_cms_changes(): void
+    {
+        $admin = $this->getAdminUser();
+
+        $this->get('/')->assertStatus(200); // primes the cache
+
+        $this->actingAs($admin)->post('/admin/skills', [
+            'name' => 'Cache Busting Skill XYZ',
+            'category' => 'Backend & Web Development',
+            'proficiency' => 80,
+        ]);
+
+        $this->get('/')->assertSee('Cache Busting Skill XYZ');
+    }
+
+    /**
+     * 26. Slugs are normalised before the uniqueness check.
+     */
+    public function test_project_slug_is_normalised_before_uniqueness_check(): void
+    {
+        $admin = $this->getAdminUser();
+        $payload = ['title' => 'Slug Test', 'category' => 'web', 'summary' => 'Summary text'];
+
+        $this->actingAs($admin)->post('/admin/projects', $payload + ['slug' => 'My Slug'])->assertSessionHasNoErrors();
+        $this->actingAs($admin)->post('/admin/projects', $payload + ['slug' => 'my slug'])->assertSessionHasErrors('slug');
+    }
+
+    /**
+     * 27. Inbox counts reflect full totals.
+     */
+    public function test_inbox_notification_endpoint_uses_controller(): void
+    {
+        $admin = $this->getAdminUser();
+        $this->actingAs($admin)->getJson('/admin/notifications/check')->assertOk()->assertJsonStructure(['total_unread']);
+    }
 }
-
-
-
-

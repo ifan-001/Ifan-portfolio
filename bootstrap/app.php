@@ -19,9 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectGuestsTo(fn () => route('admin.login'));
 
         $middleware->validateCsrfTokens(except: [
-            'contact',
             'api/chat/send',
-            'track/click',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

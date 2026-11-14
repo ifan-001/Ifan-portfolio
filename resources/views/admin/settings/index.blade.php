@@ -84,7 +84,7 @@
         <!-- Mobile Push Notification Registration -->
         <h3 style="font-size:0.95rem; font-weight:700; margin-bottom:8px;">PWA Mobile Push Notifications</h3>
         <p style="font-size:0.82rem; color:var(--text-secondary); margin-bottom:14px;">
-            Receive real-time push alerts on your Samsung Galaxy A54 when new visitor messages or contact inquiries arrive.
+            Register this device for background push alerts. <strong>Note:</strong> server-side push delivery is not configured yet (no VAPID keys), so registration is stored but no push is sent. While the admin app is open, new messages still trigger the in-app chime, vibration and toast.
         </p>
 
         <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 14px; background:rgba(255,255,255,0.02); border:1px solid var(--border-color); border-radius:var(--radius-md); margin-bottom:12px;">
@@ -99,7 +99,7 @@
             </button>
 
             <button type="button" class="btn btn-secondary btn-sm" onclick="testPushNotification()">
-                <span>Test Dispatch</span>
+                <span>Check Registration</span>
             </button>
         </div>
         <div id="pushStatusMsg" style="font-size:0.78rem; color:var(--accent-blue); margin-top:10px;"></div>
