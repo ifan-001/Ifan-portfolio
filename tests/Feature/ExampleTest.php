@@ -226,4 +226,53 @@ class ExampleTest extends TestCase
         $this->withHeader('User-Agent', 'Mozilla/5.0 (Windows NT 10.0) Chrome/120')->get('/')->assertOk();
         $this->assertSame(1, \App\Models\AnalyticsEvent::count());
     }
+
+    public function test_assistant_answers_from_portfolio_data(): void
+    {
+        $projects = $this->postJson('/api/assistant', ['question' => 'What projects has he built?'])->assertOk();
+        $this->assertStringContainsString('DoctorQR', $projects->json('answer'));
+        $this->assertSame('en', $projects->json('lang'));
+
+        $feature = $this->postJson('/api/assistant', ['question' => 'video call with picture in picture'])->assertOk();
+        $this->assertStringContainsString('DoctorQR', $feature->json('answer'));
+
+        $tech = $this->postJson('/api/assistant', ['question' => 'Does he know Laravel?'])->assertOk();
+        $this->assertStringContainsString('Laravel', $tech->json('answer'));
+
+        $bangla = $this->postJson('/api/assistant', ['question' => 'কীভাবে যোগাযোগ করব?'])->assertOk();
+        $this->assertSame('bn', $bangla->json('lang'));
+        $this->assertStringContainsString('@', $bangla->json('answer'));
+
+        $banglish = $this->postJson('/api/assistant', ['question' => 'newsifly er feature gulo ki ki?'])->assertOk();
+        $this->assertSame('bn', $banglish->json('lang'));
+        $this->assertStringContainsString('Newsifly', $banglish->json('answer'));
+    }
+
+    public function test_assistant_validates_and_escapes_nothing_server_side_unsafe(): void
+    {
+        $this->postJson('/api/assistant', ['question' => ''])->assertStatus(422);
+        $this->postJson('/api/assistant', ['question' => str_repeat('a', 501)])->assertStatus(422);
+
+        // Links returned are only safe schemes
+        $res = $this->postJson('/api/assistant', ['question' => 'contact'])->assertOk();
+        foreach ($res->json('links') as $link) {
+            $this->assertMatchesRegularExpression('#^(https?:|mailto:|\#|/)#', $link['url']);
+        }
+    }
+
+    public function test_home_shows_project_case_studies_and_assistant(): void
+    {
+        $res = $this->get('/')->assertOk();
+        $res->assertSee('id="pp-case-doctor-qr"', false);
+        $res->assertSee('id="pp-case-newsifly"', false);
+        $res->assertSee('id="assist-form"', false);
+        $res->assertSee('premium.js');
+    }
+
+    public function test_printable_cv_page_renders(): void
+    {
+        $res = $this->get('/resume/view')->assertOk();
+        $res->assertSee('Curriculum Vitae');
+        $this->assertStringContainsString('noindex', $res->headers->get('X-Robots-Tag'));
+    }
 }

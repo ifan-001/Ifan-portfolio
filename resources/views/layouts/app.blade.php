@@ -7,8 +7,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     {{-- SEO Meta Tags --}}
-    <title>{{ $portfolio['meta']['title'] ?? 'Hasnain Al Ifan | Junior Software Engineer' }}</title>
-    <meta name="description" content="{{ $portfolio['meta']['description'] ?? 'Personal portfolio of Hasnain Al Ifan, Junior Software Engineer at APPIFLY BD LIMITED.' }}">
+    <title>@hasSection('title')@yield('title')@else{{ $portfolio['meta']['title'] ?? 'Hasnain Al Ifan | Junior Software Engineer' }}@endif</title>
+    <meta name="description" content="@hasSection('meta_description')@yield('meta_description')@else{{ $portfolio['meta']['description'] ?? 'Personal portfolio of Hasnain Al Ifan, Junior Software Engineer at APPIFLY BD LIMITED.' }}@endif">
     <meta name="keywords" content="{{ $portfolio['meta']['keywords'] ?? 'Hasnain Al Ifan, Software Engineer, Laravel, PHP, Web Application' }}">
     <meta name="author" content="{{ $portfolio['brand']['full_name'] }}">
     <meta name="robots" content="index, follow">
@@ -33,7 +33,7 @@
     {{-- Typography Preconnect --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 
     {{-- Early Theme Initialization to Prevent FOUC --}}
     <script>
@@ -50,7 +50,8 @@
     </script>
 
     {{-- Production Stylesheet --}}
-    <link rel="stylesheet" href="{{ asset('css/portfolio.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/portfolio.css') }}?v={{ filemtime(public_path('css/portfolio.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/premium.css') }}?v={{ filemtime(public_path('css/premium.css')) }}">
 
     {{-- Schema.org JSON-LD Structured Data --}}
     <script type="application/ld+json">
@@ -80,6 +81,7 @@
         ]
     }
     </script>
+    @stack('styles')
 </head>
 <body class="@auth has-admin-bar @endauth">
     @auth
@@ -100,7 +102,9 @@
     @include('partials.footer')
 
     {{-- Portfolio Client Script --}}
-    <script src="{{ asset('js/portfolio.js') }}"></script>
+    <script src="{{ asset('js/portfolio.js') }}?v={{ filemtime(public_path('js/portfolio.js')) }}"></script>
+    <script src="{{ asset('js/premium.js') }}?v={{ filemtime(public_path('js/premium.js')) }}" defer></script>
+    @stack('scripts')
 
     @auth
         @include('partials.admin-editor-modals')

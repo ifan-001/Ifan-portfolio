@@ -171,6 +171,16 @@ class PortfolioController extends Controller
     }
 
     /**
+     * Printable HTML version of the CV (source for the PDF).
+     */
+    public function resumeView()
+    {
+        $portfolio = $this->portfolioService->getPortfolioData();
+
+        return response()->view('resume.cv', compact('portfolio'))->header('X-Robots-Tag', 'noindex');
+    }
+
+    /**
      * Display public blog post index.
      */
     public function blogIndex(Request $request)

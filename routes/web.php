@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\ResearchController;
 use App\Http\Controllers\Admin\ResumeController as AdminResumeController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\SkillController;
+use App\Http\Controllers\AssistantController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\FeedController;
 use App\Http\Controllers\InteractiveAppController;
@@ -44,6 +45,7 @@ Route::get('/sitemap.xml', function () {
     return response($xml, 200, ['Content-Type' => 'application/xml']);
 })->name('sitemap');
 Route::get('/resume/download', [PortfolioController::class, 'downloadResume'])->name('resume.download');
+Route::get('/resume/view', [PortfolioController::class, 'resumeView'])->name('resume.view');
 Route::post('/track/click', [PortfolioController::class, 'trackClick'])->middleware('throttle:60,1')->name('track.click');
 
 // Public Blog
@@ -60,6 +62,8 @@ Route::get('/apps', [InteractiveAppController::class, 'index'])->name('apps.inde
 Route::get('/apps/resume-builder', [InteractiveAppController::class, 'resumeBuilder'])->name('apps.resume-builder');
 Route::get('/apps/cyber-game', [InteractiveAppController::class, 'cyberGame'])->name('apps.cyber-game');
 Route::get('/apps/qr-medical', [InteractiveAppController::class, 'qrMedical'])->name('apps.qr-medical');
+Route::get('/apps/toolkit', [InteractiveAppController::class, 'toolkit'])->name('apps.toolkit');
+Route::get('/apps/games/{game}', [InteractiveAppController::class, 'game'])->where('game', '[a-z0-9-]+')->name('apps.game');
 
 // PWA Assets
 Route::get('/manifest.json', function () {
@@ -86,6 +90,9 @@ Route::get('/offline.html', function () {
 | Public Live Chat System API
 |--------------------------------------------------------------------------
 */
+// Built-in portfolio AI assistant (no external AI service)
+Route::post('/api/assistant', [AssistantController::class, 'ask'])->middleware('throttle:30,1')->name('assistant.ask');
+
 Route::prefix('api/chat')->group(function () {
     Route::get('/status', [ChatController::class, 'getStatus'])->name('chat.status');
     Route::get('/messages', [ChatController::class, 'getMessages'])->middleware('throttle:60,1')->name('chat.messages');

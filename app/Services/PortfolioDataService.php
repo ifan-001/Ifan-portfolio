@@ -36,6 +36,56 @@ class PortfolioDataService
         Cache::forget(self::CACHE_KEY);
     }
 
+    /**
+     * Attach case-study data (gallery, features, stats, accent) from config/showcase.php.
+     */
+    protected function applyShowcase(array $projects): array
+    {
+        $show = config('showcase.projects', []);
+        $configProjects = collect(config('portfolio.projects', []))->keyBy('slug');
+
+        $projects = array_map(function (array $p) use ($show, $configProjects) {
+            $slug = $p['slug'] ?? ($p['id'] ?? '');
+            $s = $show[$slug] ?? [];
+            $c = $configProjects->get($slug, []);
+
+            $features = $s['features'] ?? null;
+            if (! $features) {
+                $features = collect($c['workflows'] ?? [])->map(fn ($w) => ['title' => $w['name'], 'desc' => $w['desc']])->all();
+                if (! $features) {
+                    $features = collect($c['key_features'] ?? $p['key_features'] ?? [])
+                        ->map(fn ($f) => str_contains($f, ':') ? ['title' => trim(strtok($f, ':')), 'desc' => trim(substr($f, strpos($f, ':') + 1))] : ['title' => $f, 'desc' => ''])
+                        ->all();
+                }
+            }
+
+            $p['showcase'] = [
+                'name' => $s['title'] ?? $p['title'],
+                'tagline' => $s['tagline'] ?? ($c['category_label'] ?? null),
+                'type' => $s['type'] ?? ($p['category_label'] ?? ucfirst($p['category'] ?? '')),
+                'status' => $s['status'] ?? null,
+                'year' => $s['year'] ?? null,
+                'accent' => $s['accent'] ?? '#3B82F6',
+                'icon' => $s['icon'] ?? 'code',
+                'role' => $s['role'] ?? ($c['role'] ?? null),
+                'problem' => $s['problem'] ?? ($c['context'] ?? null),
+                'stats' => $s['stats'] ?? [],
+                'features' => $features,
+                'tech' => ! empty($p['tech_stack']) ? $p['tech_stack'] : ($s['tech'] ?? []),
+                'gallery' => $s['gallery'] ?? [],
+                'mobile_gallery' => $s['mobile_gallery'] ?? [],
+                'contribution' => $c['contribution_details'] ?? [],
+            ];
+            if (empty($p['thumbnail']) && ! empty($s['gallery'][0]['src'])) {
+                $p['thumbnail'] = $s['gallery'][0]['src'];
+            }
+
+            return $p;
+        }, $projects);
+
+        return $projects;
+    }
+
     protected function buildPortfolioData(): array
     {
         $cfg = config('portfolio');
@@ -144,6 +194,7 @@ class PortfolioDataService
                     'db_id' => $p->id,
                     'title' => $p->title,
                     'slug' => $p->slug,
+                    'thumbnail' => $p->thumbnail,
                     'category' => $p->category,
                     'category_label' => $p->tagline ?: ucfirst($p->category),
                     'featured' => (bool) $p->is_featured,
@@ -162,6 +213,7 @@ class PortfolioDataService
         } else {
             $projects = $cfg['projects'] ?? [];
         }
+        $projects = $this->applyShowcase($projects);
 
         // 7. Education
         $dbEdu = Education::orderBy('order')->get();
@@ -173,8 +225,8 @@ class PortfolioDataService
                     'institution' => $e->institution,
                     'location' => 'Dhaka, Bangladesh',
                     'status' => $e->status,
-                    'cgpa' => $e->cgpa ? "{$e->cgpa} / {$e->scale}" : null,
-                    'gpa' => $e->cgpa ? "{$e->cgpa} / {$e->scale}" : '4.50',
+                    'cgpa' => $e->cgpa ? (str_contains((string) $e->cgpa, '/') ? $e->cgpa : "{$e->cgpa} / {$e->scale}") : null,
+                    'gpa' => $e->cgpa ? (str_contains((string) $e->cgpa, '/') ? $e->cgpa : "{$e->cgpa} / {$e->scale}") : '4.50',
                     'group' => $e->field ?: 'Science',
                     'passing_year' => $e->period,
                     'expected_graduation' => $e->period,

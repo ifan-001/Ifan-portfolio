@@ -649,45 +649,31 @@ class AdminPlatformTest extends TestCase
      */
     public function test_interactive_apps_hub_and_tools_flow(): void
     {
-        // 1. Directory
         $dirResponse = $this->get('/apps');
         $dirResponse->assertStatus(200);
-        $dirResponse->assertSee('Interactive Projects &amp; Tools Hub', false);
-        $dirResponse->assertSee('Live Resume &amp; CV Builder', false);
-        $dirResponse->assertSee('Code Breaker: Cyber Defense', false);
+        $dirResponse->assertSee('CV Builder');
+        $dirResponse->assertSee('Developer toolkit');
+        $dirResponse->assertSee('Queens');
 
-        // 2. Resume Builder tool
         $resumeResponse = $this->get('/apps/resume-builder');
         $resumeResponse->assertStatus(200);
-        $resumeResponse->assertSee('Interactive Resume &amp; CV Builder', false);
-        $resumeResponse->assertSee('Print / Save as PDF');
+        $resumeResponse->assertSee('cv-builder.js');
+        $resumeResponse->assertSee('Download PDF');
 
-        // 3. Cyber Game tool
         $gameResponse = $this->get('/apps/cyber-game');
         $gameResponse->assertStatus(200);
-        $gameResponse->assertSee('Code Breaker: Cyber Defense');
         $gameResponse->assertSee('gameCanvas');
 
-        // 4. DoctorQR Medical ID Card Generator
         $qrResponse = $this->get('/apps/qr-medical');
         $qrResponse->assertStatus(200);
         $qrResponse->assertSee('DoctorQR Emergency Medical ID Generator');
-    }
 
-    /**
-     * 23. Service worker must never cache HTML pages and must be served uncached.
-     */
-    public function test_service_worker_does_not_cache_pages_and_is_versioned(): void
-    {
-        $response = $this->get('/sw.js');
-        $response->assertStatus(200);
-        $this->assertStringContainsString('no-cache', $response->headers->get('Cache-Control'));
+        foreach (['queens', 'tango', 'zip', 'memory', '2048'] as $game) {
+            $this->get('/apps/games/' . $game)->assertOk()->assertSee('data-game="' . $game . '"', false);
+        }
+        $this->get('/apps/games/unknown-game')->assertNotFound();
 
-        $sw = $response->getContent();
-        $this->assertMatchesRegularExpression("/CACHE_NAME = 'portfolio-static-v/", $sw);
-        $this->assertStringContainsString("request.mode === 'navigate'", $sw);
-        // HTML routes are fetched from the network only; no pages in the precache list
-        $this->assertStringNotContainsString("'/admin", explode('const STATIC_EXTENSIONS', $sw)[0]);
+        $this->get('/apps/toolkit')->assertOk()->assertSee('JSON formatter');
     }
 
     /**

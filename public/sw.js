@@ -1,10 +1,12 @@
 // Hasnain Portfolio PWA Service Worker
 // Bump SW_VERSION on every deployment that changes cached static assets.
-const SW_VERSION = '2.0.0';
+const SW_VERSION = '2.1.0';
 const CACHE_NAME = 'portfolio-static-v' + SW_VERSION;
 const STATIC_ASSETS = [
     '/css/portfolio.css',
     '/css/admin.css',
+    '/css/premium.css',
+    '/js/premium.js',
     '/js/portfolio.js',
     '/js/admin-in-place.js',
     '/js/qrcode.min.js',
