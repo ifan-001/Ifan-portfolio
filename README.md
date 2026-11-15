@@ -36,7 +36,7 @@ Subtle navy variations (`#0F172A`, `#131D31`, `#1E293B`) provide refined card se
 - **Templating**: Laravel Blade (`resources/views/`)
 - **Styling**: Production-grade Vanilla CSS (`public/css/portfolio.css`) with CSS custom properties and responsive grid/flexbox
 - **Frontend Logic**: Lightweight, accessible Vanilla JavaScript (`public/js/portfolio.js`)
-- **Database**: SQLite default for portability (`database/database.sqlite`), compatible with MySQL
+- **Database**: MySQL 8 / MariaDB in production (default). SQLite still works for quick local work (`DB_CONNECTION=sqlite`) and is used by the test suite
 - **SEO & Performance**: JSON-LD Schema.org structured data, Open Graph tags, semantic HTML5, lazy loading, and `robots.txt`/`sitemap.xml`
 
 ---
@@ -119,9 +119,11 @@ portfolio/
    php artisan key:generate
    ```
 
-4. **Initialize Database**:
+4. **Initialize Database** (create an empty `portfolio` MySQL database and fill `DB_*` in `.env`, or set `DB_CONNECTION=sqlite` and create `database/database.sqlite`):
    ```bash
    php artisan migrate --force
+   # optional: bring existing content over from a SQLite file
+   php artisan portfolio:import-sqlite database/database.sqlite --content-only
    ```
 
 5. **Start Local Development Server**:
@@ -182,16 +184,13 @@ In `config/portfolio.php`, add an array entry to the `'projects'` array:
 
 ## 🌐 Production Deployment
 
-### Option A: Traditional VPS (Ubuntu / Nginx / Apache / PHP-FPM)
-1. Clone the repository into `/var/www/portfolio`.
-2. Point Nginx document root to `/var/www/portfolio/public`.
-3. Set permissions:
-   ```bash
-   chown -R www-data:www-data storage bootstrap/cache
-   chmod -R 775 storage bootstrap/cache
-   ```
-4. Run `composer install --optimize-autoloader --no-dev`.
-5. Run `php artisan config:cache && php artisan route:cache && php artisan view:cache`.
+### Option A: Oracle Cloud Always Free VPS (recommended, step by step)
+Follow [`deploy/ORACLE_GUIDE.md`](deploy/ORACLE_GUIDE.md). Ready-made files live in `deploy/`:
+`server-setup.sh` (Nginx, PHP 8.3, MySQL, firewall), `nginx.conf`, `env.production.example`,
+`deploy.sh` (updates), `backup.sh` (daily DB + uploads backup) and `pack-for-server.ps1` (packs your local content).
+
+Generic VPS notes: document root is `public/`; run `composer install --no-dev --optimize-autoloader`,
+then `php artisan config:cache && php artisan view:cache` (do **not** use `route:cache`, some routes are closures).
 
 ### Option B: Platform as a Service (Railway / Render / Fly.io / Heroku)
 - Set build command: `composer install --no-dev --optimize-autoloader`
