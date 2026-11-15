@@ -228,3 +228,15 @@
   .cv-console #chat-reply-form { gap: 8px !important; }
 }
 @media (max-width: 340px) { .cv-back-label { display: none; } }
+
+/* ======================= Dark scrollbars and tidy header on mid-size screens ======================= */
+html { color-scheme: dark; }
+.ad-nav { scrollbar-width: thin; scrollbar-color: rgba(148, 163, 184, .35) transparent; }
+@media (min-width: 901px) and (max-width: 1240px) {
+  .admin-header { gap: 10px; }
+  .header-title-wrap { min-width: 0; flex: 1 1 auto; }
+  .header-page-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .header-actions { flex: 0 0 auto; gap: 8px; flex-wrap: nowrap; }
+  .header-actions .btn, .header-actions .status-pill { white-space: nowrap; }
+  .header-install-btn span, #alert-bell-text { display: none !important; }
+}
