@@ -72,11 +72,18 @@ Browser এ আপনার site এর ঠিকানা খুলুন।
 
 ## ধাপ ৭: HTTPS (free SSL)
 
-Control panel এ **Free SSL Certificates** খুলে আপনার domain এ certificate নিন (কয়েক ঘণ্টা লাগতে পারে)। চালু হলে:
-1. `.env` এ `APP_URL=https://...` আর `SESSION_SECURE_COOKIE=true` করুন।
-2. `https://` দিয়ে খুলে দেখুন সব ঠিক আছে।
+InfinityFree এর free subdomain (`...gt.tc`, `...infinityfreeapp.com` ইত্যাদি) এ **HTTPS নিজে নিজেই চালু থাকে**, আলাদা certificate নিতে হয় না (নিজের domain হলে Control panel → **SSL Certificates** থেকে নিতে হয়)।
 
-HTTPS ছাড়া ফোনের PWA ("Install on Phone") আর কিছু সুবিধা কাজ করে না।
+HTTPS চালু হলে:
+1. `.env` এ `APP_URL=https://...` আর `SESSION_SECURE_COOKIE=true` করুন।
+2. `htdocs/.htaccess` এ `RewriteEngine On` এর ঠিক পরে এই তিন লাইন যোগ করুন, তাহলে `http://` খুললে নিজে `https://` এ চলে যাবে:
+   ```
+   # Always use HTTPS
+   RewriteCond %{HTTPS} off
+   RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+   ```
+
+HTTPS ছাড়া ফোনের PWA ("Install on Phone") আর secure login কাজ করে না।
 
 ## ধাপ ৮: Live হলো কিনা যাচাই
 
