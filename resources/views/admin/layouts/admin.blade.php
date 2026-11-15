@@ -376,10 +376,76 @@
     (function () {
         var nav = document.querySelector('.ad-nav');
         var btn = document.getElementById('ad-collapse-btn');
+        var syncBtn = function () {
+            if (!btn) return;
+            var label = document.body.classList.contains('ad-collapsed') ? 'Expand sidebar' : 'Collapse sidebar';
+            btn.setAttribute('aria-label', label);
+            btn.setAttribute('data-tip', label);
+            btn.removeAttribute('title');
+        };
+        syncBtn();
         if (btn) btn.addEventListener('click', function () {
             var on = document.body.classList.toggle('ad-collapsed');
             try { localStorage.setItem('ad_sidebar_collapsed', on ? '1' : '0'); } catch (e) {}
+            syncBtn();
+            hideTip();
         });
+
+        // Instant tooltips: the name shows the moment the cursor touches a button
+        var tip = document.createElement('div');
+        tip.className = 'ad-tip';
+        tip.setAttribute('role', 'tooltip');
+        document.body.appendChild(tip);
+        var tipFor = null;
+        function hideTip() { tip.classList.remove('show'); tipFor = null; }
+        function labelOf(el) {
+            if (el.hasAttribute('title')) {
+                var t = el.getAttribute('title');
+                el.removeAttribute('title');
+                if (t) el.setAttribute('data-tip', t);
+                if (t && !el.hasAttribute('aria-label') && !el.textContent.trim()) el.setAttribute('aria-label', t);
+            }
+            return el.getAttribute('data-tip') || '';
+        }
+        function showTip(el) {
+            var text = labelOf(el);
+            if (!text) return hideTip();
+            var inSide = !!el.closest('.ad-sidebar');
+            // In the open sidebar the label is already visible, so skip the tip there
+            if (inSide && !document.body.classList.contains('ad-collapsed') && el !== btn && el.textContent.trim()) return hideTip();
+            tipFor = el;
+            tip.textContent = text;
+            tip.className = 'ad-tip';
+            var r = el.getBoundingClientRect(), tw = tip.offsetWidth, th = tip.offsetHeight, x, y;
+            if (inSide) {
+                tip.classList.add('is-right');
+                x = r.right + 12; y = r.top + r.height / 2 - th / 2;
+            } else if (r.bottom + th + 12 < window.innerHeight) {
+                tip.classList.add('is-below');
+                x = r.left + r.width / 2 - tw / 2; y = r.bottom + 10;
+            } else {
+                tip.classList.add('is-above');
+                x = r.left + r.width / 2 - tw / 2; y = r.top - th - 10;
+            }
+            x = Math.max(8, Math.min(x, window.innerWidth - tw - 8));
+            tip.style.left = x + 'px';
+            tip.style.top = Math.max(8, y) + 'px';
+            tip.classList.add('show');
+        }
+        if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+            document.addEventListener('mouseover', function (e) {
+                var el = e.target.closest('[title], [data-tip]');
+                if (el === tipFor) return;
+                if (el) showTip(el); else hideTip();
+            });
+            document.addEventListener('focusin', function (e) {
+                var el = e.target.closest('[title], [data-tip]');
+                if (el && e.target.matches(':focus-visible')) showTip(el);
+            });
+            document.addEventListener('focusout', hideTip);
+            document.addEventListener('mousedown', hideTip);
+            window.addEventListener('scroll', hideTip, true);
+        }
         if (!nav) return;
         // Keep the sidebar where it was when you clicked an item lower down the list
         try {

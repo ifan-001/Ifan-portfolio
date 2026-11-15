@@ -1,34 +1,67 @@
 /* Admin: collapsible sidebar, premium buttons, dashboard. Loaded after admin-premium.css */
 
-/* ======================= Collapsible sidebar ======================= */
-.ad-brand { display: flex !important; align-items: center; justify-content: space-between; gap: 8px; }
-.ad-collapse-btn { width: 34px; height: 34px; flex-shrink: 0; border-radius: 10px; border: 1px solid var(--ad-line); background: rgba(148, 163, 184, .06); color: var(--ad-sub); display: grid; place-items: center; cursor: pointer; transition: all .2s ease; }
-.ad-collapse-btn:hover { color: var(--ad-text); border-color: var(--ad-line-2); }
-.ad-sidebar, .admin-main { transition: width .25s cubic-bezier(.2, .8, .2, 1), margin-left .25s cubic-bezier(.2, .8, .2, 1); }
+/* ======================= Sidebar: no overlap, collapsible ======================= */
+.ad-brand { display: flex !important; align-items: center; justify-content: space-between; gap: 10px; min-width: 0; }
+.ad-brand .sidebar-logo { flex: 1 1 auto; min-width: 0; }
+.ad-logo-mark { flex-shrink: 0; }
+.ad-logo-text { min-width: 0; }
+.ad-logo-text b, .ad-logo-text small { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ad-collapse-btn { width: 34px; height: 34px; flex-shrink: 0; border-radius: 50%; border: 1px solid var(--ad-line); background: rgba(148, 163, 184, .06); color: var(--ad-sub); display: grid; place-items: center; cursor: pointer; transition: all .2s ease; }
+.ad-collapse-btn:hover { color: #fff; border-color: transparent; background: var(--ad-grad); }
+.ad-collapse-btn svg { transition: transform .25s ease; }
+/* Items must never shrink, the list scrolls instead */
+.ad-nav { display: flex !important; flex-direction: column; min-height: 0; }
+.ad-nav > * { flex-shrink: 0 !important; }
+.ad-nav .nav-link { min-height: 40px; white-space: nowrap; }
+.ad-nav .nav-link > span:not(.nav-badge) { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.ad-nav .nav-link svg { flex-shrink: 0; }
+.ad-nav .nav-section-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 14px 8px 6px !important; line-height: 1.3; }
+.ad-nav .nav-section-title:first-child { margin-top: 6px !important; }
+.ad-visual-btn, .ad-brand, .ad-side-foot { flex-shrink: 0; }
+.app-version-badge > span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ad-sidebar, .admin-main { transition: width .3s cubic-bezier(.2, .8, .2, 1), margin-left .3s cubic-bezier(.2, .8, .2, 1), border-radius .3s ease, inset .3s ease; }
+
 @media (min-width: 901px) {
-  .ad-nav .nav-link, .ad-nav .nav-section-title, .ad-logo-text { white-space: nowrap; overflow: hidden; }
+  /* Collapsed = floating rounded rail with circular buttons */
   body.ad-collapsed { --sidebar-width: 76px; }
-  body.ad-collapsed .ad-sidebar { width: 76px !important; }
-  body.ad-collapsed .admin-main { margin-left: 76px !important; }
-  body.ad-collapsed .ad-brand { flex-direction: column; padding: 14px 8px 8px !important; }
+  body.ad-collapsed .ad-sidebar { width: 76px !important; top: 12px !important; bottom: 12px !important; left: 12px !important; height: auto !important; border-radius: 38px !important; border: 1px solid var(--ad-line-2) !important; box-shadow: 0 24px 60px -24px rgba(0, 0, 0, .7), inset 0 1px 0 rgba(255, 255, 255, .04); overflow: hidden; }
+  body.ad-collapsed .admin-main { margin-left: 100px !important; }
+  body.ad-collapsed .ad-brand { flex-direction: column; gap: 10px; height: auto !important; min-height: 0 !important; padding: 16px 0 10px !important; border-bottom: 0 !important; }
+  body.ad-collapsed .ad-brand .sidebar-logo { flex: none; justify-content: center; }
+  body.ad-collapsed .ad-logo-mark { width: 44px; height: 44px; border-radius: 50%; }
   body.ad-collapsed .ad-logo-text,
   body.ad-collapsed .ad-nav .nav-section-title,
-  body.ad-collapsed .ad-nav .nav-link span:not(.nav-badge),
+  body.ad-collapsed .ad-nav .nav-link > span:not(.nav-badge),
   body.ad-collapsed .ad-side-foot .app-version-badge,
   body.ad-collapsed .ad-visual-btn em { display: none !important; }
   body.ad-collapsed .ad-collapse-btn svg { transform: scaleX(-1); }
-  body.ad-collapsed .ad-visual-btn { margin: 4px 12px 8px; padding: 11px 0; justify-content: center; font-size: 0; }
+  body.ad-collapsed .ad-visual-btn { width: 44px; height: 44px; margin: 2px auto 10px; padding: 0; border-radius: 50%; justify-content: center; font-size: 0; }
   body.ad-collapsed .ad-visual-btn span { font-size: 1rem; }
-  body.ad-collapsed .ad-nav { padding: 4px 12px !important; }
-  body.ad-collapsed .ad-nav .nav-link { justify-content: center; padding: 11px 0 !important; position: relative; }
-  body.ad-collapsed .ad-nav .nav-link .nav-badge { position: absolute; top: 3px; right: 5px; min-width: 16px; height: 16px; font-size: .6rem; padding: 0 4px; }
-  body.ad-collapsed .ad-side-foot .sidebar-footer { flex-direction: column; }
-  body.ad-collapsed .ad-side-foot .btn { font-size: 0 !important; padding: 9px 0 !important; }
-  body.ad-collapsed .ad-side-foot .btn::before { font-size: .95rem; }
+  body.ad-collapsed .ad-nav { padding: 6px 0 !important; align-items: center; gap: 6px; scrollbar-width: none; }
+  body.ad-collapsed .ad-nav::-webkit-scrollbar { display: none; }
+  body.ad-collapsed .ad-nav .nav-section-title + .nav-link { margin-top: 8px !important; }
+  body.ad-collapsed .ad-nav .nav-link { width: 46px !important; height: 46px; min-height: 46px; padding: 0 !important; margin: 0 !important; justify-content: center; border-radius: 50% !important; position: relative; overflow: visible; }
+  body.ad-collapsed .ad-nav .nav-link:hover { background: rgba(59, 130, 246, .14) !important; color: #fff !important; }
+  body.ad-collapsed .ad-nav .nav-link.active { background: var(--ad-grad) !important; color: #fff !important; box-shadow: 0 10px 22px -10px rgba(59, 130, 246, .9); }
+  body.ad-collapsed .ad-nav .nav-link.active::before { display: none !important; }
+  body.ad-collapsed .ad-nav .nav-link .nav-badge { position: absolute; top: -2px; right: -2px; min-width: 18px; height: 18px; font-size: .6rem; padding: 0 4px; border: 2px solid var(--ad-surface); }
+  body.ad-collapsed .ad-side-foot { align-items: center; border-top: 0 !important; padding: 10px 0 16px !important; }
+  body.ad-collapsed .ad-side-foot .sidebar-footer { flex-direction: column; align-items: center; gap: 8px; }
+  body.ad-collapsed .ad-side-foot form { display: contents; }
+  body.ad-collapsed .ad-side-foot .btn { width: 44px; height: 44px; padding: 0 !important; border-radius: 50% !important; font-size: 0 !important; display: grid !important; place-items: center; }
+  body.ad-collapsed .ad-side-foot .btn::before { font-size: 1rem; }
   body.ad-collapsed .ad-side-foot a.btn::before { content: "\2197"; }
-  body.ad-collapsed .ad-side-foot button.btn::before { content: "\238B"; }
+  body.ad-collapsed .ad-side-foot button.btn::before { content: "\23FB"; }
 }
 @media (max-width: 900px) { .ad-collapse-btn { display: none; } }
+
+/* ======================= Instant tooltips ======================= */
+.ad-tip { position: fixed; z-index: 3000; pointer-events: none; padding: 7px 11px; border-radius: 9px; background: #0B1220; color: #F1F5F9; border: 1px solid rgba(148, 163, 184, .22); font: 600 .78rem/1.2 "Plus Jakarta Sans", system-ui, sans-serif; white-space: nowrap; box-shadow: 0 12px 30px -10px rgba(0, 0, 0, .7); opacity: 0; transform: translateX(-4px); transition: opacity .08s ease, transform .08s ease; }
+.ad-tip.show { opacity: 1; transform: none; }
+.ad-tip::before { content: ""; position: absolute; width: 8px; height: 8px; background: inherit; border-left: 1px solid rgba(148, 163, 184, .22); border-bottom: 1px solid rgba(148, 163, 184, .22); }
+.ad-tip.is-right::before { left: -5px; top: 50%; margin-top: -4px; transform: rotate(45deg); }
+.ad-tip.is-below::before { top: -5px; left: 50%; margin-left: -4px; transform: rotate(135deg); }
+.ad-tip.is-above::before { bottom: -5px; left: 50%; margin-left: -4px; transform: rotate(-45deg); }
 
 /* ======================= Header (clean on every size) ======================= */
 @media (min-width: 901px) { .mobile-brand-pill { display: none !important; } }
