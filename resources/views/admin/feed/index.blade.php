@@ -120,7 +120,7 @@
                 {{-- File upload input --}}
                 <div id="media-file-block" style="display:none; margin-top:10px;">
                     <label style="display:block; font-size:0.8rem; color:var(--text-secondary); margin-bottom:4px;">
-                        Choose a photo (JPG, PNG, WEBP) or a video (MP4, WEBM, max 40 MB). Big photos are made smaller automatically.
+                        Choose any photo (JPG, PNG, WEBP, HEIC and more) or a video (MP4, WEBM, max 40 MB). Photos are converted and made lighter automatically.
                     </label>
                     <input type="file" name="media_file" id="media-file-input" accept="image/*,video/mp4,video/webm,video/quicktime"
                            style="width:100%; font-size:0.85rem; color:var(--text-primary);">
@@ -419,6 +419,32 @@ function toggleMediaInputs(type) {
         const r = form.querySelector('input[name=media_type][value=' + type + ']');
         if (r && !r.checked) { r.checked = true; toggleMediaInputs(type); }
     }
+    function isHeic(file, head) {
+        if (/hei[cf]/i.test(file.type) || /\.(heic|heif)$/i.test(file.name)) return true;
+        const brand = String.fromCharCode.apply(null, head.slice(8, 12));
+        return String.fromCharCode.apply(null, head.slice(4, 8)) === 'ftyp' && /^(heic|heix|hevc|hevx|heim|heis|mif1|msf1)$/.test(brand);
+    }
+    function loadHeicLib() {
+        if (window.heic2any) return Promise.resolve(window.heic2any);
+        const urls = ['https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js', 'https://unpkg.com/heic2any@0.0.4/dist/heic2any.min.js'];
+        return urls.reduce(function (p, url) {
+            return p.catch(function () {
+                return new Promise(function (resolve, reject) {
+                    const sc = document.createElement('script');
+                    sc.src = url;
+                    sc.onload = function () { window.heic2any ? resolve(window.heic2any) : reject(new Error('lib')); };
+                    sc.onerror = function () { sc.remove(); reject(new Error('lib')); };
+                    document.head.appendChild(sc);
+                });
+            });
+        }, Promise.reject(new Error('start')));
+    }
+    async function heicToJpeg(file) {
+        const lib = await loadHeicLib();
+        let out = await lib({ blob: file, toType: 'image/jpeg', quality: 0.9 });
+        if (Array.isArray(out)) out = out[0];
+        return new File([out], (file.name.replace(/\.[^.]+$/, '') || 'photo') + '.jpg', { type: 'image/jpeg' });
+    }
     function decode(file) {
         return new Promise(function (resolve, reject) {
             const img = new Image();
@@ -460,10 +486,26 @@ function toggleMediaInputs(type) {
         busy = true;
         say('Preparing photo…');
         try {
-            const img = await decode(file);
+            // HEIC / HEIF (iPhone, Samsung "high efficiency" photos): turn into JPG first
+            let src = file;
+            const head = new Uint8Array(await file.slice(0, 16).arrayBuffer());
+            if (isHeic(file, head)) {
+                say('Converting HEIC photo to JPG… (a few seconds)');
+                src = await heicToJpeg(file);
+            }
+            let img;
+            try {
+                img = await decode(src);
+            } catch (first) {
+                // The phone could not open it directly: try the HEIC converter as a last resort
+                if (src !== file) throw first;
+                say('Converting photo… (a few seconds)');
+                src = await heicToJpeg(file);
+                img = await decode(src);
+            }
             const scale = Math.min(1, MAX_SIDE / Math.max(img.naturalWidth, img.naturalHeight));
-            const needsWork = scale < 1 || file.size > 1.5 * 1048576 || !/^image\/(jpeg|png|webp)$/.test(file.type);
-            let out = file;
+            const needsWork = scale < 1 || src.size > 1.5 * 1048576 || !/^image\/(jpeg|png|webp)$/.test(src.type);
+            let out = src;
             if (needsWork) {
                 const c = document.createElement('canvas');
                 c.width = Math.round(img.naturalWidth * scale);
@@ -475,16 +517,18 @@ function toggleMediaInputs(type) {
                 const blob = await new Promise(function (r) { c.toBlob(r, 'image/jpeg', 0.86); });
                 if (blob) {
                     out = new File([blob], (file.name.replace(/\.[^.]+$/, '') || 'photo') + '.jpg', { type: 'image/jpeg' });
-                    const dt = new DataTransfer();
-                    dt.items.add(out);
-                    input.files = dt.files;
                 }
+            }
+            if (out !== file) {
+                const dt = new DataTransfer();
+                dt.items.add(out);
+                input.files = dt.files;
             }
             say('Photo ready (' + mb(out.size) + ').');
             showPreview(out);
         } catch (e) {
             blocked = true;
-            say('This photo format cannot be opened here (often a HEIC photo). Please choose a JPG or PNG photo, or take a screenshot of it and post that.', true);
+            say('This photo could not be opened. Please check your internet connection and pick it again, or take a screenshot of the photo and post that.', true);
             showPreview(null);
         } finally {
             busy = false;
