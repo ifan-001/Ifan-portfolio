@@ -25,5 +25,29 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        // A page left open for a long time (or restored by the phone) carries an old form token.
+        // Instead of the bare "419 Page Expired" screen, send people somewhere useful.
+        $exceptions->render(function (\Illuminate\Session\TokenMismatchException $e, \Illuminate\Http\Request $request) {
+            if ($request->expectsJson()) {
+                return null;
+            }
+
+            if ($request->is('portal/logout')) {
+                \Illuminate\Support\Facades\Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
+                return redirect('/');
+            }
+
+            if ($request->is('portal/login')) {
+                return redirect()->route('admin.login')
+                    ->withInput($request->only('email'))
+                    ->withErrors(['email' => 'The sign-in page had expired, so it was refreshed. Please sign in again.']);
+            }
+
+            return redirect()->back()
+                ->withInput($request->except(['password', 'password_confirmation', '_token']))
+                ->withErrors(['session' => 'This page was open for a long time, so it was refreshed. Please try again.']);
+        });
     })->create();

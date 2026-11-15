@@ -8,10 +8,10 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="robots" content="noindex, nofollow">
     <title>Staff Authentication | Hasnain Al Ifan</title>
-    <link rel="manifest" href="/js/pwa-manifest.js" crossorigin="use-credentials">
+    <link rel="manifest" href="/js/pwa-manifest.js?v={{ @filemtime(public_path('js/pwa-manifest.js')) ?: 1 }}" crossorigin="use-credentials">
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
-    <link rel="icon" type="image/svg+xml" href="/icons/icon.svg">
-    <link rel="apple-touch-icon" href="/icons/icon-192.png">
+        <link rel="icon" type="image/png" href="/icons/app-192.png?v={{ @filemtime(public_path('icons/app-192.png')) ?: 1 }}">
+    <link rel="apple-touch-icon" href="/icons/app-180.png?v={{ @filemtime(public_path('icons/app-180.png')) ?: 1 }}">
     <style>
         body {
             display: flex;
@@ -107,10 +107,7 @@
             </div>
 
             <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; font-size:0.85rem;">
-                <label style="display:flex; align-items:center; gap:8px; cursor:pointer; color:var(--text-secondary);">
-                    <input type="checkbox" name="remember" value="1" style="accent-color:var(--accent-blue);">
-                    <span>Remember this session</span>
-                </label>
+                <span style="display:flex; align-items:center; gap:8px; color:var(--text-secondary);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>Stay signed in on this device until you sign out</span>
             </div>
 
             <button type="submit" class="btn btn-primary" style="width:100%; padding:12px;">
@@ -136,6 +133,12 @@
                     navigator.serviceWorker.register('/sw.js').catch(function () {});
                 });
             }
+            // A sign-in page restored from memory (app reopened, back button) has an old form token: reload it
+            var loadedAt = Date.now();
+            window.addEventListener('pageshow', function (e) { if (e.persisted) location.reload(); });
+            document.addEventListener('visibilitychange', function () {
+                if (!document.hidden && Date.now() - loadedAt > 10 * 60 * 1000) location.reload();
+            });
             var standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
             if (standalone) return;
             var box = document.getElementById('pwa-install-box');

@@ -146,15 +146,57 @@ class InboxController extends Controller
     {
         $chatUnread = ChatMessage::where('sender', 'visitor')->where('is_read', false)->count();
         $inquiryUnread = ContactMessage::where('status', 'unread')->count();
-        $latestChat = ChatMessage::where('sender', 'visitor')->where('is_read', false)->latest()->first();
+        $latestChat = ChatMessage::with('conversation')->where('sender', 'visitor')->where('is_read', false)->latest()->first();
         $latestInquiry = ContactMessage::where('status', 'unread')->latest()->first();
 
+        // Whichever arrived last decides the preview and the name shown in the alert
+        $chatIsNewest = $latestChat && (! $latestInquiry || $latestChat->created_at >= $latestInquiry->created_at);
+        $previewText = $chatIsNewest ? $latestChat->message : ($latestInquiry ? $latestInquiry->message : null);
+        $previewName = $chatIsNewest
+            ? ($latestChat->conversation?->visitor_name ?: 'Live visitor')
+            : ($latestInquiry ? $latestInquiry->name : 'Live visitor');
+
+        // Changes whenever a chat/inquiry arrives or is read, so open admin pages know when to refresh themselves
+        $signature = md5(implode('|', [
+            ChatMessage::max('id'), ChatConversation::max('id'), ContactMessage::max('id'), $chatUnread, $inquiryUnread,
+        ]));
+
         return response()->json([
+            'signature' => $signature,
             'total_unread' => $chatUnread + $inquiryUnread,
             'chat_unread' => $chatUnread,
             'inquiry_unread' => $inquiryUnread,
-            'latest_preview' => $latestChat ? $latestChat->message : ($latestInquiry ? $latestInquiry->message : null),
-            'latest_sender' => $latestInquiry ? $latestInquiry->name : 'Live Visitor',
+            'latest_preview' => $previewText,
+            'latest_sender' => $previewName,
+        ]);
+    }
+
+    /**
+     * Live feed for an open conversation: messages newer than ?after=<id> (visitor messages arrive here
+     * without reloading the page). Visitor messages are marked as read because the admin is looking at them.
+     */
+    public function chatMessages(Request $request, ChatConversation $conversation)
+    {
+        $after = max(0, (int) $request->query('after', 0));
+
+        $messages = $conversation->messages()
+            ->where('id', '>', $after)
+            ->orderBy('id')
+            ->get(['id', 'sender', 'message', 'created_at']);
+
+        $conversation->messages()
+            ->where('sender', 'visitor')
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
+
+        return response()->json([
+            'messages' => $messages->map(fn ($m) => [
+                'id' => $m->id,
+                'sender' => $m->sender,
+                'message' => $m->message,
+                'time' => $m->created_at->format('g:i A'),
+            ])->values(),
+            'last_id' => (int) ($messages->max('id') ?? $after),
         ]);
     }
 

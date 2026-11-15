@@ -55,7 +55,8 @@ class AdminPlatformTest extends TestCase
     {
         $login = $this->get('/portal/login');
         $login->assertOk();
-        $login->assertSee('href="/js/pwa-manifest.js" crossorigin="use-credentials"', false);
+        $login->assertSee('href="/js/pwa-manifest.js?v=', false);
+        $login->assertSee('crossorigin="use-credentials"', false);
         $login->assertSee('pwa-install-btn', false);
 
         $manifest = json_decode(file_get_contents(public_path('js/pwa-manifest.js')), true);
@@ -110,6 +111,90 @@ class AdminPlatformTest extends TestCase
         $logoutResponse = $this->actingAs($admin)->post('/portal/logout');
         $logoutResponse->assertRedirect('/');
         $this->assertGuest();
+    }
+
+    /**
+     * The admin stays signed in on a device (remember token is always issued) and
+     * normal use of the login form never trips the coarse IP throttle (429).
+     */
+    public function test_admin_stays_signed_in_and_login_is_not_rate_limited_too_early(): void
+    {
+        $admin = $this->getAdminUser();
+
+        for ($i = 0; $i < 12; $i++) {
+            $this->post('/portal/login', ['email' => "nobody{$i}@example.com", 'password' => 'wrong-password'])
+                ->assertStatus(302);
+        }
+
+        $this->post('/portal/login', ['email' => $admin->email, 'password' => self::ADMIN_PASSWORD])
+            ->assertRedirect('/admin');
+        $this->assertAuthenticatedAs($admin);
+        $this->assertNotEmpty($admin->fresh()->getRememberToken());
+    }
+
+    /**
+     * Visitor messages show up in the open admin conversation without a page reload.
+     */
+    public function test_admin_conversation_feed_returns_new_visitor_messages(): void
+    {
+        $admin = $this->getAdminUser();
+        $conversation = \App\Models\ChatConversation::create(['session_id' => 'feed-test-1', 'visitor_name' => 'Feed Tester', 'last_message_at' => now()]);
+        $first = \App\Models\ChatMessage::create(['conversation_id' => $conversation->id, 'sender' => 'visitor', 'message' => 'First', 'is_read' => true]);
+
+        $url = route('admin.inbox.chat.messages', $conversation->id);
+
+        $this->getJson($url . '?after=0')->assertStatus(401);
+
+        $long = str_repeat('A long visitor message. ', 40);
+        \App\Models\ChatMessage::create(['conversation_id' => $conversation->id, 'sender' => 'visitor', 'message' => $long, 'is_read' => false]);
+
+        $res = $this->actingAs($admin)->getJson($url . '?after=' . $first->id);
+        $res->assertOk();
+        $res->assertJsonCount(1, 'messages');
+        $res->assertJsonPath('messages.0.message', $long);
+
+        // Seen by the admin, so it is no longer unread
+        $this->assertSame(0, \App\Models\ChatMessage::where('conversation_id', $conversation->id)->where('sender', 'visitor')->where('is_read', false)->count());
+
+        // The notification poller exposes a signature that changes when something new arrives
+        $before = $this->actingAs($admin)->getJson(route('admin.notifications.check'))->json('signature');
+        \App\Models\ChatMessage::create(['conversation_id' => $conversation->id, 'sender' => 'visitor', 'message' => 'Another', 'is_read' => false]);
+        $after = $this->actingAs($admin)->getJson(route('admin.notifications.check'))->json('signature');
+        $this->assertNotSame($before, $after);
+    }
+
+    /**
+     * The home screen icon is built from the profile photo and can be rebuilt by the admin.
+     */
+    public function test_app_icon_follows_the_profile_photo(): void
+    {
+        foreach ([512, 192, 180] as $size) {
+            $this->assertFileExists(public_path("icons/app-{$size}.png"));
+            $info = getimagesize(public_path("icons/app-{$size}.png"));
+            $this->assertSame([$size, $size], [$info[0], $info[1]]);
+        }
+
+        $this->get('/admin/app-icon/rebuild')->assertRedirect('/portal/login');
+
+        $admin = $this->getAdminUser();
+        $response = $this->actingAs($admin)->from('/admin/settings')->get('/admin/app-icon/rebuild');
+        $response->assertRedirect('/admin/settings');
+
+        if (\App\Services\AppIconGenerator::available()) {
+            // Real image in a temp folder-free way: build into the public icons from a tiny generated photo
+            $tmp = tempnam(sys_get_temp_dir(), 'ico') . '.png';
+            $im = imagecreatetruecolor(600, 900);
+            imagefill($im, 0, 0, imagecolorallocate($im, 40, 80, 160));
+            imagepng($im, $tmp);
+            imagedestroy($im);
+            $backup = file_get_contents(public_path('icons/app-512.png'));
+            $this->assertTrue(\App\Services\AppIconGenerator::generate($tmp));
+            $this->assertSame([512, 512], array_slice(getimagesize(public_path('icons/app-512.png')), 0, 2));
+            file_put_contents(public_path('icons/app-512.png'), $backup);
+            @unlink($tmp);
+        } else {
+            $response->assertSessionHasErrors('app_icon');
+        }
     }
 
     /**

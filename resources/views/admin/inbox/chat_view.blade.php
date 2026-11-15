@@ -40,7 +40,7 @@
     @endphp
 
     {{-- Chat Box Card --}}
-    <div class="cv-console" style="background:var(--bg-surface); border:1px solid var(--border-color); border-radius:var(--radius-lg); overflow:hidden; display:flex; flex-direction:column; height:calc(85vh - 120px); min-height:520px; box-shadow:0 8px 30px rgba(0,0,0,0.35);">
+    <div class="cv-console" style="position:relative; background:var(--bg-surface); border:1px solid var(--border-color); border-radius:var(--radius-lg); overflow:hidden; display:flex; flex-direction:column; height:calc(85vh - 120px); min-height:520px; box-shadow:0 8px 30px rgba(0,0,0,0.35);">
         {{-- Chat Box Header --}}
         <div class="cv-head" style="padding:16px 22px; border-bottom:1px solid var(--border-color); background:rgba(0,0,0,0.2); display:flex; align-items:center; justify-content:space-between; gap:12px;">
             <div style="display:flex; align-items:center; gap:14px;">
@@ -73,17 +73,16 @@
         </div>
 
         {{-- Messages Scroll Area --}}
+        <button type="button" id="cv-new-pill" style="display:none; position:absolute; left:50%; transform:translateX(-50%); bottom:84px; z-index:5; padding:8px 16px; border-radius:999px; border:0; background:var(--accent-blue); color:#fff; font-weight:700; font-size:.82rem; box-shadow:0 8px 24px rgba(0,0,0,.45); cursor:pointer;">New message &darr;</button>
         <div id="chat-messages-container" style="flex:1; overflow-y:auto; padding:20px; display:flex; flex-direction:column; gap:12px;">
             @forelse($conversation->messages as $msg)
                 @php $isAdmin = $msg->sender === 'admin'; @endphp
-                <div style="display:flex; justify-content:{{ $isAdmin ? 'flex-end' : 'flex-start' }};">
-                    <div style="max-width:75%; padding:10px 16px; border-radius:{{ $isAdmin ? '16px 16px 4px 16px' : '16px 16px 16px 4px' }}; background:{{ $isAdmin ? 'var(--accent-blue)' : 'rgba(255,255,255,0.06)' }}; color:{{ $isAdmin ? '#ffffff' : 'var(--text-primary)' }}; border:1px solid {{ $isAdmin ? 'transparent' : 'var(--border-color)' }}; box-shadow:0 2px 4px rgba(0,0,0,0.1);">
+                <div class="cv-row" data-id="{{ $msg->id }}" style="display:flex; justify-content:{{ $isAdmin ? 'flex-end' : 'flex-start' }};">
+                    <div class="cv-bubble" style="max-width:75%; padding:10px 16px; border-radius:{{ $isAdmin ? '16px 16px 4px 16px' : '16px 16px 16px 4px' }}; background:{{ $isAdmin ? 'var(--accent-blue)' : 'rgba(255,255,255,0.06)' }}; color:{{ $isAdmin ? '#ffffff' : 'var(--text-primary)' }}; border:1px solid {{ $isAdmin ? 'transparent' : 'var(--border-color)' }}; box-shadow:0 2px 4px rgba(0,0,0,0.1);">
                         <div style="font-size:0.7rem; margin-bottom:4px; opacity:0.8; font-weight:600; text-align:{{ $isAdmin ? 'right' : 'left' }};">
                             {{ $isAdmin ? 'You (Admin)' : ($conversation->visitor_name ?: 'Visitor') }} &bull; {{ $msg->created_at->format('g:i A') }}
                         </div>
-                        <div style="font-size:0.9rem; line-height:1.45; word-break:break-word;">
-                            {{ $msg->message }}
-                        </div>
+                        <div class="cv-text" style="font-size:0.9rem; line-height:1.55; overflow-wrap:anywhere; white-space:pre-wrap;">{{ $msg->message }}</div>
                     </div>
                 </div>
             @empty
@@ -113,61 +112,110 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const container = document.getElementById('chat-messages-container');
-    if (container) {
-        container.scrollTop = container.scrollHeight;
-    }
-
     const form = document.getElementById('chat-reply-form');
     const input = document.getElementById('chat-reply-input');
+    const pill = document.getElementById('cv-new-pill');
+    const feedUrl = "{{ route('admin.inbox.chat.messages', $conversation->id) }}";
+    const visitorName = {!! json_encode($conversation->visitor_name ?: 'Visitor') !!};
+    let lastId = {{ (int) $conversation->messages->max('id') }};
+    if (!container) return;
+    window.__openChatLive = true;
+
+    const atBottom = () => container.scrollHeight - container.scrollTop - container.clientHeight < 140;
+    const toBottom = () => { container.scrollTop = container.scrollHeight; if (pill) pill.style.display = 'none'; };
+    toBottom();
+    if (pill) pill.addEventListener('click', toBottom);
+    container.addEventListener('scroll', () => { if (pill && atBottom()) pill.style.display = 'none'; }, { passive: true });
+
+    function bubble(m) {
+        const isAdmin = m.sender === 'admin';
+        const row = document.createElement('div');
+        row.className = 'cv-row';
+        row.dataset.id = m.id;
+        row.style.cssText = 'display:flex; justify-content:' + (isAdmin ? 'flex-end' : 'flex-start') + ';';
+        const box = document.createElement('div');
+        box.className = 'cv-bubble';
+        box.style.cssText = 'max-width:75%; padding:10px 16px; border-radius:' + (isAdmin ? '16px 16px 4px 16px' : '16px 16px 16px 4px') +
+            '; background:' + (isAdmin ? 'var(--accent-blue)' : 'rgba(255,255,255,0.06)') + '; color:' + (isAdmin ? '#ffffff' : 'var(--text-primary)') +
+            '; border:1px solid ' + (isAdmin ? 'transparent' : 'var(--border-color)') + '; box-shadow:0 2px 4px rgba(0,0,0,0.1);';
+        const meta = document.createElement('div');
+        meta.style.cssText = 'font-size:0.7rem; margin-bottom:4px; opacity:0.8; font-weight:600; text-align:' + (isAdmin ? 'right' : 'left') + ';';
+        meta.textContent = (isAdmin ? 'You (Admin)' : visitorName) + ' • ' + (m.time || 'Just now');
+        const text = document.createElement('div');
+        text.className = 'cv-text';
+        text.style.cssText = 'font-size:0.9rem; line-height:1.55; overflow-wrap:anywhere; white-space:pre-wrap;';
+        text.textContent = m.message;
+        box.appendChild(meta); box.appendChild(text); row.appendChild(box);
+        container.appendChild(row);
+        return row;
+    }
+
+    // A long new message: show its beginning, otherwise stay at the bottom
+    function reveal(row) {
+        if (row.offsetHeight > container.clientHeight - 24) {
+            container.scrollTo({ top: Math.max(0, row.offsetTop - 10), behavior: 'smooth' });
+        } else {
+            toBottom();
+        }
+    }
+
+    function poll() {
+        fetch(feedUrl + '?after=' + lastId, {
+            credentials: 'same-origin',
+            headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(r => r.json())
+        .then(d => {
+            if (!d || !d.messages || !d.messages.length) return;
+            const stick = atBottom();
+            let firstNew = null, fromVisitor = false;
+            d.messages.forEach(m => {
+                if (container.querySelector('[data-id="' + m.id + '"]')) { lastId = Math.max(lastId, m.id); return; }
+                const row = bubble(m);
+                if (!firstNew) firstNew = row;
+                if (m.sender === 'visitor') fromVisitor = true;
+                lastId = Math.max(lastId, m.id);
+            });
+            if (fromVisitor) {
+                if (typeof playNotificationChime === 'function') playNotificationChime();
+                if (typeof triggerPhoneVibration === 'function') triggerPhoneVibration();
+            }
+            if (firstNew) {
+                if (stick) reveal(firstNew); else if (pill) pill.style.display = 'block';
+            }
+        })
+        .catch(() => {})
+        .finally(() => { setTimeout(poll, document.hidden ? 8000 : 2200); });
+    }
+    setTimeout(poll, 1800);
 
     if (form && input) {
         form.addEventListener('submit', function (e) {
             e.preventDefault();
-            const text = input.value.trim();
-            if (!text) return;
-
+            const textValue = input.value.trim();
+            if (!textValue) return;
             const submitBtn = form.querySelector('button[type="submit"]');
             submitBtn.disabled = true;
 
-            const formData = new FormData(form);
             fetch(form.action, {
                 method: 'POST',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'application/json'
-                },
-                body: formData
+                credentials: 'same-origin',
+                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
+                body: new FormData(form)
             })
             .then(res => res.json())
             .then(data => {
                 if (data.status === 'success') {
-                    // Append bubble locally
-                    const bubble = document.createElement('div');
-                    bubble.style.display = 'flex';
-                    bubble.style.justifyContent = 'flex-end';
-                    bubble.innerHTML = `
-                        <div style="max-width:75%; padding:10px 16px; border-radius:16px 16px 4px 16px; background:var(--accent-blue); color:#ffffff; box-shadow:0 2px 4px rgba(0,0,0,0.1);">
-                            <div style="font-size:0.7rem; margin-bottom:4px; opacity:0.8; font-weight:600; text-align:right;">
-                                You (Admin) &bull; ${data.created_at || 'Just now'}
-                            </div>
-                            <div style="font-size:0.9rem; line-height:1.45; word-break:break-word;">
-                                ${text}
-                            </div>
-                        </div>
-                    `;
-                    container.appendChild(bubble);
-                    container.scrollTop = container.scrollHeight;
+                    if (!container.querySelector('[data-id="' + data.message_id + '"]')) {
+                        bubble({ id: data.message_id, sender: 'admin', message: textValue, time: data.created_at });
+                    }
+                    lastId = Math.max(lastId, data.message_id || 0);
+                    toBottom();
                     input.value = '';
                 }
             })
-            .catch(err => {
-                console.error(err);
-                form.submit(); // fallback to normal submit
-            })
-            .finally(() => {
-                submitBtn.disabled = false;
-                input.focus();
-            });
+            .catch(err => { console.error(err); form.submit(); })
+            .finally(() => { submitBtn.disabled = false; input.focus(); });
         });
     }
 });

@@ -299,6 +299,17 @@
     var input = $('#assist-input');
     var busy = false;
 
+    // Panels always start below the site's top bar (which is taller when the editor bar is shown)
+    function syncPanelTop() {
+      var header = document.querySelector('.site-header');
+      var bottom = header ? header.getBoundingClientRect().bottom : 72;
+      document.documentElement.style.setProperty('--pw-top', Math.round(Math.max(bottom, 0) + 10) + 'px');
+    }
+    syncPanelTop();
+    window.addEventListener('resize', syncPanelTop);
+    window.addEventListener('load', syncPanelTop);
+    document.addEventListener('click', function (e) { if (e.target.closest('.pw-launcher, [data-pw-open], [data-pw-ask]')) syncPanelTop(); }, true);
+
     function liveOpen() { return livePanel && livePanel.style.display !== 'none'; }
     function aiOpen() { return aiPanel && !aiPanel.hidden; }
     function setAi(open) {
@@ -399,7 +410,18 @@
       return row;
     }
 
-    function addChips(list) {
+    // Long answers: show the START of the reply (not its end) so it can be read from the top.
+    function reveal(row) {
+      if (!row) return;
+      var tall = row.offsetHeight > body.clientHeight - 28;
+      if (tall) {
+        body.scrollTo({ top: Math.max(0, row.offsetTop - 10), behavior: 'smooth' });
+      } else {
+        body.scrollTop = body.scrollHeight;
+      }
+    }
+
+    function addChips(list, keepScroll) {
       if (!list || !list.length) return;
       var wrap = document.createElement('div');
       wrap.className = 'pw-chips';
@@ -410,7 +432,7 @@
         wrap.appendChild(b);
       });
       body.appendChild(wrap);
-      body.scrollTop = body.scrollHeight;
+      if (!keepScroll) body.scrollTop = body.scrollHeight;
     }
 
     function ask(question) {
@@ -442,11 +464,11 @@
             }).join('');
             if (links) html += '<div class="pw-links">' + links + '</div>';
             typing.querySelector('.pw-bubble').innerHTML = html;
-            addChips(data.suggestions);
+            addChips(data.suggestions, true);
             if (data.open_live_chat) {
-              addChips(['Message Hasnain now']);
+              addChips(['Message Hasnain now'], true);
             }
-            body.scrollTop = body.scrollHeight;
+            reveal(typing);
             busy = false;
           }, wait);
         })

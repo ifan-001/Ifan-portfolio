@@ -333,4 +333,41 @@
         </div>
     @endif
 </div>
+
+<script>
+// Live inbox: when a new chat or inquiry arrives (or something is read) the list refreshes itself.
+(function () {
+    const wrap = document.querySelector('.inbox-wrapper');
+    if (!wrap) return;
+    const checkUrl = "{{ route('admin.notifications.check') }}";
+    let signature = null;
+    let busy = false;
+
+    function refresh() {
+        const search = wrap.querySelector('.inbox-search-input');
+        if (busy || (search && document.activeElement === search)) return;
+        busy = true;
+        fetch(location.href, { credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(r => r.text())
+            .then(html => {
+                const fresh = new DOMParser().parseFromString(html, 'text/html').querySelector('.inbox-wrapper');
+                if (fresh) wrap.innerHTML = fresh.innerHTML;
+            })
+            .catch(() => {})
+            .finally(() => { busy = false; });
+    }
+
+    function tick() {
+        fetch(checkUrl, { credentials: 'same-origin', headers: { 'Accept': 'application/json' } })
+            .then(r => r.json())
+            .then(d => {
+                if (signature !== null && d.signature !== signature) refresh();
+                signature = d.signature;
+            })
+            .catch(() => {})
+            .finally(() => { setTimeout(tick, document.hidden ? 9000 : 3500); });
+    }
+    setTimeout(tick, 1500);
+})();
+</script>
 @endsection

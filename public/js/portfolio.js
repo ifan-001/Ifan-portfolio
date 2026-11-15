@@ -317,8 +317,17 @@ document.addEventListener('DOMContentLoaded', function () {
             appendMessageToUI(msg.sender, msg.message, msg.time, false);
           });
 
+          const previousCount = lastMessageCount;
           lastMessageCount = data.messages.length;
-          chatMessagesBody.scrollTop = chatMessagesBody.scrollHeight;
+
+          // A long reply from Hasnain: show where it STARTS; otherwise stay at the bottom
+          const newest = data.messages[data.messages.length - 1];
+          const firstNew = chatMessagesBody.querySelectorAll('.chat-message-row.dynamic')[previousCount];
+          if (newest && newest.sender === 'admin' && firstNew && firstNew.offsetHeight > chatMessagesBody.clientHeight - 24) {
+            chatMessagesBody.scrollTo({ top: Math.max(0, firstNew.offsetTop - 8), behavior: 'smooth' });
+          } else {
+            chatMessagesBody.scrollTop = chatMessagesBody.scrollHeight;
+          }
         }
       })
       .catch(err => console.debug('Messages fetch notice:', err));

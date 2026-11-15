@@ -121,6 +121,9 @@
                 <button type="button" class="btn btn-secondary btn-sm" onclick="openAppVersionModal()">
                     App Info
                 </button>
+                <a href="{{ route('admin.app-icon.rebuild') }}" class="btn btn-secondary btn-sm" title="Rebuild the home screen icon from your current profile photo">
+                    🖼️ Refresh app icon
+                </a>
             </div>
         </div>
     </div>

@@ -117,7 +117,8 @@ Route::prefix('api/chat')->group(function () {
 */
 Route::prefix('portal')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('admin.login');
-    Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1')->name('admin.login.submit');
+    // Failed attempts are limited per e-mail + IP inside the controller (5 per minute); this only guards against floods
+    Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:60,1')->name('admin.login.submit');
     Route::post('/logout', [AuthController::class, 'logout'])->name('admin.logout');
 });
 
@@ -211,6 +212,8 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     // Unified Inbox (Consolidates Live & Random Visitor Chats + Contact Inquiries)
     Route::get('/inbox', [InboxController::class, 'index'])->name('admin.inbox.index');
     Route::post('/inbox/chat/reply', [InboxController::class, 'replyChat'])->name('admin.inbox.chat.reply');
+    Route::get('/app-icon/rebuild', [\App\Http\Controllers\Admin\ProfileController::class, 'rebuildAppIcon'])->name('admin.app-icon.rebuild');
+    Route::get('/inbox/chat/{conversation}/messages', [InboxController::class, 'chatMessages'])->name('admin.inbox.chat.messages');
     Route::delete('/inbox/chat/{conversation}', [InboxController::class, 'destroyChat'])->name('admin.inbox.chat.destroy');
     Route::post('/inbox/inquiry/{inquiry}/status', [InboxController::class, 'updateInquiryStatus'])->name('admin.inbox.inquiry.status');
     Route::delete('/inbox/inquiry/{inquiry}', [InboxController::class, 'destroyInquiry'])->name('admin.inbox.inquiry.destroy');

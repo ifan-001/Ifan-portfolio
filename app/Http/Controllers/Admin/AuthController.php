@@ -53,7 +53,8 @@ class AuthController extends Controller
             ]);
         }
 
-        $remember = $request->boolean('remember');
+        // The admin signs in on their own devices (phone app included): stay signed in until "Sign out".
+        $remember = true;
 
         if (Auth::attempt($credentials, $remember)) {
             RateLimiter::clear($throttleKey);

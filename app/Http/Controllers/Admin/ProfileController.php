@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Profile;
+use App\Services\AppIconGenerator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
@@ -74,6 +75,7 @@ class ProfileController extends Controller
                 $file->move($destination, $fileName);
                 $profile->profile_image = '/images/' . $fileName;
                 @copy($destination . '/' . $fileName, $destination . '/profile.jpg');
+                $this->refreshAppIcon($destination . '/' . $fileName);
             } else {
                 $profile->profile_image = '/images/' . $fileName;
             }
@@ -158,6 +160,32 @@ class ProfileController extends Controller
     /**
      * Upload and automatically fit profile picture.
      */
+    /**
+     * The home screen app icon always follows the current profile photo.
+     */
+    private function refreshAppIcon(string $photoPath): void
+    {
+        try {
+            AppIconGenerator::generate($photoPath);
+        } catch (\Throwable $e) {
+            // never block a photo upload because of the icon
+        }
+    }
+
+    /**
+     * Rebuild the app icon from the current profile photo (link on the settings page).
+     */
+    public function rebuildAppIcon()
+    {
+        if (! AppIconGenerator::available()) {
+            return back()->withErrors(['app_icon' => 'This server cannot build images (PHP GD is missing).']);
+        }
+
+        return AppIconGenerator::fromCurrentProfile()
+            ? back()->with('status', 'App icon rebuilt from your profile photo. Reinstall or reopen the app to see it.')
+            : back()->withErrors(['app_icon' => 'Could not build the icon. Upload a profile photo first.']);
+    }
+
     public function updatePhoto(Request $request)
     {
         $request->validate([
@@ -185,6 +213,7 @@ class ProfileController extends Controller
             $profile->profile_image = '/images/' . $fileName;
             @copy($destination . '/' . $fileName, $destination . '/profile.jpg');
             $profile->save();
+            $this->refreshAppIcon($destination . '/' . $fileName);
         } else {
             $profile->profile_image = '/images/' . $fileName;
             $profile->save();

@@ -12,16 +12,22 @@
   "lang": "en",
   "icons": [
     {
-      "src": "/icons/icon-192.png",
+      "src": "/icons/app-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/icon-512.png",
+      "src": "/icons/app-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
+    },
+    {
+      "src": "/icons/app-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
   "categories": [
@@ -35,7 +41,7 @@
       "url": "/admin/inbox",
       "icons": [
         {
-          "src": "/icons/icon-192.png",
+          "src": "/icons/app-192.png",
           "sizes": "192x192"
         }
       ]
@@ -46,7 +52,7 @@
       "url": "/admin",
       "icons": [
         {
-          "src": "/icons/icon-192.png",
+          "src": "/icons/app-192.png",
           "sizes": "192x192"
         }
       ]

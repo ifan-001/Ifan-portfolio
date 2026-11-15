@@ -210,7 +210,7 @@
   .inbox-meta-title { font-size: .88rem !important; }
   .inbox-meta-email { display: none !important; }
   .inbox-meta-time { margin-left: auto; font-size: .7rem !important; }
-  .inbox-meta-snippet { font-size: .8rem !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .inbox-meta-snippet { font-size: .82rem !important; }
   .inbox-btn-open { display: none !important; }
   .inbox-btn-delete { width: 34px !important; height: 34px !important; }
 }
@@ -239,4 +239,44 @@ html { color-scheme: dark; }
   .header-actions { flex: 0 0 auto; gap: 8px; flex-wrap: nowrap; }
   .header-actions .btn, .header-actions .status-pill { white-space: nowrap; }
   .header-install-btn span, #alert-bell-text { display: none !important; }
+}
+
+/* Inbox previews: show up to 3 lines of the message, not a single cut-off line */
+.inbox-meta-snippet { display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; white-space: normal !important; text-overflow: clip !important; overflow-wrap: anywhere; line-height: 1.5; max-width: 100%; }
+
+/* Chat bubbles use more of the width on phones */
+@media (max-width: 640px) { .cv-bubble { max-width: 92% !important; } }
+
+/* ======================= Tablets and small laptops (769-900px): compact rail instead of the phone layout ======================= */
+@media (min-width: 769px) and (max-width: 900px) {
+  .admin-sidebar.ad-sidebar { display: flex !important; position: fixed !important; top: 12px !important; bottom: 12px !important; left: 12px !important; height: auto !important; width: 76px !important; transform: none !important; border-radius: 38px !important; border: 1px solid var(--ad-line-2) !important; box-shadow: 0 24px 60px -24px rgba(0, 0, 0, .7) !important; overflow: hidden; z-index: 1100; }
+  .admin-main { margin-left: 100px !important; padding-bottom: 0 !important; }
+  .mobile-bottom-nav, .ad-drawer-backdrop { display: none !important; }
+  .ad-collapse-btn { display: none !important; }
+  .ad-brand { flex-direction: column; gap: 10px; height: auto !important; min-height: 0 !important; padding: 16px 0 10px !important; border-bottom: 0 !important; }
+  .ad-brand .sidebar-logo { flex: none; justify-content: center; }
+  .ad-logo-mark { width: 44px; height: 44px; border-radius: 50%; }
+  .ad-logo-text,
+  .ad-nav .nav-section-title,
+  .ad-nav .nav-link > span:not(.nav-badge),
+  .ad-side-foot .app-version-badge,
+  .ad-visual-btn em { display: none !important; }
+  .ad-collapse-btn svg { transform: scaleX(-1); }
+  .ad-visual-btn { width: 44px; height: 44px; margin: 2px auto 10px; padding: 0; border-radius: 50%; justify-content: center; font-size: 0; }
+  .ad-visual-btn span { font-size: 1rem; }
+  .ad-nav { padding: 6px 0 !important; align-items: center; gap: 6px; scrollbar-width: none; }
+  .ad-nav::-webkit-scrollbar { display: none; }
+  .ad-nav .nav-section-title + .nav-link { margin-top: 8px !important; }
+  .ad-nav .nav-link { width: 46px !important; height: 46px; min-height: 46px; padding: 0 !important; margin: 0 !important; justify-content: center; border-radius: 50% !important; position: relative; overflow: visible; }
+  .ad-nav .nav-link:hover { background: rgba(59, 130, 246, .14) !important; color: #fff !important; }
+  .ad-nav .nav-link.active { background: var(--ad-grad) !important; color: #fff !important; box-shadow: 0 10px 22px -10px rgba(59, 130, 246, .9); }
+  .ad-nav .nav-link.active::before { display: none !important; }
+  .ad-nav .nav-link .nav-badge { position: absolute; top: -2px; right: -2px; min-width: 18px; height: 18px; font-size: .6rem; padding: 0 4px; border: 2px solid var(--ad-surface); }
+  .ad-side-foot { align-items: center; border-top: 0 !important; padding: 10px 0 16px !important; }
+  .ad-side-foot .sidebar-footer { flex-direction: column; align-items: center; gap: 8px; }
+  .ad-side-foot form { display: contents; }
+  .ad-side-foot .btn { width: 44px; height: 44px; padding: 0 !important; border-radius: 50% !important; font-size: 0 !important; display: grid !important; place-items: center; }
+  .ad-side-foot .btn::before { font-size: 1rem; }
+  .ad-side-foot a.btn::before { content: "\2197"; }
+  .ad-side-foot button.btn::before { content: "\23FB"; }
 }

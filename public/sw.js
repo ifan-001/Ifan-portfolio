@@ -1,6 +1,6 @@
 // Hasnain Portfolio PWA Service Worker
 // Bump SW_VERSION on every deployment that changes cached static assets.
-const SW_VERSION = '2.2.0';
+const SW_VERSION = '2.3.0';
 const CACHE_NAME = 'portfolio-static-v' + SW_VERSION;
 const STATIC_ASSETS = [
     '/css/portfolio.css',
@@ -54,6 +54,11 @@ self.addEventListener('fetch', (event) => {
 
     // API, admin, auth and upload endpoints always go to the network
     if (/^\/(admin|portal|api|contact|track|feed|resume\/download)/.test(url.pathname)) {
+        return;
+    }
+
+    // The app manifest and app icons change in place (icon follows the profile photo): always fresh
+    if (url.pathname === '/js/pwa-manifest.js' || url.pathname.startsWith('/icons/app-')) {
         return;
     }
 

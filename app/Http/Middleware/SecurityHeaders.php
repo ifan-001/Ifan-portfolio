@@ -23,7 +23,7 @@ class SecurityHeaders
 
         // Pages rendered for a logged-in admin contain edit controls and CSRF tokens:
         // never let a browser, proxy or service worker store or reuse them for anyone else.
-        if ($request->user() && ! $response->headers->has('Content-Disposition')) {
+        if (($request->user() || $request->is('portal', 'portal/*')) && ! $response->headers->has('Content-Disposition')) {
             $response->headers->set('Cache-Control', 'no-store, private, max-age=0');
             $response->headers->set('Vary', 'Cookie', false);
         }

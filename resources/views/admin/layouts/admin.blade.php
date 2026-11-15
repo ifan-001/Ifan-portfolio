@@ -7,15 +7,14 @@
     <title>@yield('title', 'Admin Dashboard') | Hasnain Al Ifan Portfolio Manager</title>
 
     <!-- PWA & Mobile Capabilities -->
-    <link rel="manifest" href="/js/pwa-manifest.js" crossorigin="use-credentials">
+    <link rel="manifest" href="/js/pwa-manifest.js?v={{ @filemtime(public_path('js/pwa-manifest.js')) ?: 1 }}" crossorigin="use-credentials">
     <meta name="theme-color" content="#0B1120">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Ifan Admin">
-    <link rel="apple-touch-icon" href="/icons/icon-192.png">
-    <link rel="icon" type="image/svg+xml" href="/icons/icon.svg">
-    <link rel="icon" type="image/png" href="/icons/icon-192.png">
+    <link rel="apple-touch-icon" href="/icons/app-180.png?v={{ @filemtime(public_path('icons/app-180.png')) ?: 1 }}">
+        <link rel="icon" type="image/png" href="/icons/app-192.png?v={{ @filemtime(public_path('icons/app-192.png')) ?: 1 }}">
 
     <!-- Stylesheets -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -341,6 +340,21 @@
         }
     }
 
+    // Keep the unread counters in the sidebar and bottom bar live
+    function syncInboxBadges(total) {
+        document.querySelectorAll('a[href$="/admin/inbox"]').forEach(function (a) {
+            const bottom = a.classList.contains('bottom-nav-item');
+            let b = a.querySelector(bottom ? '.bottom-nav-badge' : '.nav-badge:not(.nav-badge-soft)');
+            if (total > 0) {
+                if (!b) { b = document.createElement('span'); b.className = bottom ? 'bottom-nav-badge' : 'nav-badge'; a.appendChild(b); }
+                b.textContent = total;
+                b.style.display = '';
+            } else if (b) {
+                b.style.display = 'none';
+            }
+        });
+    }
+
     // Auto-poll for incoming messages every 6 seconds
     function pollIncomingMessages() {
         fetch('{{ route("admin.notifications.check") }}', {
@@ -348,17 +362,18 @@
         })
         .then(res => res.json())
         .then(data => {
-            if (data.total_unread > lastKnownTotalUnread) {
-                // Trigger Sound, Vibration, and Toast!
+            if (data.total_unread > lastKnownTotalUnread && !window.__openChatLive) {
+                // Trigger Sound, Vibration, and Toast!  (the open conversation handles its own live updates)
                 playNotificationChime();
                 triggerPhoneVibration();
                 showIncomingMessageToast(data.latest_sender, data.latest_preview);
             }
             lastKnownTotalUnread = data.total_unread;
+            syncInboxBadges(data.total_unread);
         })
         .catch(err => {})
         .finally(() => {
-            setTimeout(pollIncomingMessages, 6000);
+            setTimeout(pollIncomingMessages, document.hidden ? 12000 : 4000);
         });
     }
 
@@ -412,7 +427,8 @@
             if (!text) return hideTip();
             var inSide = !!el.closest('.ad-sidebar');
             // In the open sidebar the label is already visible, so skip the tip there
-            if (inSide && !document.body.classList.contains('ad-collapsed') && el !== btn && el.textContent.trim()) return hideTip();
+            var rail = document.body.classList.contains('ad-collapsed') || window.matchMedia('(min-width: 769px) and (max-width: 900px)').matches;
+            if (inSide && !rail && el !== btn && el.textContent.trim()) return hideTip();
             tipFor = el;
             tip.textContent = text;
             tip.className = 'ad-tip';

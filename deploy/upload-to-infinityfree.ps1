@@ -14,6 +14,8 @@ param(
     [string]$Site    = 'http://ifan-portfolio.gt.tc',
     [string]$Package = (Join-Path (Split-Path -Parent $PSScriptRoot) 'storage\backups\shared-hosting'),
     [int]$PartMB     = 4,
+    [switch]$ChangedOnly,                     # upload only files changed since $Base (fast updates)
+    [string]$Base    = 'origin/master',
     [switch]$DryRun
 )
 
@@ -87,13 +89,30 @@ try {
     if (-not $DryRun) { $password = Get-PlainPassword } else { $password = 'dry-run-password' }
     if ([string]::IsNullOrWhiteSpace($password)) { throw 'No password entered.' }
 
-    # DB password goes only into the zip, the package folder is restored right after
-    $patched = [regex]::Replace($originalEnv, '(?m)^DB_PASSWORD=.*$', [Text.RegularExpressions.MatchEvaluator] { param($m) 'DB_PASSWORD=' + $password })
-    [IO.File]::WriteAllText($envFile, $patched, $utf8)
-    Write-Host 'Building site.zip ...'
-    & tar -a -cf $zipPath -C $siteDir .
-    if ($LASTEXITCODE -ne 0) { throw 'tar failed' }
-    [IO.File]::WriteAllText($envFile, $originalEnv, $utf8)
+    if ($ChangedOnly) {
+        $root = Split-Path -Parent $PSScriptRoot
+        $files = @(& git -C $root diff --name-only $Base) + @(& git -C $root ls-files -o --exclude-standard)
+        $files = $files | Where-Object { $_ -match '^(app|bootstrap|config|database|public|resources|routes)/' -and (Test-Path (Join-Path $root $_) -PathType Leaf) } | Sort-Object -Unique
+        if (-not $files) { throw "No changed files since $Base." }
+        $stage = Join-Path $tmp 'stage'
+        foreach ($f in $files) {
+            $dest = Join-Path $stage $f
+            New-Item -ItemType Directory -Force (Split-Path -Parent $dest) | Out-Null
+            Copy-Item (Join-Path $root $f) $dest -Force
+        }
+        Write-Host ("Changed files to upload: {0}" -f @($files).Count)
+        $files | ForEach-Object { Write-Host "  $_" }
+        & tar -a -cf $zipPath -C $stage .
+        if ($LASTEXITCODE -ne 0) { throw 'tar failed' }
+    } else {
+        # DB password goes only into the zip, the package folder is restored right after
+        $patched = [regex]::Replace($originalEnv, '(?m)^DB_PASSWORD=.*$', [Text.RegularExpressions.MatchEvaluator] { param($m) 'DB_PASSWORD=' + $password })
+        [IO.File]::WriteAllText($envFile, $patched, $utf8)
+        Write-Host 'Building site.zip ...'
+        & tar -a -cf $zipPath -C $siteDir .
+        if ($LASTEXITCODE -ne 0) { throw 'tar failed' }
+        [IO.File]::WriteAllText($envFile, $originalEnv, $utf8)
+    }
     $zipBytes = (Get-Item $zipPath).Length
     $zipMb = [math]::Round($zipBytes / 1MB, 1)
 

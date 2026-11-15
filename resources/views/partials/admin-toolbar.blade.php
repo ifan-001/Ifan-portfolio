@@ -49,14 +49,22 @@
                 <span id="previewBtnText">Visitor View</span>
             </button>
 
-            <form action="{{ route('admin.logout') }}" method="POST" style="display:inline;">
-                @csrf
-                <button type="submit" class="admin-btn-logout" title="Sign out of Admin Portal">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-                    <span>Exit</span>
-                </button>
-            </form>
+            <a href="{{ route('admin.dashboard') }}" class="admin-btn-logout admin-btn-back" title="Leave the visual editor and go back to the admin panel">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                <span>Admin panel</span>
+            </a>
         </div>
     </div>
 </div>
+<script>
+    // Keep the site's own menu below the editor bar, whatever height the bar wraps to
+    (function () {
+        var bar = document.getElementById('adminCommandBar');
+        if (!bar) return;
+        var set = function () { document.documentElement.style.setProperty('--admin-bar-h', bar.offsetHeight + 'px'); };
+        set();
+        window.addEventListener('resize', set);
+        window.addEventListener('load', set);
+    })();
+</script>
 @endauth
