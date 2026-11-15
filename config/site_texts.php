@@ -26,6 +26,9 @@ return [
         'contact_title' => ['Contact: title', "Let's build something together", 'text'],
         'contact_lead' => ['Contact: intro', 'Have a role, a project or a question? Send a message, chat live, or ask my AI assistant.', 'textarea'],
     ],
+    'AI assistant facts' => [
+        'languages_spoken' => ['Languages you speak', 'Bengali (native), English (fluent)', 'text'],
+    ],
     'Footer & SEO' => [
         'footer_tagline' => ['Footer tagline', 'Software engineer building practical SaaS, mobile and AI-powered products from Dhaka, Bangladesh.', 'textarea'],
         'seo_title' => ['Browser / Google title', 'Hasnain Al Ifan | Software Engineer (Laravel, Flutter)', 'text'],

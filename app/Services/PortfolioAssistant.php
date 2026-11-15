@@ -21,31 +21,35 @@ class PortfolioAssistant
         'thanks' => ['thanks', 'thank', 'thx', 'dhonnobad', 'ধন্যবাদ', 'shukriya'],
         'projects' => ['project', 'projects', 'projekt', 'portfolio', 'built', 'build', 'made', 'work', 'works', 'apps', 'kaj', 'প্রজেক্ট', 'প্রকল্প', 'কাজ', 'বানিয়েছ', 'বানিয়েছেন'],
         'features' => ['feature', 'features', 'function', 'functionality', 'does', 'can', 'kore', 'korte', 'ফিচার', 'বৈশিষ্ট্য', 'কি করে', 'কী করে'],
-        'tech' => ['tech', 'stack', 'technology', 'technologies', 'framework', 'language', 'built with', 'tools', 'প্রযুক্তি', 'টেক'],
-        'link' => ['link', 'live', 'demo', 'url', 'github', 'repo', 'source', 'visit', 'লিংক', 'লিঙ্ক'],
+        'tech' => ['tech', 'stack', 'technology', 'technologies', 'framework', 'built with', 'প্রযুক্তি', 'টেক'],
+        'link' => ['link', 'live', 'demo', 'url', 'repo', 'source', 'visit', 'লিংক', 'লিঙ্ক'],
         'skills' => ['skill', 'skills', 'expertise', 'know', 'jane', 'jano', 'proficient', 'good at', 'দক্ষতা', 'স্কিল', 'জানে', 'জানেন'],
-        'experience' => ['experience', 'job', 'company', 'appifly', 'intern', 'internship', 'career', 'working', 'chakri', 'অভিজ্ঞতা', 'চাকরি', 'কোম্পানি'],
-        'education' => ['education', 'study', 'university', 'bubt', 'cgpa', 'gpa', 'degree', 'hsc', 'ssc', 'college', 'school', 'porashona', 'পড়াশোনা', 'শিক্ষা', 'বিশ্ববিদ্যালয়'],
-        'contact' => ['contact', 'email', 'mail', 'phone', 'number', 'reach', 'linkedin', 'jogajog', 'যোগাযোগ', 'ইমেইল', 'ফোন'],
+        'experience' => ['experience', 'job', 'jobs', 'company', 'appifly', 'intern', 'internship', 'career', 'working', 'works at', 'current role', 'chakri', 'অভিজ্ঞতা', 'চাকরি', 'কোম্পানি', 'ইন্টার্ন'],
+        'education' => ['education', 'study', 'studies', 'student', 'university', 'varsity', 'bubt', 'cgpa', 'gpa', 'result', 'degree', 'hsc', 'ssc', 'college', 'school', 'porashona', 'pore', 'পড়াশোনা', 'পড়েন', 'পড়ে', 'শিক্ষা', 'বিশ্ববিদ্যালয়', 'ইউনিভার্সিটি', 'ভার্সিটি', 'কলেজ', 'রেজাল্ট', 'সিজিপিএ'],
+        'contact' => ['contact', 'email', 'mail', 'phone', 'number', 'call him', 'reach', 'jogajog', 'যোগাযোগ', 'ইমেইল', 'ফোন', 'নাম্বার'],
+        'socials' => ['github', 'linkedin', 'kaggle', 'facebook', 'youtube', 'instagram', 'twitter', 'social', 'socials', 'profile link', 'সোশ্যাল', 'লিংকডইন', 'গিটহাব'],
+        'languages' => ['speak', 'speaks', 'spoken', 'bangla', 'bengali', 'english', 'languages he', 'language he', 'mother tongue', 'ভাষা'],
+        'blog' => ['blog', 'article', 'articles', 'writing', 'notes', 'ব্লগ', 'আর্টিকেল'],
+        'assistant' => ['who are you', 'what are you', 'are you a bot', 'are you ai', 'are you real', 'tumi ke', 'apni ke', 'তুমি কে', 'আপনি কে'],
         'hire' => ['hire', 'hiring', 'available', 'freelance', 'collaborate', 'opportunity', 'offer', 'নিয়োগ', 'ফ্রিল্যান্স'],
         'resume' => ['cv', 'resume', 'biodata', 'সিভি', 'রেজুমে'],
         'about' => ['who', 'about', 'yourself', 'introduce', 'hasnain', 'ifan', 'ke', 'porichoy', 'পরিচয়', 'কে'],
         'research' => ['research', 'interest', 'ai', 'machine learning', 'deep learning', 'computer vision', 'security', 'gobeshona', 'গবেষণা'],
-        'apps' => ['tool', 'tools', 'game', 'games', 'resume builder', 'cv builder', 'play', 'খেলা', 'গেম', 'টুল'],
-        'feed' => ['feed', 'post', 'update', 'updates', 'blog', 'ফিড', 'পোস্ট'],
+        'apps' => ['tool', 'tools', 'apps and tools', 'app hub', 'game', 'games', 'resume builder', 'cv builder', 'cover letter', 'invoice', 'resizer', 'puzzle', 'queens', 'tango', 'play', 'খেলা', 'গেম', 'টুল'],
+        'feed' => ['feed', 'post', 'posts', 'update', 'updates', 'news feed', 'ফিড', 'পোস্ট'],
         'location' => ['location', 'where', 'dhaka', 'thake', 'kothay', 'কোথায়', 'থাকেন'],
     ];
 
     /** Aliases so visitors can refer to projects loosely. */
     protected const PROJECT_ALIASES = [
         'doctor-qr' => ['doctorqr', 'doctor qr', 'doctor-qr', 'doctor', 'telemedicine', 'prescription', 'ডক্টর', 'ডাক্তার'],
-        'newsifly' => ['newsifly', 'news', 'newspaper', 'নিউজ', 'সংবাদ'],
+        'newsifly' => ['newsifly', 'news portal', 'news app', 'newspaper', 'নিউজিফ্লাই', 'নিউজ', 'সংবাদ'],
         'employee-management' => ['employee', 'ems', 'hr', 'staff', 'এমপ্লয়ি'],
-        'adshield' => ['adshield', 'ad shield', 'adblock', 'ad block', 'ad blocker', 'dns', 'vpn'],
+        'adshield' => ['adshield', 'ad shield', 'adblock', 'ad block', 'ad blocker', 'ad blocking', 'dns', 'vpn', 'অ্যাডশিল্ড'],
         'portfolio-platform' => ['this website', 'this site', 'portfolio platform', 'your website', 'ei website', 'এই ওয়েবসাইট'],
         'nuclei-segmentation' => ['nuclei', 'segmentation', 'capstone', 'cell', 'medical image'],
-        'c2c-web-system' => ['c2c web', 'ecommerce', 'e-commerce'],
-        'c2c-android-app' => ['c2c android', 'react native', 'marketplace app', 'android app'],
+        'c2c-web-system' => ['c2c web', 'ecommerce', 'e-commerce', 'c2c', 'marketplace'],
+        'c2c-android-app' => ['c2c android', 'marketplace app', 'android marketplace', 'c2c', 'marketplace'],
         'rental-solution' => ['rental', 'tenant', 'property', 'c++'],
     ];
 
@@ -62,12 +66,26 @@ class PortfolioAssistant
         $q = mb_strtolower($raw);
         $this->lang = $this->detectLanguage($q);
 
-        $project = $this->matchProject($q);
         $scores = $this->scoreIntents($q);
 
-        // A named project always wins; sub-intent decides which part to describe.
-        if ($project) {
-            return $this->projectAnswer($project, $scores, $q);
+        // "Does he know X?" style questions are about skills, even if X also appears in a project
+        if (preg_match('/\b(know|knows|use|used|uses|experience (with|in)|familiar|work(ed)? with|jane|jano|paren)\b|জানে|জানেন|পারে/u', $q)) {
+            $tech = $this->techSearch($q);
+            if ($tech) {
+                return $tech;
+            }
+            if (isset($scores['skills']) && ! $this->matchProjects($q)) {
+                return $this->unknownSkill($q);
+            }
+        }
+
+        $projects = $this->matchProjects($q);
+        if (count($projects) > 1) {
+            return $this->projectsBrief($projects);
+        }
+        // A named project wins; sub-intent decides which part to describe.
+        if ($projects) {
+            return $this->projectAnswer($projects[0], $scores, $q);
         }
 
         // Try a feature search before falling back to generic intents
@@ -81,6 +99,10 @@ class PortfolioAssistant
             'experience' => $this->experience(),
             'education' => $this->education(),
             'contact', 'hire' => $this->contact($top === 'hire'),
+            'socials' => $this->socials(),
+            'languages' => $this->spokenLanguages(),
+            'blog' => $this->blog(),
+            'assistant' => $this->greeting(),
             'resume' => $this->resume(),
             'about' => $this->about(),
             'research' => $this->research(),
@@ -141,22 +163,42 @@ class PortfolioAssistant
         return (bool) preg_match('/(?<![a-z])' . preg_quote($needle, '/') . '(?![a-z])/u', $haystack);
     }
 
-    protected function matchProject(string $q): ?array
+    /** All projects named in the question (ties on the longest matching alias are all returned). */
+    protected function matchProjects(string $q): array
     {
-        $best = null;
+        $found = [];
         $bestLen = 0;
         foreach ($this->projects() as $p) {
             $slug = $p['slug'];
             $names = array_merge(self::PROJECT_ALIASES[$slug] ?? [], [mb_strtolower($p['showcase']['name'] ?? ''), $slug]);
+            $len = 0;
             foreach (array_filter($names) as $alias) {
-                if ($this->contains($q, $alias) && mb_strlen($alias) > $bestLen) {
-                    $best = $p;
-                    $bestLen = mb_strlen($alias);
+                if ($this->contains($q, $alias)) {
+                    $len = max($len, mb_strlen($alias));
                 }
+            }
+            if ($len > $bestLen) {
+                $bestLen = $len;
+                $found = [$p];
+            } elseif ($len && $len === $bestLen) {
+                $found[] = $p;
             }
         }
 
-        return $best;
+        return $found;
+    }
+
+    /** Words of the question that are not just the project's own name. */
+    protected function residualWords(array $p, string $q): string
+    {
+        $names = array_merge(self::PROJECT_ALIASES[$p['slug']] ?? [], [mb_strtolower($p['showcase']['name'] ?? ''), $p['slug']]);
+        usort($names, fn ($a, $b) => mb_strlen($b) <=> mb_strlen($a));
+        foreach (array_filter($names) as $n) {
+            $q = str_replace($n, ' ', $q);
+        }
+        $q = preg_replace('/\b(tell|me|about|what|is|the|a|an|of|show|explain|describe|project|app|system|please|ki|ta|er|sombondhe|somporke|bolo)\b/u', ' ', $q);
+
+        return trim(preg_replace('/\s+/', ' ', $q));
     }
 
     // ------------------------------------------------------------------ answers
@@ -168,7 +210,8 @@ class PortfolioAssistant
         $links = $this->projectLinks($p);
 
         // Specific feature mentioned inside this project?
-        $feature = $this->bestFeature([$p], $q, 2);
+        $rest = $this->residualWords($p, $q);
+        $feature = $rest !== '' ? $this->bestFeature([$p], $rest, 2) : null;
         if ($feature && ! isset($scores['tech']) && ! isset($scores['link'])) {
             [$proj, $f] = $feature;
 
@@ -346,8 +389,10 @@ class PortfolioAssistant
             }
         }
 
+        $intro = $this->data['texts']['experience_lead'] ?? '';
+
         return $this->reply(
-            $this->t("Professional experience:\n" . implode("\n", $lines), "পেশাগত অভিজ্ঞতা:\n" . implode("\n", $lines)),
+            $this->t(($intro ? $intro . "\n\n" : '') . "Professional experience:\n" . implode("\n", $lines), ($intro ? $intro . "\n\n" : '') . "পেশাগত অভিজ্ঞতা:\n" . implode("\n", $lines)),
             [$this->t('What did he build there?', 'সেখানে কী তৈরি করেছেন?'), $this->t('Education', 'পড়াশোনা')],
             [['label' => 'View experience', 'url' => '#experience']]
         );
@@ -379,7 +424,7 @@ class PortfolioAssistant
             : $this->t("You can reach Hasnain here:", "Hasnain এর সাথে যোগাযোগ:");
 
         $text = $intro . "\n• Email: {$email}\n• Phone: {$phone}" . ($linkedin ? "\n• LinkedIn: {$linkedin}" : '')
-            . $this->t("\n\nOr switch to the **Message Hasnain** tab to chat with him directly.", "\n\nঅথবা **Message Hasnain** ট্যাবে গিয়ে সরাসরি চ্যাট করুন।");
+            . $this->t("\n\nOr open the 💬 chat bubble to message him directly.", "\n\nঅথবা 💬 chat bubble খুলে সরাসরি মেসেজ করুন।");
 
         $links = [['label' => 'Send email', 'url' => 'mailto:' . $email], ['label' => 'Contact form', 'url' => '#contact']];
         if ($linkedin) {
@@ -445,19 +490,74 @@ class PortfolioAssistant
     {
         return $this->reply(
             $this->t(
-                "Hi! I'm Hasnain's portfolio assistant. Ask me about his projects, features, skills, experience or how to contact him.",
-                "হ্যালো! আমি Hasnain এর পোর্টফোলিও অ্যাসিস্ট্যান্ট। তার প্রজেক্ট, ফিচার, দক্ষতা, অভিজ্ঞতা বা যোগাযোগ নিয়ে জিজ্ঞেস করুন।"
+                "Hi! I'm the AI assistant for Hasnain's portfolio (an automated bot, not Hasnain himself). Ask me about his projects, features, skills, experience or how to contact him. To talk to Hasnain directly, use the 💬 chat bubble.",
+                "হ্যালো! আমি Hasnain এর পোর্টফোলিওর AI অ্যাসিস্ট্যান্ট (একটা বট, Hasnain নিজে নন)। তার প্রজেক্ট, ফিচার, দক্ষতা, অভিজ্ঞতা বা যোগাযোগ নিয়ে জিজ্ঞেস করুন। সরাসরি তার সাথে কথা বলতে 💬 chat bubble ব্যবহার করুন।"
             ),
             $this->defaultSuggestions()
         );
+    }
+
+    protected function projectsBrief(array $projects): array
+    {
+        $lines = array_map(fn ($p) => '• **' . $p['showcase']['name'] . '** — ' . ($p['summary'] ?? $p['showcase']['tagline']), $projects);
+        $names = array_map(fn ($p) => $p['showcase']['name'], $projects);
+
+        return $this->reply(
+            $this->t("There are " . count($projects) . " matching projects:\n" . implode("\n", $lines), count($projects) . "টি মিল পাওয়া প্রজেক্ট:\n" . implode("\n", $lines)),
+            array_map(fn ($n) => $this->t("Tell me about {$n}", "{$n} সম্পর্কে বলো"), array_slice($names, 0, 3)),
+            array_map(fn ($p) => ['label' => $p['showcase']['name'], 'url' => '#project-' . $p['slug']], array_slice($projects, 0, 3))
+        );
+    }
+
+    protected function unknownSkill(string $q): array
+    {
+        return $this->reply(
+            $this->t("That technology isn't listed in Hasnain's portfolio. His main stack is Laravel, PHP, MySQL, JavaScript and Flutter. For anything else, ask him directly in the 💬 chat bubble.",
+                "এই প্রযুক্তিটা Hasnain এর পোর্টফোলিওতে নেই। তার মূল স্ট্যাক Laravel, PHP, MySQL, JavaScript আর Flutter। অন্য কিছু জানতে 💬 chat bubble এ সরাসরি জিজ্ঞেস করুন।"),
+            [$this->t('What are his skills?', 'দক্ষতা কী কী?')],
+            [['label' => 'View skills', 'url' => '#skills']]
+        );
+    }
+
+    protected function socials(): array
+    {
+        $lines = [];
+        $links = [];
+        foreach ($this->data['socials'] ?? [] as $key => $s) {
+            $lines[] = '• **' . ($s['name'] ?? ucfirst($key)) . ':** ' . preg_replace('#^(mailto:|https?://(www\.)?)#', '', rtrim($s['url'] ?? '', '/'));
+            if (str_starts_with($s['url'] ?? '', 'http')) {
+                $links[] = ['label' => $s['name'] ?? ucfirst($key), 'url' => $s['url']];
+            }
+        }
+
+        return $this->reply($this->t("Hasnain's profiles:\n" . implode("\n", $lines), "Hasnain এর প্রোফাইল:\n" . implode("\n", $lines)), [], array_slice($links, 0, 4));
+    }
+
+    protected function spokenLanguages(): array
+    {
+        $langs = $this->data['texts']['languages_spoken'] ?? 'Bengali (native), English (fluent)';
+
+        return $this->reply($this->t("Hasnain speaks {$langs}.", "Hasnain যেসব ভাষায় কথা বলেন: {$langs}।"), [$this->t('Programming languages he uses', 'প্রোগ্রামিং দক্ষতা')]);
+    }
+
+    protected function blog(): array
+    {
+        $posts = collect($this->data['blog_posts'] ?? [])->take(3);
+        if ($posts->isEmpty()) {
+            return $this->feed();
+        }
+        $lines = $posts->map(fn ($p) => '• **' . $p->title . '**' . ($p->excerpt ? ' — ' . $p->excerpt : ''))->implode("\n");
+        $links = $posts->map(fn ($p) => ['label' => \Illuminate\Support\Str::limit($p->title, 28), 'url' => route('blog.show', $p->slug)])->values()->all();
+
+        return $this->reply($this->t("Latest articles:\n" . $lines, "সাম্প্রতিক লেখা:\n" . $lines), [], array_merge($links, [['label' => 'All articles', 'url' => route('blog.index')]]));
     }
 
     protected function fallback(): array
     {
         return $this->reply(
             $this->t(
-                "I'm not sure about that one. I can tell you about Hasnain's projects and their features, his skills, experience, education, CV or contact details. You can also ask him directly in the **Message Hasnain** tab.",
-                "এটা ঠিক বুঝতে পারিনি। আমি Hasnain এর প্রজেক্ট ও ফিচার, দক্ষতা, অভিজ্ঞতা, পড়াশোনা, সিভি বা যোগাযোগ নিয়ে বলতে পারি। চাইলে **Message Hasnain** ট্যাবে সরাসরি তাকে জিজ্ঞেস করুন।"
+                "I'm not sure about that one. I can tell you about Hasnain's projects and their features, his skills, experience, education, CV or contact details. You can also ask him directly in the 💬 chat bubble.",
+                "এটা ঠিক বুঝতে পারিনি। আমি Hasnain এর প্রজেক্ট ও ফিচার, দক্ষতা, অভিজ্ঞতা, পড়াশোনা, সিভি বা যোগাযোগ নিয়ে বলতে পারি। চাইলে 💬 chat bubble এ সরাসরি তাকে জিজ্ঞেস করুন।"
             ),
             $this->defaultSuggestions()
         );

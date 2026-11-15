@@ -195,10 +195,16 @@
 .pw-link { background: none; border: 0; padding: 0; font: inherit; font-weight: 700; color: var(--pp-blue); cursor: pointer; text-decoration: underline; }
 
 @media (max-width: 640px) {
-  .pw-ai { right: 16px; bottom: 92px; }
-  .pw-launcher-ai { width: 52px; height: 52px; border-radius: 16px; }
-  .pw-panel-ai { position: fixed; left: 8px; right: 8px; bottom: 154px; width: auto !important; height: calc(100dvh - 180px) !important; }
+  .pw-ai { right: 24px; bottom: 100px; }
+
+  .pw-panel-ai { position: fixed; left: 8px; right: 8px; bottom: 172px; width: auto !important; height: calc(100dvh - 270px) !important; }
 }
 .pw-panel-ai { height: min(580px, calc(100vh - 270px)) !important; }
 .pw-dock.live-open .pw-ai { opacity: 0; pointer-events: none; transform: translateY(10px); }
 .pw-ai { transition: opacity .25s ease, transform .25s ease; }
+
+/* Keep both chat panels below the sticky navbar so their headers are always visible */
+.pw-live .pw-panel { height: min(620px, calc(100vh - 190px)) !important; }
+@media (max-width: 640px) {
+  .pw-live .pw-panel { height: calc(100dvh - 186px) !important; }
+}
