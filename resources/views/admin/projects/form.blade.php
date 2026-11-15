@@ -50,7 +50,7 @@
                         <div class="ad-repeat-row">
                             <input class="form-control" name="features[{{ $i }}][title]" value="{{ $f['title'] ?? '' }}" placeholder="Feature title" maxlength="120">
                             <textarea class="form-control" name="features[{{ $i }}][desc]" rows="2" placeholder="Short description" maxlength="600">{{ $f['desc'] ?? '' }}</textarea>
-                            <button type="button" class="ad-x" data-repeat-remove title="Remove">&times;</button>
+                            <button type="button" class="ad-x" data-repeat-remove title="Remove" aria-label="Remove"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
                         </div>
                     @endforeach
                 </div>
@@ -58,7 +58,7 @@
                     <div class="ad-repeat-row">
                         <input class="form-control" name="features[__i__][title]" placeholder="Feature title" maxlength="120">
                         <textarea class="form-control" name="features[__i__][desc]" rows="2" placeholder="Short description" maxlength="600"></textarea>
-                        <button type="button" class="ad-x" data-repeat-remove title="Remove">&times;</button>
+                        <button type="button" class="ad-x" data-repeat-remove title="Remove" aria-label="Remove"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
                     </div>
                 </template>
             </section>
@@ -126,7 +126,7 @@
                         <div class="ad-repeat-row ad-repeat-inline">
                             <input class="form-control" name="stats[{{ $i }}][value]" value="{{ $st['value'] ?? '' }}" placeholder="475" maxlength="30">
                             <input class="form-control" name="stats[{{ $i }}][label]" value="{{ $st['label'] ?? '' }}" placeholder="Passing tests" maxlength="60">
-                            <button type="button" class="ad-x" data-repeat-remove title="Remove">&times;</button>
+                            <button type="button" class="ad-x" data-repeat-remove title="Remove" aria-label="Remove"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
                         </div>
                     @endforeach
                 </div>
@@ -134,7 +134,7 @@
                     <div class="ad-repeat-row ad-repeat-inline">
                         <input class="form-control" name="stats[__i__][value]" placeholder="475" maxlength="30">
                         <input class="form-control" name="stats[__i__][label]" placeholder="Passing tests" maxlength="60">
-                        <button type="button" class="ad-x" data-repeat-remove title="Remove">&times;</button>
+                        <button type="button" class="ad-x" data-repeat-remove title="Remove" aria-label="Remove"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
                     </div>
                 </template>
             </section>

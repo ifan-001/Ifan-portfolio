@@ -22,9 +22,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}?v={{ filemtime(public_path('css/admin.css')) }}">
     <link rel="stylesheet" href="{{ asset('css/admin-premium.css') }}?v={{ filemtime(public_path('css/admin-premium.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/admin-dashboard.css') }}?v={{ filemtime(public_path('css/admin-dashboard.css')) }}">
     @stack('styles')
 </head>
 <body>
+<script>try { if (localStorage.getItem('ad_sidebar_collapsed') === '1' && window.innerWidth > 900) document.body.classList.add('ad-collapsed'); } catch (e) {}</script>
 @php
     $currentPillar = 'operations';
     if (request()->routeIs('admin.analytics.*') || request()->routeIs('admin.settings.*')) {
@@ -44,31 +46,34 @@
                     <span class="ad-logo-mark">IF</span>
                     <span class="ad-logo-text"><b>{{ $appInfo['name'] ?? 'Hasnain Portfolio Manager' }}</b><small>Admin panel</small></span>
                 </a>
+                <button type="button" class="ad-collapse-btn" id="ad-collapse-btn" aria-label="Collapse sidebar" title="Collapse / expand sidebar">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><line x1="9" y1="4" x2="9" y2="20"/><polyline points="15 10 13 12 15 14"/></svg>
+                </button>
             </div>
 
-            <a href="{{ route('admin.content') }}" class="ad-visual-btn" title="Edit the live portfolio page directly">
+            <a href="{{ route('admin.content') }}" class="ad-visual-btn" title="Open visual editor">
                 <span>✦</span> Open visual editor <em>↗</em>
             </a>
 
             <nav class="sidebar-nav ad-nav">
                 <div class="nav-section-title">Overview</div>
-                <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg><span>Dashboard</span></a>
-                <a href="{{ route('admin.inbox.index') }}" class="nav-link {{ request()->routeIs('admin.inbox.*', 'admin.inquiries.*', 'admin.chat.*') ? 'active' : '' }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Inbox & live chat</span>@if($totalInboxUnreadCount > 0)<span class="nav-badge">{{ $totalInboxUnreadCount }}</span>@endif</a>
-                <a href="{{ route('admin.feed.index') }}" class="nav-link {{ request()->routeIs('admin.feed.*') ? 'active' : '' }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg><span>Feed posts</span></a>
+                <a href="{{ route('admin.dashboard') }}" title="Dashboard" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg><span>Dashboard</span></a>
+                <a href="{{ route('admin.inbox.index') }}" title="Inbox & live chat" class="nav-link {{ request()->routeIs('admin.inbox.*', 'admin.inquiries.*', 'admin.chat.*') ? 'active' : '' }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Inbox & live chat</span>@if($totalInboxUnreadCount > 0)<span class="nav-badge">{{ $totalInboxUnreadCount }}</span>@endif</a>
+                <a href="{{ route('admin.feed.index') }}" title="Feed posts" class="nav-link {{ request()->routeIs('admin.feed.*') ? 'active' : '' }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg><span>Feed posts</span></a>
                 <div class="nav-section-title">Portfolio content</div>
-                <a href="{{ route('admin.projects.index') }}" class="nav-link {{ request()->routeIs('admin.projects.*') ? 'active' : '' }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg><span>Projects</span></a>
-                <a href="{{ route('admin.profile.edit') }}" class="nav-link {{ request()->routeIs('admin.profile.*') ? 'active' : '' }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Profile & bio</span></a>
-                <a href="{{ route('admin.site-content') }}" class="nav-link {{ request()->routeIs('admin.site-content*') ? 'active' : '' }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg><span>Texts, cards & links</span></a>
-                <a href="{{ route('admin.skills.index') }}" class="nav-link {{ request()->routeIs('admin.skills.*') ? 'active' : '' }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><span>Skills</span></a>
-                <a href="{{ route('admin.experience.index') }}" class="nav-link {{ request()->routeIs('admin.experience.*') ? 'active' : '' }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg><span>Experience</span></a>
-                <a href="{{ route('admin.education.index') }}" class="nav-link {{ request()->routeIs('admin.education.*') ? 'active' : '' }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg><span>Education</span></a>
-                <a href="{{ route('admin.research.index') }}" class="nav-link {{ request()->routeIs('admin.research.*') ? 'active' : '' }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span>Research</span></a>
-                <a href="{{ route('admin.blog.index') }}" class="nav-link {{ request()->routeIs('admin.blog.*') ? 'active' : '' }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg><span>Blog articles</span></a>
-                <a href="{{ route('admin.resume.index') }}" class="nav-link {{ request()->routeIs('admin.resume.*') ? 'active' : '' }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span>Resume / CV</span></a>
+                <a href="{{ route('admin.projects.index') }}" title="Projects" class="nav-link {{ request()->routeIs('admin.projects.*') ? 'active' : '' }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg><span>Projects</span></a>
+                <a href="{{ route('admin.profile.edit') }}" title="Profile & bio" class="nav-link {{ request()->routeIs('admin.profile.*') ? 'active' : '' }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Profile & bio</span></a>
+                <a href="{{ route('admin.site-content') }}" title="Texts, cards & links" class="nav-link {{ request()->routeIs('admin.site-content*') ? 'active' : '' }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg><span>Texts, cards & links</span></a>
+                <a href="{{ route('admin.skills.index') }}" title="Skills" class="nav-link {{ request()->routeIs('admin.skills.*') ? 'active' : '' }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><span>Skills</span></a>
+                <a href="{{ route('admin.experience.index') }}" title="Experience" class="nav-link {{ request()->routeIs('admin.experience.*') ? 'active' : '' }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg><span>Experience</span></a>
+                <a href="{{ route('admin.education.index') }}" title="Education" class="nav-link {{ request()->routeIs('admin.education.*') ? 'active' : '' }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg><span>Education</span></a>
+                <a href="{{ route('admin.research.index') }}" title="Research" class="nav-link {{ request()->routeIs('admin.research.*') ? 'active' : '' }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span>Research</span></a>
+                <a href="{{ route('admin.blog.index') }}" title="Blog articles" class="nav-link {{ request()->routeIs('admin.blog.*') ? 'active' : '' }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg><span>Blog articles</span></a>
+                <a href="{{ route('admin.resume.index') }}" title="Resume / CV" class="nav-link {{ request()->routeIs('admin.resume.*') ? 'active' : '' }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span>Resume / CV</span></a>
                 <div class="nav-section-title">Site</div>
-                <a href="{{ route('admin.settings.index') }}" class="nav-link {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 1v3M12 20v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M1 12h3M20 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg><span>Settings & sections</span></a>
-                <a href="{{ route('admin.analytics.index') }}" class="nav-link {{ request()->routeIs('admin.analytics.*') ? 'active' : '' }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span>Analytics</span></a>
-                <button type="button" class="nav-link" onclick="openQrInstallModal()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg><span>Install on phone</span><span class="nav-badge nav-badge-soft">QR</span></button>
+                <a href="{{ route('admin.settings.index') }}" title="Settings & sections" class="nav-link {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 1v3M12 20v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M1 12h3M20 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg><span>Settings & sections</span></a>
+                <a href="{{ route('admin.analytics.index') }}" title="Analytics" class="nav-link {{ request()->routeIs('admin.analytics.*') ? 'active' : '' }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span>Analytics</span></a>
+                <button type="button" title="Install on phone" class="nav-link" onclick="openQrInstallModal()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg><span>Install on phone</span><span class="nav-badge nav-badge-soft">QR</span></button>
             </nav>
 
             <div class="ad-side-foot">
@@ -203,7 +208,7 @@
                 <span>🔔</span>
                 <span id="toast-title">New Message Received!</span>
             </div>
-            <button type="button" onclick="document.getElementById('admin-floating-toast').style.display='none'" style="background:none; border:none; color:#fff; cursor:pointer; font-size:1rem;">✕</button>
+            <button type="button" class="ui-close ui-close-sm" onclick="document.getElementById('admin-floating-toast').style.display='none'" aria-label="Dismiss"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         </div>
         <p id="toast-body" style="font-size:0.85rem; margin:0 0 10px 0; line-height:1.4; color:#E2E8F0;"></p>
         <a href="{{ route('admin.inbox.index') }}" class="btn btn-primary btn-xs" style="width:100%; text-align:center; display:block;">
@@ -367,6 +372,30 @@
     });
     </script>
     
+    <script>
+    (function () {
+        var nav = document.querySelector('.ad-nav');
+        var btn = document.getElementById('ad-collapse-btn');
+        if (btn) btn.addEventListener('click', function () {
+            var on = document.body.classList.toggle('ad-collapsed');
+            try { localStorage.setItem('ad_sidebar_collapsed', on ? '1' : '0'); } catch (e) {}
+        });
+        if (!nav) return;
+        // Keep the sidebar where it was when you clicked an item lower down the list
+        try {
+            var saved = sessionStorage.getItem('ad_nav_scroll');
+            if (saved !== null) nav.scrollTop = parseInt(saved, 10) || 0;
+        } catch (e) {}
+        var active = nav.querySelector('.nav-link.active');
+        if (active) {
+            var r = active.getBoundingClientRect(), nr = nav.getBoundingClientRect();
+            if (r.top < nr.top || r.bottom > nr.bottom) active.scrollIntoView({ block: 'center' });
+        }
+        var remember = function () { try { sessionStorage.setItem('ad_nav_scroll', nav.scrollTop); } catch (e) {} };
+        nav.addEventListener('scroll', remember, { passive: true });
+        nav.addEventListener('click', remember);
+    })();
+    </script>
     @stack('scripts')
 </body>
 </html>

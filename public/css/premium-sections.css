@@ -208,3 +208,45 @@
 @media (max-width: 640px) {
   .pw-live .pw-panel { height: calc(100dvh - 186px) !important; }
 }
+
+/* ======================= Compact bubbles (v2) ======================= */
+.pw-live, .live-chat-widget.pw-live { right: 22px !important; bottom: 22px !important; }
+.pw-ai { right: 22px !important; bottom: 86px !important; }
+.pw-launcher, .pw-launcher-ai, .pw-launcher-live { width: 52px !important; height: 52px !important; border-radius: 16px !important; }
+.pw-launcher-ai .pw-ic-open { width: 24px; height: 24px; }
+.pw-launcher-photo { width: 38px !important; height: 38px !important; border-radius: 12px !important; border-width: 1.5px !important; }
+.pw-launcher-live #chat-icon-open { width: 18px !important; height: 18px !important; padding: 3px !important; bottom: -3px !important; left: -3px !important; }
+.pw-launcher-live .chat-status-indicator { width: 11px !important; height: 11px !important; top: -2px !important; right: -2px !important; }
+.pw-ai-badge { top: -6px !important; left: -6px !important; font-size: .58rem !important; padding: 1px 5px !important; }
+.pw-launcher-ring { inset: -4px !important; border-radius: 19px !important; }
+.pw-ai .pw-launcher-hint, .pw-live .pw-launcher-hint { right: 62px; font-size: .8rem; padding: 7px 12px; }
+.pw-live .pw-panel { bottom: 64px !important; }
+.pw-panel-ai { bottom: 64px !important; }
+.pw-ai-avatar { color: #7C3AED; }
+@media (max-width: 640px) {
+  .pw-live, .live-chat-widget.pw-live { right: 16px !important; bottom: 16px !important; }
+  .pw-ai { right: 16px !important; bottom: 72px !important; }
+  .pw-launcher, .pw-launcher-ai, .pw-launcher-live { width: 46px !important; height: 46px !important; border-radius: 14px !important; }
+  .pw-launcher-photo { width: 34px !important; height: 34px !important; border-radius: 10px !important; }
+  .pw-launcher-ai .pw-ic-open { width: 22px; height: 22px; }
+  .pw-live .pw-panel { bottom: 58px !important; height: calc(100dvh - 170px) !important; }
+  .pw-panel-ai { bottom: 130px !important; height: calc(100dvh - 236px) !important; }
+}
+
+
+/* ======================= Unified close button ======================= */
+.ui-close { display: inline-grid !important; place-items: center; width: 38px !important; height: 38px !important; padding: 0 !important; border-radius: 12px !important;
+  border: 1px solid rgba(148, 163, 184, .28) !important; background: rgba(148, 163, 184, .1) !important; color: inherit; cursor: pointer; line-height: 0 !important; font-size: 0 !important;
+  transition: background .2s ease, transform .2s ease, border-color .2s ease, color .2s ease; flex-shrink: 0; }
+.ui-close svg { width: 16px; height: 16px; display: block; }
+.ui-close:hover { background: rgba(239, 68, 68, .14) !important; border-color: rgba(239, 68, 68, .45) !important; color: #F87171 !important; transform: rotate(90deg); }
+.ui-close:focus-visible { outline: 2px solid #60A5FA; outline-offset: 2px; }
+.ui-close-sm { width: 28px !important; height: 28px !important; border-radius: 9px !important; border-color: rgba(255, 255, 255, .25) !important; background: rgba(255, 255, 255, .12) !important; color: #fff !important; }
+.pc-close.ui-close { position: absolute; top: 16px; right: 16px; z-index: 6; background: var(--pp-surface-solid, #111A2E) !important; color: var(--text-primary); box-shadow: 0 8px 20px -10px rgba(0, 0, 0, .5); }
+[data-theme="bright"] .ui-close { border-color: rgba(15, 23, 42, .12) !important; background: #F1F5F9 !important; color: #0F172A; }
+[data-theme="bright"] .pc-close.ui-close { background: #fff !important; }
+.admin-modal-close.ui-close { position: relative; top: auto; right: auto; color: var(--text-primary, #F1F5F9); }
+.chat-action-btn { width: 34px !important; height: 34px !important; border-radius: 10px !important; display: grid !important; place-items: center; transition: background .2s ease, transform .2s ease; }
+.pw-header .chat-action-btn:hover { background: rgba(255, 255, 255, .26) !important; }
+#chat-close-btn:hover, #ai-close-btn:hover { transform: rotate(90deg); }
+.ad-x { display: grid; place-items: center; }

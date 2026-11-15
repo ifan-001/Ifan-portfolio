@@ -325,9 +325,8 @@ class AdminPlatformTest extends TestCase
 
         $response = $this->actingAs($admin)->get('/admin');
         $response->assertStatus(200);
-        $response->assertSee('Core Operations');
-        $response->assertSee('Content Management');
-        $response->assertSee('System & Insights');
+        $response->assertSee('Quick actions');
+        $response->assertSee('Latest chats');
         $response->assertSee('Open Visual Portfolio Editor');
 
         // Content management redirect

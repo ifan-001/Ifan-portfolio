@@ -5,10 +5,11 @@
     <div class="pw-widget pw-ai" id="ai-widget">
         <button id="ai-bubble-btn" class="pw-launcher pw-launcher-ai" aria-label="Open AI assistant: ask anything about this portfolio" aria-expanded="false" aria-controls="ai-window">
             <span class="pw-ai-badge" aria-hidden="true">AI</span>
-            <svg class="pw-ic-open" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9z"></path>
-                <path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z"></path>
-                <path d="M5 16l.6 1.4L7 18l-1.4.6L5 20l-.6-1.4L3 18l1.4-.6z"></path>
+            <svg class="pw-ic-open" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="12" y1="2.5" x2="12" y2="5.5"></line><circle cx="12" cy="2.3" r="0.9" fill="currentColor"></circle>
+                <rect x="4" y="5.5" width="16" height="12.5" rx="4"></rect>
+                <circle cx="9" cy="11.2" r="1.4" fill="currentColor" stroke="none"></circle><circle cx="15" cy="11.2" r="1.4" fill="currentColor" stroke="none"></circle>
+                <path d="M9.5 14.8h5"></path><path d="M2 10.5v3M22 10.5v3"></path><path d="M8.5 18v2.5M15.5 18v2.5"></path>
             </svg>
             <svg class="pw-ic-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             <span class="pw-launcher-hint" aria-hidden="true">✨ Ask AI about my work</span>
@@ -18,7 +19,7 @@
             <div class="pw-header pw-header-ai">
                 <div class="pw-header-glow" aria-hidden="true"></div>
                 <div class="chat-header-user">
-                    <div class="pw-ai-avatar" aria-hidden="true">AI</div>
+                    <div class="pw-ai-avatar" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2.5" x2="12" y2="5.5"/><rect x="4" y="5.5" width="16" height="12.5" rx="4"/><circle cx="9" cy="11.2" r="1.4" fill="currentColor" stroke="none"/><circle cx="15" cy="11.2" r="1.4" fill="currentColor" stroke="none"/><path d="M9.5 14.8h5"/></svg></div>
                     <div>
                         <div id="ai-title" class="chat-header-name">Portfolio AI Assistant</div>
                         <div class="pw-sub">Instant answers about projects, skills &amp; experience</div>

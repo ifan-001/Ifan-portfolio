@@ -53,6 +53,7 @@
     <link rel="stylesheet" href="{{ asset('css/portfolio.css') }}?v={{ filemtime(public_path('css/portfolio.css')) }}">
     <link rel="stylesheet" href="{{ asset('css/premium.css') }}?v={{ filemtime(public_path('css/premium.css')) }}">
     <link rel="stylesheet" href="{{ asset('css/premium-sections.css') }}?v={{ filemtime(public_path('css/premium-sections.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/premium-light.css') }}?v={{ filemtime(public_path('css/premium-light.css')) }}">
 
     {{-- Schema.org JSON-LD Structured Data --}}
     <script type="application/ld+json">

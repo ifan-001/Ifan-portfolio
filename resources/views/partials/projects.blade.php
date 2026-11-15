@@ -207,7 +207,7 @@
     <div class="pc-modal" id="pc-modal" aria-hidden="true">
         <div class="pc-backdrop" data-pc-close></div>
         <div class="pc-dialog" role="dialog" aria-modal="true" aria-label="Project case study">
-            <button type="button" class="pc-close" data-pc-close aria-label="Close case study">&times;</button>
+            <button type="button" class="pc-close ui-close" data-pc-close aria-label="Close case study"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
             <div class="pc-content" id="pc-content"></div>
         </div>
     </div>

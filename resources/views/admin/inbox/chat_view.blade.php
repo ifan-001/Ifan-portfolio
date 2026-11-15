@@ -6,14 +6,14 @@
 @section('content')
 <div style="max-width:920px; margin:0 auto;">
     {{-- Header with prominent Back Button --}}
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:12px;">
+    <div class="cv-top" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:12px;">
         <a href="{{ route('admin.inbox.index') }}" class="btn btn-secondary btn-sm" style="display:inline-flex; align-items:center; gap:8px; font-weight:600; padding:8px 16px; border-radius:var(--radius-full); background:rgba(255,255,255,0.05); border:1px solid var(--border-color);">
             <span style="font-size:1.1rem; line-height:1;">&larr;</span>
-            <span>Back to Message List</span>
+            <span class="cv-back-label">Back to Message List</span>
         </a>
 
         <div style="display:flex; align-items:center; gap:10px;">
-            <span style="font-size:0.75rem; background:rgba(59,130,246,0.15); color:#60A5FA; border:1px solid rgba(59,130,246,0.3); padding:4px 12px; border-radius:var(--radius-full); font-weight:700; letter-spacing:0.04em;">
+            <span class="cv-console-badge" style="font-size:0.75rem; background:rgba(59,130,246,0.15); color:#60A5FA; border:1px solid rgba(59,130,246,0.3); padding:4px 12px; border-radius:var(--radius-full); font-weight:700; letter-spacing:0.04em;">
                 LIVE CHAT CONSOLE
             </span>
             <form action="{{ route('admin.inbox.chat.destroy', $conversation->id) }}" method="POST" onsubmit="return confirm('Permanently delete this chat conversation?');" style="display:inline;">
@@ -40,9 +40,9 @@
     @endphp
 
     {{-- Chat Box Card --}}
-    <div style="background:var(--bg-surface); border:1px solid var(--border-color); border-radius:var(--radius-lg); overflow:hidden; display:flex; flex-direction:column; height:calc(85vh - 120px); min-height:520px; box-shadow:0 8px 30px rgba(0,0,0,0.35);">
+    <div class="cv-console" style="background:var(--bg-surface); border:1px solid var(--border-color); border-radius:var(--radius-lg); overflow:hidden; display:flex; flex-direction:column; height:calc(85vh - 120px); min-height:520px; box-shadow:0 8px 30px rgba(0,0,0,0.35);">
         {{-- Chat Box Header --}}
-        <div style="padding:16px 22px; border-bottom:1px solid var(--border-color); background:rgba(0,0,0,0.2); display:flex; align-items:center; justify-content:space-between; gap:12px;">
+        <div class="cv-head" style="padding:16px 22px; border-bottom:1px solid var(--border-color); background:rgba(0,0,0,0.2); display:flex; align-items:center; justify-content:space-between; gap:12px;">
             <div style="display:flex; align-items:center; gap:14px;">
                 <div style="width:44px; height:44px; border-radius:50%; background:{{ $isNamed ? 'linear-gradient(135deg, #065F46, #10B981)' : 'linear-gradient(135deg, #1E3A8A, #3B82F6)' }}; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:1.05rem; box-shadow:0 0 12px rgba(59,130,246,0.3);">
                     {{ $avatarLetter }}
@@ -61,12 +61,12 @@
                             <span style="color:var(--accent-blue); font-weight:500;">✉ {{ $conversation->visitor_email }}</span>
                             <span>&bull;</span>
                         @endif
-                        <span>Session: {{ substr($conversation->session_id, 0, 14) }}...</span>
+                        <span class="cv-session">Session: {{ substr($conversation->session_id, 0, 14) }}...</span>
                     </div>
                 </div>
             </div>
 
-            <div style="display:flex; align-items:center; gap:8px; background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.25); padding:5px 12px; border-radius:var(--radius-full);">
+            <div class="cv-live" style="display:flex; align-items:center; gap:8px; background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.25); padding:5px 12px; border-radius:var(--radius-full);">
                 <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#10B981; box-shadow:0 0 6px #10B981;"></span>
                 <span style="font-size:0.78rem; font-weight:600; color:#34D399;">Active Live Session</span>
             </div>

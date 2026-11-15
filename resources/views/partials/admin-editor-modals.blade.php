@@ -16,7 +16,7 @@
         <h3 id="profileModalTitle" class="admin-modal-title">Edit Profile &amp; Identity</h3>
         <div class="admin-modal-header-actions">
             <button type="submit" form="profileInfoForm" class="btn btn-primary btn-xs">💾 Save</button>
-            <button type="button" class="admin-modal-close" onclick="closeAdminModal('profileInfoModal')">&times;</button>
+            <button type="button" class="admin-modal-close ui-close" aria-label="Close" onclick="closeAdminModal('profileInfoModal')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         </div>
     </div>
     <form id="profileInfoForm" onsubmit="handleProfileUpdate(event)">
@@ -89,7 +89,7 @@
         <h3 id="photoModalTitle" class="admin-modal-title">Profile Picture &amp; Automatic Fitting</h3>
         <div class="admin-modal-header-actions">
             <button type="submit" form="profilePhotoForm" class="btn btn-primary btn-xs">💾 Save Photo</button>
-            <button type="button" class="admin-modal-close" onclick="closeAdminModal('profilePhotoModal')">&times;</button>
+            <button type="button" class="admin-modal-close ui-close" aria-label="Close" onclick="closeAdminModal('profilePhotoModal')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         </div>
     </div>
     <form id="profilePhotoForm" onsubmit="handlePhotoUpload(event)">
@@ -150,7 +150,7 @@
                 ↺ Restore Bio
             </button>
             <button type="submit" form="aboutBioForm" class="btn btn-primary btn-xs">💾 Save Bio</button>
-            <button type="button" class="admin-modal-close" onclick="closeAdminModal('aboutBioModal')">&times;</button>
+            <button type="button" class="admin-modal-close ui-close" aria-label="Close" onclick="closeAdminModal('aboutBioModal')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         </div>
     </div>
     <form id="aboutBioForm" onsubmit="handleAboutBioSave(event)">
@@ -191,7 +191,7 @@
         <h3 id="skillModalTitle" class="admin-modal-title">Add / Edit Skill</h3>
         <div class="admin-modal-header-actions">
             <button type="submit" form="skillForm" class="btn btn-primary btn-xs">💾 Save</button>
-            <button type="button" class="admin-modal-close" onclick="closeAdminModal('skillModal')">&times;</button>
+            <button type="button" class="admin-modal-close ui-close" aria-label="Close" onclick="closeAdminModal('skillModal')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         </div>
     </div>
     <form id="skillForm" onsubmit="handleSkillSave(event)">
@@ -244,7 +244,7 @@
         <h3 id="projectModalTitle" class="admin-modal-title">Add / Edit Project</h3>
         <div class="admin-modal-header-actions">
             <button type="submit" form="projectForm" class="btn btn-primary btn-xs">💾 Save</button>
-            <button type="button" class="admin-modal-close" onclick="closeAdminModal('projectModal')">&times;</button>
+            <button type="button" class="admin-modal-close ui-close" aria-label="Close" onclick="closeAdminModal('projectModal')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         </div>
     </div>
     <form id="projectForm" onsubmit="handleProjectSave(event)" enctype="multipart/form-data">
@@ -333,7 +333,7 @@
         <h3 id="expModalTitle" class="admin-modal-title">Add / Edit Experience</h3>
         <div class="admin-modal-header-actions">
             <button type="submit" form="experienceForm" class="btn btn-primary btn-xs">💾 Save</button>
-            <button type="button" class="admin-modal-close" onclick="closeAdminModal('experienceModal')">&times;</button>
+            <button type="button" class="admin-modal-close ui-close" aria-label="Close" onclick="closeAdminModal('experienceModal')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         </div>
     </div>
     <form id="experienceForm" onsubmit="handleExperienceSave(event)">
@@ -405,7 +405,7 @@
         <h3 id="eduModalTitle" class="admin-modal-title">Add / Edit Education</h3>
         <div class="admin-modal-header-actions">
             <button type="submit" form="educationForm" class="btn btn-primary btn-xs">💾 Save</button>
-            <button type="button" class="admin-modal-close" onclick="closeAdminModal('educationModal')">&times;</button>
+            <button type="button" class="admin-modal-close ui-close" aria-label="Close" onclick="closeAdminModal('educationModal')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         </div>
     </div>
     <form id="educationForm" onsubmit="handleEducationSave(event)">
@@ -464,7 +464,7 @@
         <h3 id="resModalTitle" class="admin-modal-title">Add Research Topic / Highlight</h3>
         <div class="admin-modal-header-actions">
             <button type="submit" form="researchForm" class="btn btn-primary btn-xs">💾 Save</button>
-            <button type="button" class="admin-modal-close" onclick="closeAdminModal('researchModal')">&times;</button>
+            <button type="button" class="admin-modal-close ui-close" aria-label="Close" onclick="closeAdminModal('researchModal')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         </div>
     </div>
     <form id="researchForm" onsubmit="handleResearchSave(event)">
@@ -526,7 +526,7 @@
         <h3 id="blogModalTitle" class="admin-modal-title">Write / Edit Blog Article</h3>
         <div class="admin-modal-header-actions">
             <button type="submit" form="blogForm" class="btn btn-primary btn-xs">💾 Save</button>
-            <button type="button" class="admin-modal-close" onclick="closeAdminModal('blogModal')">&times;</button>
+            <button type="button" class="admin-modal-close ui-close" aria-label="Close" onclick="closeAdminModal('blogModal')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         </div>
     </div>
     <form id="blogForm" onsubmit="handleBlogSave(event)">
@@ -583,7 +583,7 @@
         <h3 id="resumeModalTitle" class="admin-modal-title">Manage Resume &amp; CV</h3>
         <div class="admin-modal-header-actions">
             <button type="submit" form="resumeForm" class="btn btn-primary btn-xs">💾 Save</button>
-            <button type="button" class="admin-modal-close" onclick="closeAdminModal('resumeModal')">&times;</button>
+            <button type="button" class="admin-modal-close ui-close" aria-label="Close" onclick="closeAdminModal('resumeModal')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         </div>
     </div>
     <form id="resumeForm" onsubmit="handleResumeSave(event)" enctype="multipart/form-data">
@@ -623,7 +623,7 @@
         <h3 id="socialsModalTitle" class="admin-modal-title">Manage Social Links</h3>
         <div class="admin-modal-header-actions">
             <button type="submit" form="socialsForm" class="btn btn-primary btn-xs">💾 Save</button>
-            <button type="button" class="admin-modal-close" onclick="closeAdminModal('socialsModal')">&times;</button>
+            <button type="button" class="admin-modal-close ui-close" aria-label="Close" onclick="closeAdminModal('socialsModal')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         </div>
     </div>
     <form id="socialsForm" onsubmit="handleSocialsSave(event)">
@@ -660,7 +660,7 @@
 <div id="sectionVisibilityModal" class="admin-modal" role="dialog" aria-modal="true" aria-labelledby="secModalTitle">
     <div class="admin-modal-header">
         <h3 id="secModalTitle" class="admin-modal-title">Portfolio Section Visibility</h3>
-        <button type="button" class="admin-modal-close" onclick="closeAdminModal('sectionVisibilityModal')">&times;</button>
+        <button type="button" class="admin-modal-close ui-close" aria-label="Close" onclick="closeAdminModal('sectionVisibilityModal')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <div class="admin-modal-body">
         <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:14px;">

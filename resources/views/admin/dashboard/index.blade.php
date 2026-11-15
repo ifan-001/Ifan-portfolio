@@ -3,247 +3,132 @@
 @section('title', 'Overview')
 @section('page_title', 'Portfolio Control Center')
 
+@php
+    $hour = (int) now()->format('G');
+    $greet = $hour < 12 ? 'Good morning' : ($hour < 18 ? 'Good afternoon' : 'Good evening');
+    $days = collect(range(6, 0))->map(fn ($d) => now()->subDays($d)->toDateString());
+    $maxViews = max(1, max($viewsLast7Days ?: [0]));
+    $actions = [
+        ['url' => route('admin.feed.index'), 'icon' => '✍️', 'label' => 'Write a post', 'sub' => 'Share an update'],
+        ['url' => route('admin.projects.index'), 'icon' => '🗂️', 'label' => 'Projects', 'sub' => 'Screenshots & features'],
+        ['url' => route('admin.site-content'), 'icon' => '🔤', 'label' => 'Site texts', 'sub' => 'Headings, SEO, links'],
+        ['url' => route('admin.resume.index'), 'icon' => '📄', 'label' => 'Resume / CV', 'sub' => 'Upload a new PDF'],
+        ['url' => route('admin.skills.index'), 'icon' => '🧩', 'label' => 'Skills', 'sub' => 'Add or remove'],
+        ['url' => route('admin.settings.index'), 'icon' => '⚙️', 'label' => 'Settings', 'sub' => 'Sections & password'],
+    ];
+@endphp
+
 @section('content')
-<!-- 3-Pillar Master Architecture Hub -->
-<div class="pillar-hub-grid" style="margin-bottom: 28px;">
-    <!-- Pillar 1: Core Operations -->
-    <div class="pillar-hub-card active">
-        <div class="pillar-hub-top">
-            <span class="pillar-hub-icon">⚡</span>
-            <span class="badge badge-primary">Pillar 1 &middot; Active</span>
+<div class="dx-dash">
+    <section class="dx-hello">
+        <div>
+            <p class="dx-date">{{ now()->format('l, j F Y') }}</p>
+            <h2>{{ $greet }}, {{ \Illuminate\Support\Str::of(auth()->user()->name)->before(' ') }} 👋</h2>
+            <p class="dx-sub">Here's what's happening on your portfolio.</p>
         </div>
-        <h2 class="pillar-hub-title">Core Operations</h2>
-        <p class="pillar-hub-desc">
-            দৈনন্দিন ওয়েবসাইট পরিচালনা, লাইভ উপস্থিতি সুইচ, ভিজিটর সরাসরি চ্যাট কনসোল এবং যোগাযোগ ইনবক্স।
-        </p>
-        <div class="pillar-hub-tags">
-            <a href="{{ route('admin.dashboard') }}" class="pillar-tag active">Dashboard Overview</a>
-            <a href="{{ route('admin.feed.index') }}" class="pillar-tag">
-                Posts &amp; Feed
-            </a>
-            <a href="{{ route('admin.inbox.index') }}" class="pillar-tag">
-                Unified Inbox @if(($unreadChats + $unreadInquiries) > 0)<span class="tag-counter" style="background:#EF4444;">{{ $unreadChats + $unreadInquiries }}</span>@endif
-            </a>
-        </div>
-    </div>
-
-    <!-- Pillar 2: Content Management (Live In-Place Visual CMS) -->
-    <div class="pillar-hub-card featured">
-        <div class="pillar-hub-top">
-            <span class="pillar-hub-icon" style="background:rgba(59, 130, 246, 0.2); color:#3B82F6;">✦</span>
-            <span class="badge badge-success">Pillar 2 &middot; In-Place CMS</span>
-        </div>
-        <h2 class="pillar-hub-title">Content Management</h2>
-        <p class="pillar-hub-desc">
-            সম্পূর্ণ পোর্টফোলিও ওয়েবসাইটটি সরাসরি খুলবে এবং প্রতিটি সেকশন (Profile, Bio, Skills, Projects, Experience, Blog) সরাসরি সাইট থেকেই এডিট করা যাবে।
-        </p>
-        <div style="margin-top:auto; padding-top:16px;">
-            <a href="{{ route('admin.content') }}" class="btn btn-primary" style="width:100%; justify-content:center; gap:8px;">
-                <span>Open Visual Portfolio Editor</span>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-            </a>
-        </div>
-    </div>
-
-    <!-- Pillar 3: System & Insights -->
-    <div class="pillar-hub-card">
-        <div class="pillar-hub-top">
-            <span class="pillar-hub-icon">⚙</span>
-            <span class="badge" style="background:rgba(255,255,255,0.08); color:var(--text-secondary);">Pillar 3</span>
-        </div>
-        <h2 class="pillar-hub-title">System &amp; Insights</h2>
-        <p class="pillar-hub-desc">
-            ওয়েবসাইট ট্রাফিক অ্যানালিটিক্স, ভিজিটর পরিসংখ্যান, নিরাপত্তা, পাসওয়ার্ড পরিবর্তন এবং প্ল্যাটফর্ম সেটিংস।
-        </p>
-        <div class="pillar-hub-tags">
-            <a href="{{ route('admin.analytics.index') }}" class="pillar-tag">Analytics &amp; Telemetry</a>
-            <a href="{{ route('admin.settings.index') }}" class="pillar-tag">Platform Settings</a>
-        </div>
-    </div>
-</div>
-
-<!-- Personal Admin Web App & Mobile Deployment (Samsung Galaxy A54 Companion) -->
-<div class="web-app-hero-card">
-    <div class="web-app-hero-top">
-        <div class="web-app-hero-icon">
-            <img src="/icons/icon-192.png" alt="App Icon" style="width:100%; height:100%; object-fit:cover;">
-        </div>
-        <div class="web-app-hero-body">
-            <div class="web-app-hero-title-row">
-                <h2 class="web-app-hero-title">{{ $appInfo['name'] ?? 'Hasnain Portfolio Manager' }}</h2>
-                <button type="button" onclick="openAppVersionModal()" class="app-version-badge" title="Click to view App Version details">
-                    <span>{{ $appInfo['version'] ?? 'v1.0.0' }}</span>
+        <div class="dx-hello-actions">
+            <form action="{{ route('admin.dashboard.toggle-status') }}" method="POST">
+                @csrf
+                <button type="submit" class="dx-status {{ $chatStatus->is_online ? 'is-on' : '' }}" title="Visitors see this on your chat bubble">
+                    <span class="dx-status-dot"></span>
+                    <span>{{ $chatStatus->is_online ? 'You are online' : 'You are away' }}</span>
+                    <em>{{ $chatStatus->is_online ? 'Go away' : 'Go online' }}</em>
                 </button>
-                <span class="badge badge-success app-ready-badge">✓ Ready for Mobile</span>
-            </div>
-            <p class="web-app-hero-desc">
-                আপনার Samsung Galaxy A54 ফোনে Personal Admin Web App ইনস্টল করে ব্রাউজার খোঁজা ছাড়াই হোমস্ক্রিন থেকে সরাসরি লাইভ চ্যাট ও পোর্টফোলিও পরিচালনা করুন।
-            </p>
-            <div class="web-app-hero-meta">
-                <span>📱 Samsung Galaxy A54</span>
-                <span>⚡ PWA Standalone</span>
-                <span>📶 Local Wi-Fi: <code>{{ $appInfo['local_ip'] ?? '192.168.0.103' }}:{{ $appInfo['port'] ?? 8000 }}</code></span>
-            </div>
+            </form>
+            <a href="{{ route('admin.content') }}" class="btn btn-primary">✦ Open Visual Portfolio Editor</a>
         </div>
-    </div>
+    </section>
 
-    <div class="web-app-hero-actions">
-        <button type="button" class="btn btn-primary" onclick="openQrInstallModal()">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-            <span>Install Web App on Phone</span>
-        </button>
-        <button type="button" class="btn btn-secondary" onclick="openAppVersionModal()">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-            <span>App Version Info</span>
-        </button>
-    </div>
-</div>
+    <section class="dx-kpis">
+        <a href="{{ route('admin.inbox.index') }}" class="dx-kpi is-alert">
+            <span class="dx-kpi-ic">💬</span>
+            <strong>{{ $unreadChats }}</strong><span>Unread chats</span>
+        </a>
+        <a href="{{ route('admin.inbox.index', ['filter' => 'inquiries']) }}" class="dx-kpi">
+            <span class="dx-kpi-ic">✉️</span>
+            <strong>{{ $unreadInquiries }}</strong><span>New inquiries</span>
+        </a>
+        <a href="{{ route('admin.analytics.index') }}" class="dx-kpi">
+            <span class="dx-kpi-ic">👁️</span>
+            <strong>{{ number_format($totalViews) }}</strong><span>Page views</span>
+        </a>
+        <a href="{{ route('admin.analytics.index') }}" class="dx-kpi">
+            <span class="dx-kpi-ic">🧑‍💻</span>
+            <strong>{{ number_format($uniqueVisitors) }}</strong><span>Visitors</span>
+        </a>
+    </section>
 
-<!-- KPI Row -->
-<div class="kpi-grid">
-    <div class="kpi-card">
-        <span class="kpi-label">Total Portfolio Views</span>
-        <span class="kpi-value">{{ number_format($totalViews) }}</span>
-        <span class="kpi-sub">Privacy-first anonymous telemetry</span>
-    </div>
-
-    <div class="kpi-card">
-        <span class="kpi-label">Unique Visitors</span>
-        <span class="kpi-value">{{ number_format($uniqueVisitors) }}</span>
-        <span class="kpi-sub">Daily hashed visitor sessions</span>
-    </div>
-
-    <div class="kpi-card">
-        <span class="kpi-label">Unread Inquiries</span>
-        <span class="kpi-value" style="{{ $unreadInquiries > 0 ? 'color:#3B82F6;' : '' }}">{{ $unreadInquiries }}</span>
-        <span class="kpi-sub"><a href="{{ route('admin.inquiries.index') }}" style="color:var(--text-secondary); text-decoration:none;">Open inbox &rarr;</a></span>
-    </div>
-
-    <div class="kpi-card">
-        <span class="kpi-label">Unread Live Chats</span>
-        <span class="kpi-value" style="{{ $unreadChats > 0 ? 'color:#EF4444;' : '' }}">{{ $unreadChats }}</span>
-        <span class="kpi-sub"><a href="{{ route('admin.inbox.index') }}" style="color:var(--text-secondary); text-decoration:none;">Open in Inbox &rarr;</a></span>
-    </div>
-</div>
-
-<!-- Availability & PWA Status Banner -->
-<div class="card status-banner-card" style="margin-bottom:28px; background:linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%);">
-    <div class="status-banner-inner">
-        <div class="status-banner-left">
-            <div class="status-banner-icon {{ $chatStatus->is_online ? 'online' : 'offline' }}">
-                <span class="status-dot-sm {{ $chatStatus->is_online ? 'online' : 'offline' }}" style="width:14px; height:14px;"></span>
-            </div>
-            <div>
-                <h2 style="font-size:1.1rem; font-weight:700;">Live Chat Status: <span style="color:{{ $chatStatus->is_online ? 'var(--status-online)' : 'var(--status-offline)' }};">{{ $chatStatus->is_online ? 'Online (Active Now)' : 'Offline' }}</span></h2>
-                <p style="font-size:0.85rem; color:var(--text-secondary);">
-                    {{ $chatStatus->is_online ? 'Visitors on your portfolio website see a green status dot and can chat with you live.' : 'Visitors see a red offline indicator and are guided to leave an inquiry.' }}
-                </p>
-            </div>
+    <section class="dx-section">
+        <h3 class="dx-h">Quick actions</h3>
+        <div class="dx-actions">
+            @foreach($actions as $a)
+                <a href="{{ $a['url'] }}" class="dx-action"><span>{{ $a['icon'] }}</span><strong>{{ $a['label'] }}</strong><small>{{ $a['sub'] }}</small></a>
+            @endforeach
         </div>
+    </section>
 
-        <form action="{{ route('admin.dashboard.toggle-status') }}" method="POST" class="status-banner-form">
-            @csrf
-            <button type="submit" class="btn {{ $chatStatus->is_online ? 'btn-secondary' : 'btn-primary' }}">
-                <span>Switch to {{ $chatStatus->is_online ? 'Offline' : 'Online' }}</span>
-            </button>
-        </form>
-    </div>
-</div>
-
-<!-- Grid: Recent Inquiries & Recent Chats -->
-<div class="form-grid-2" style="margin-bottom:28px;">
-    <!-- Recent Inquiries -->
-    <div class="card">
-        <div class="card-header">
-            <h3 class="card-title">Recent Contact Inquiries</h3>
-            <a href="{{ route('admin.inquiries.index') }}" class="btn btn-secondary btn-sm">View All</a>
-        </div>
-
-        @if($recentInquiries->isEmpty())
-            <p style="color:var(--text-muted); font-size:0.88rem; padding:12px 0;">No inquiries received yet.</p>
-        @else
-            <div class="table-responsive">
-                <table class="admin-table">
-                    <thead>
-                        <tr>
-                            <th>Sender</th>
-                            <th>Subject</th>
-                            <th>Status</th>
-                            <th>Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($recentInquiries as $inq)
-                            <tr>
-                                <td>
-                                    <a href="{{ route('admin.inquiries.show', $inq->id) }}" style="color:var(--text-primary); font-weight:600; text-decoration:none;">
-                                        {{ $inq->name }}
-                                    </a>
-                                    <div style="font-size:0.75rem; color:var(--text-muted);">{{ $inq->email }}</div>
-                                </td>
-                                <td>
-                                    <span style="font-size:0.82rem;">{{ Str::limit($inq->subject ?: $inq->message, 30) }}</span>
-                                </td>
-                                <td>
-                                    <span class="badge {{ $inq->status === 'unread' ? 'badge-danger' : ($inq->status === 'replied' ? 'badge-success' : 'badge-info') }}">
-                                        {{ $inq->status }}
-                                    </span>
-                                </td>
-                                <td style="font-size:0.78rem; color:var(--text-muted);">
-                                    {{ $inq->created_at->diffForHumans() }}
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+    <div class="dx-cols">
+        <section class="card dx-panel">
+            <div class="dx-panel-head"><h3 class="dx-h">Latest chats</h3><a href="{{ route('admin.inbox.index') }}">Open inbox →</a></div>
+            <div class="table-responsive dx-list">
+                @forelse($recentChats as $c)
+                    @php $last = $c->messages->first(); @endphp
+                    <a href="{{ route('admin.inbox.index', ['conversation_id' => $c->id]) }}" class="dx-row">
+                        <span class="dx-avatar">{{ strtoupper(mb_substr($c->visitor_name ?: 'V', 0, 1)) }}</span>
+                        <span class="dx-row-main"><b>{{ $c->visitor_name ?: 'Anonymous visitor' }}</b><small>{{ \Illuminate\Support\Str::limit($last->message ?? '—', 60) }}</small></span>
+                        <time>{{ optional($c->last_message_at)->diffForHumans(null, true) }}</time>
+                    </a>
+                @empty
+                    <p class="dx-empty">No chats yet.</p>
+                @endforelse
             </div>
-        @endif
+        </section>
+
+        <section class="card dx-panel">
+            <div class="dx-panel-head"><h3 class="dx-h">Latest inquiries</h3><a href="{{ route('admin.inbox.index', ['filter' => 'inquiries']) }}">See all →</a></div>
+            <div class="table-responsive dx-list">
+                @forelse($recentInquiries as $iq)
+                    <a href="{{ route('admin.inbox.index', ['inquiry_id' => $iq->id]) }}" class="dx-row">
+                        <span class="dx-avatar dx-avatar-mail">{{ strtoupper(mb_substr($iq->name, 0, 1)) }}</span>
+                        <span class="dx-row-main"><b>{{ $iq->name }} @if($iq->status === 'unread')<i class="dx-new">New</i>@endif</b><small>{{ \Illuminate\Support\Str::limit($iq->subject ?: $iq->message, 60) }}</small></span>
+                        <time>{{ $iq->created_at->diffForHumans(null, true) }}</time>
+                    </a>
+                @empty
+                    <p class="dx-empty">No inquiries yet.</p>
+                @endforelse
+            </div>
+        </section>
     </div>
 
-    <!-- Recent Live Chats -->
-    <div class="card">
-        <div class="card-header">
-            <h3 class="card-title">Live Chat Conversations</h3>
-            <a href="{{ route('admin.inbox.index') }}" class="btn btn-secondary btn-sm">Open in Inbox</a>
-        </div>
-
-        @if($recentChats->isEmpty())
-            <p style="color:var(--text-muted); font-size:0.88rem; padding:12px 0;">No live chat conversations recorded yet.</p>
-        @else
-            <div class="table-responsive">
-                <table class="admin-table">
-                    <thead>
-                        <tr>
-                            <th>Visitor</th>
-                            <th>Latest Message</th>
-                            <th>Time</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($recentChats as $chat)
-                            @php $latest = $chat->messages->first(); @endphp
-                            <tr>
-                                <td>
-                                    <span style="font-weight:600;">{{ $chat->visitor_name ?: 'Anonymous Visitor' }}</span>
-                                    <div style="font-size:0.72rem; color:var(--text-muted);">#{{ substr($chat->session_id, 0, 8) }}</div>
-                                </td>
-                                <td>
-                                    <span style="font-size:0.82rem; color:var(--text-secondary);">{{ Str::limit($latest?->message ?: 'No messages', 32) }}</span>
-                                </td>
-                                <td style="font-size:0.78rem; color:var(--text-muted);">
-                                    {{ $chat->last_message_at ? $chat->last_message_at->diffForHumans() : 'N/A' }}
-                                </td>
-                                <td>
-                                    <a href="{{ route('admin.inbox.index', ['conversation_id' => $chat->id]) }}" class="btn btn-primary btn-sm">Reply</a>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+    <div class="dx-cols">
+        <section class="card dx-panel">
+            <div class="dx-panel-head"><h3 class="dx-h">Views this week</h3><a href="{{ route('admin.analytics.index') }}">Analytics →</a></div>
+            <div class="dx-chart" role="img" aria-label="Page views over the last 7 days">
+                @foreach($days as $d)
+                    @php $v = $viewsLast7Days[$d] ?? 0; @endphp
+                    <div class="dx-bar"><span style="height: {{ max(4, round($v / $maxViews * 100)) }}%" title="{{ $v }} views"></span><em>{{ \Carbon\Carbon::parse($d)->format('D') }}</em></div>
+                @endforeach
             </div>
-        @endif
+            <div class="dx-mini-stats">
+                <div><strong>{{ $projectCount }}</strong><span>Projects</span></div>
+                <div><strong>{{ $skillCount }}</strong><span>Skills</span></div>
+                <div><strong>{{ $blogCount }}</strong><span>Articles</span></div>
+            </div>
+        </section>
+
+        <section class="card dx-panel web-app-hero-card">
+            <div class="dx-app">
+                <div class="dx-app-icon">IF</div>
+                <div>
+                    <h3 class="dx-h">{{ $appInfo['name'] ?? 'Hasnain Portfolio Manager' }}</h3>
+                    <p class="dx-sub">Get a chime and vibration on your phone for every new message. Version {{ $appInfo['version'] ?? 'v1.0.0' }}.</p>
+                </div>
+            </div>
+            <div class="dx-app-actions">
+                <button type="button" class="btn btn-primary" onclick="openQrInstallModal()">📱 Install Web App on Phone</button>
+                <button type="button" class="btn btn-secondary" onclick="openAppVersionModal()">App info</button>
+            </div>
+        </section>
     </div>
 </div>
 @endsection
-
