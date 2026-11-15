@@ -65,28 +65,22 @@ Key file এর permission নিয়ে ত্রুটি এলে: ফা�
 
 ## ধাপ ৬: Project server এ আনা
 
-**সবচেয়ে ভালো উপায়: private GitHub repo।**
+আপনার code GitHub এ আছে: `https://github.com/ifan-001/Ifan-portfolio` (branch: `master`)।
 
-আপনার PC তে (একবার):
-1. GitHub এ একটা **Private** repository বানান (যেমন `portfolio`)।
-2. ```powershell
-   cd D:\portfolio
-   git remote add origin https://github.com/<আপনার-username>/portfolio.git
-   git push -u origin master
-   ```
-
-Server এ (একবার): deploy key বানিয়ে repo-কে read-only access দিন:
-```bash
-ssh-keygen -t ed25519 -C "portfolio-server" -N "" -f ~/.ssh/id_ed25519
-cat ~/.ssh/id_ed25519.pub
-```
-এই লাইনটা কপি করে GitHub → repo → **Settings → Deploy keys → Add deploy key** এ বসান (Write access দরকার নেই)। তারপর:
+Server এ:
 ```bash
 sudo mkdir -p /var/www && sudo chown ubuntu:www-data /var/www
-git clone git@github.com:<আপনার-username>/portfolio.git /var/www/portfolio
+git clone https://github.com/ifan-001/Ifan-portfolio.git /var/www/portfolio
 cd /var/www/portfolio
 git config core.fileMode false
 ```
+
+> Repo **Public** থাকলে এটুকুই যথেষ্ট। পরে repo **Private** করলে server এ clone/pull এর জন্য deploy key লাগবে:
+> ```bash
+> ssh-keygen -t ed25519 -C "portfolio-server" -N "" -f ~/.ssh/id_ed25519 && cat ~/.ssh/id_ed25519.pub
+> ```
+> ওই লাইন GitHub → repo → **Settings → Deploy keys → Add deploy key** এ বসান (Write access দরকার নেই), তারপর
+> `git remote set-url origin git@github.com:ifan-001/Ifan-portfolio.git`।
 
 ## ধাপ ৭: Server প্রস্তুত করা (এক command এ)
 
