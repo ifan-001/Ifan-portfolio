@@ -1,6 +1,6 @@
 // Hasnain Portfolio PWA Service Worker
 // Bump SW_VERSION on every deployment that changes cached static assets.
-const SW_VERSION = '2.1.0';
+const SW_VERSION = '2.2.0';
 const CACHE_NAME = 'portfolio-static-v' + SW_VERSION;
 const STATIC_ASSETS = [
     '/css/portfolio.css',
@@ -10,9 +10,11 @@ const STATIC_ASSETS = [
     '/js/portfolio.js',
     '/js/admin-in-place.js',
     '/js/qrcode.min.js',
-    '/icons/icon.svg',
-    '/offline.html'
+    '/icons/icon.svg'
 ];
+
+// Built in, so it never depends on a network request (some hosts challenge non-page requests)
+const OFFLINE_HTML = '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Offline</title><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0B1120;color:#E2E8F0;font-family:system-ui,sans-serif;text-align:center;padding:24px}h1{font-size:1.3rem;margin:0 0 8px}p{color:#94A3B8;margin:0 0 18px}button{background:#3B82F6;color:#fff;border:0;border-radius:12px;padding:12px 22px;font-size:1rem}</style></head><body><div><h1>You are offline</h1><p>Check your internet connection and try again.</p><button onclick="location.reload()">Retry</button></div></body></html>';
 const STATIC_EXTENSIONS = /\.(?:css|js|png|jpe?g|webp|gif|avif|svg|ico|woff2?)$/i;
 
 self.addEventListener('install', (event) => {
@@ -45,7 +47,7 @@ self.addEventListener('fetch', (event) => {
     // admin UI, CSRF tokens and private data. Network only, offline page on failure.
     if (request.mode === 'navigate') {
         event.respondWith(
-            fetch(request).catch(() => caches.match('/offline.html'))
+            fetch(request).catch(() => new Response(OFFLINE_HTML, { status: 503, headers: { 'Content-Type': 'text/html; charset=utf-8' } }))
         );
         return;
     }

@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="robots" content="noindex, nofollow">
     <title>Staff Authentication | Hasnain Al Ifan</title>
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="/js/pwa-manifest.js" crossorigin="use-credentials">
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
     <link rel="icon" type="image/svg+xml" href="/icons/icon.svg">
     <link rel="apple-touch-icon" href="/icons/icon-192.png">
@@ -119,9 +119,46 @@
             </button>
         </form>
 
+        <div id="pwa-install-box" style="display:none; margin-top:18px; padding:14px; border:1px dashed rgba(96,165,250,.45); border-radius:14px; background:rgba(59,130,246,.08); text-align:center;">
+            <button type="button" id="pwa-install-btn" class="btn btn-secondary" style="display:none; width:100%; padding:11px;">📲 Install this app on your phone</button>
+            <p id="pwa-ios-hint" style="display:none; margin:0; font-size:.82rem; line-height:1.5; color:var(--text-secondary);">To install on iPhone: tap <strong>Share</strong> &rarr; <strong>Add to Home Screen</strong>.</p>
+        </div>
+
         <div class="login-footer">
             <a href="{{ route('home') }}" style="color:var(--text-muted); text-decoration:none;">&larr; Return to Public Portfolio</a>
         </div>
     </div>
+
+    <script>
+        (function () {
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function () {
+                    navigator.serviceWorker.register('/sw.js').catch(function () {});
+                });
+            }
+            var standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+            if (standalone) return;
+            var box = document.getElementById('pwa-install-box');
+            var btn = document.getElementById('pwa-install-btn');
+            var ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+            var deferred = null;
+            if (ios) {
+                box.style.display = 'block';
+                document.getElementById('pwa-ios-hint').style.display = 'block';
+            }
+            window.addEventListener('beforeinstallprompt', function (e) {
+                e.preventDefault();
+                deferred = e;
+                box.style.display = 'block';
+                btn.style.display = 'block';
+            });
+            btn.addEventListener('click', function () {
+                if (!deferred) return;
+                deferred.prompt();
+                deferred.userChoice.then(function () { deferred = null; box.style.display = 'none'; });
+            });
+            window.addEventListener('appinstalled', function () { box.style.display = 'none'; });
+        })();
+    </script>
 </body>
 </html>

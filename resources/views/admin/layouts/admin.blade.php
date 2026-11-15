@@ -7,12 +7,12 @@
     <title>@yield('title', 'Admin Dashboard') | Hasnain Al Ifan Portfolio Manager</title>
 
     <!-- PWA & Mobile Capabilities -->
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="/js/pwa-manifest.js" crossorigin="use-credentials">
     <meta name="theme-color" content="#0B1120">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Portfolio Admin">
+    <meta name="apple-mobile-web-app-title" content="Ifan Admin">
     <link rel="apple-touch-icon" href="/icons/icon-192.png">
     <link rel="icon" type="image/svg+xml" href="/icons/icon.svg">
     <link rel="icon" type="image/png" href="/icons/icon-192.png">

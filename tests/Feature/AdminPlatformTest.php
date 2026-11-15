@@ -48,6 +48,37 @@ class AdminPlatformTest extends TestCase
     }
 
     /**
+     * Installable web app: manifest is served from a static asset path, icons exist,
+     * and the QR installer points at the production domain on a real host.
+     */
+    public function test_web_app_is_installable_and_qr_defaults_to_production_domain(): void
+    {
+        $login = $this->get('/portal/login');
+        $login->assertOk();
+        $login->assertSee('href="/js/pwa-manifest.js" crossorigin="use-credentials"', false);
+        $login->assertSee('pwa-install-btn', false);
+
+        $manifest = json_decode(file_get_contents(public_path('js/pwa-manifest.js')), true);
+        $this->assertSame('/portal/login', $manifest['start_url']);
+        $this->assertSame('standalone', $manifest['display']);
+        $sizes = array_column($manifest['icons'], 'sizes');
+        $this->assertContains('192x192', $sizes);
+        $this->assertContains('512x512', $sizes);
+        foreach ($manifest['icons'] as $icon) {
+            $this->assertFileExists(public_path(ltrim($icon['src'], '/')));
+        }
+
+        $admin = User::factory()->create(['password' => Hash::make(self::ADMIN_PASSWORD)]);
+
+        $local = $this->actingAs($admin)->get('/admin');
+        $local->assertSee("const qrDefaultPreset = 'lan'", false);
+
+        $live = $this->actingAs($admin)->get('https://ifan-portfolio.gt.tc/admin');
+        $live->assertSee("const qrDefaultPreset = 'prod'", false);
+        $live->assertSee('prod: "https://ifan-portfolio.gt.tc/portal/login"', false);
+    }
+
+    /**
      * 2. Security: Authorized administrators can log in and log out.
      */
     public function test_admin_authentication_and_logout(): void

@@ -1,4 +1,11 @@
-{{-- 1. QR CODE MOBILE INSTALLATION MODAL FOR SAMSUNG GALAXY A54 --}}
+@php
+    $qrHost = request()->getHost();
+    $qrIsLocal = in_array($qrHost, ['localhost', '127.0.0.1', '::1'], true)
+        || preg_match('/^(10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)/', $qrHost)
+        || str_ends_with($qrHost, '.test') || str_ends_with($qrHost, '.localhost');
+    $qrDefault = $qrIsLocal ? 'lan' : 'prod';
+@endphp
+{{-- 1. QR CODE MOBILE INSTALLATION MODAL --}}
 <div id="qrInstallModal" class="admin-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="qrModalTitle">
     <div class="app-qr-modal">
         <div class="app-qr-header">
@@ -35,13 +42,13 @@
                 
                 <!-- Quick Network Presets -->
                 <div class="qr-preset-tabs">
-                    <button type="button" class="qr-preset-btn active" id="presetLanBtn" onclick="setQrPreset('lan')" title="Use your Local Wi-Fi IP so your phone can connect">
+                    <button type="button" class="qr-preset-btn {{ $qrDefault === 'lan' ? 'active' : '' }}" id="presetLanBtn" @if(! $qrIsLocal) style="display:none;" @endif onclick="setQrPreset('lan')" title="Use your Local Wi-Fi IP so your phone can connect">
                         📶 Local Wi-Fi (Phone)
                     </button>
-                    <button type="button" class="qr-preset-btn" id="presetLocalhostBtn" onclick="setQrPreset('localhost')" title="Localhost for testing on PC">
+                    <button type="button" class="qr-preset-btn" id="presetLocalhostBtn" @if(! $qrIsLocal) style="display:none;" @endif onclick="setQrPreset('localhost')" title="Localhost for testing on PC">
                         💻 Localhost
                     </button>
-                    <button type="button" class="qr-preset-btn" id="presetProdBtn" onclick="setQrPreset('prod')" title="Production URL when site is hosted online">
+                    <button type="button" class="qr-preset-btn {{ $qrDefault === 'prod' ? 'active' : '' }}" id="presetProdBtn" onclick="setQrPreset('prod')" title="Production URL when site is hosted online">
                         🌐 Production Domain
                     </button>
                 </div>
@@ -241,7 +248,9 @@
         }
     }
 
-    function openQrInstallModal(preset = 'lan') {
+    const qrDefaultPreset = '{{ $qrDefault }}';
+
+    function openQrInstallModal(preset = qrDefaultPreset) {
         const modal = document.getElementById('qrInstallModal');
         if (modal) {
             modal.classList.add('active');
@@ -269,7 +278,7 @@
         const activeBtn = document.getElementById('preset' + key.charAt(0).toUpperCase() + key.slice(1) + 'Btn');
         if (activeBtn) activeBtn.classList.add('active');
 
-        const targetUrl = qrUrls[key] || qrUrls.lan;
+        const targetUrl = qrUrls[key] || qrUrls[qrDefaultPreset];
         const input = document.getElementById('qrTargetUrlInput');
         const openLink = document.getElementById('qrOpenLinkBtn');
         if (input) input.value = targetUrl;
