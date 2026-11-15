@@ -1,4 +1,5 @@
-{!! '<?xml version="1.0" encoding="UTF-8"?>' !!}
+{{-- Declaration is split in two so hosts with short_open_tag enabled never see an opening tag here --}}
+{!! '<' . '?xml version="1.0" encoding="UTF-8"?>' !!}
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 @foreach($urls as $u)
     <url>
