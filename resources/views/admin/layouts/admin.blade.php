@@ -427,7 +427,7 @@
             if (!text) return hideTip();
             var inSide = !!el.closest('.ad-sidebar');
             // In the open sidebar the label is already visible, so skip the tip there
-            var rail = document.body.classList.contains('ad-collapsed') || window.matchMedia('(min-width: 769px) and (max-width: 900px)').matches;
+            var rail = document.body.classList.contains('ad-collapsed') || window.matchMedia('(min-width: 769px) and (max-width: 900px), (min-width: 560px) and (max-width: 768px) and (hover: hover) and (pointer: fine)').matches;
             if (inSide && !rail && el !== btn && el.textContent.trim()) return hideTip();
             tipFor = el;
             tip.textContent = text;

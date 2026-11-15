@@ -247,8 +247,8 @@ html { color-scheme: dark; }
 /* Chat bubbles use more of the width on phones */
 @media (max-width: 640px) { .cv-bubble { max-width: 92% !important; } }
 
-/* ======================= Tablets and small laptops (769-900px): compact rail instead of the phone layout ======================= */
-@media (min-width: 769px) and (max-width: 900px) {
+/* ======================= Tablets, small laptops and narrow desktop windows (mouse): compact rail instead of the phone layout ======================= */
+@media (min-width: 769px) and (max-width: 900px), (min-width: 560px) and (max-width: 768px) and (hover: hover) and (pointer: fine) {
   .admin-sidebar.ad-sidebar { display: flex !important; position: fixed !important; top: 12px !important; bottom: 12px !important; left: 12px !important; height: auto !important; width: 76px !important; transform: none !important; border-radius: 38px !important; border: 1px solid var(--ad-line-2) !important; box-shadow: 0 24px 60px -24px rgba(0, 0, 0, .7) !important; overflow: hidden; z-index: 1100; }
   .admin-main { margin-left: 100px !important; padding-bottom: 0 !important; }
   .mobile-bottom-nav, .ad-drawer-backdrop { display: none !important; }
