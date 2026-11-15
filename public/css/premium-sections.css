@@ -350,3 +350,10 @@ body.has-admin-bar .mobile-nav-drawer { top: calc(var(--admin-bar-h, 50px) + var
   .pw-live .pw-panel { height: calc(100dvh - var(--pw-top, 72px) - 74px) !important; }
   .pw-panel-ai { height: calc(100dvh - var(--pw-top, 72px) - 130px) !important; }
 }
+
+/* ======================= Hero: no double gap under the top bar ======================= */
+/* The page already reserves room for the fixed header (body padding), so the hero only needs a small breathing space */
+.ph-hero { padding-top: 40px !important; min-height: calc(min(100dvh, 940px) - var(--header-height) - var(--admin-bar-h, 0px)) !important; }
+@media (max-width: 768px) {
+  .ph-hero { padding-top: 22px !important; min-height: 0 !important; }
+}
