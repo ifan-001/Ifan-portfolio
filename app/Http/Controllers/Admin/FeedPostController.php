@@ -36,37 +36,65 @@ class FeedPostController extends Controller
     }
 
     /**
+     * Rules shared by "publish" and "update".
+     * The photo or video decides the media type, so a wrong radio choice never blocks a post.
+     */
+    private function rules(): array
+    {
+        return [
+            'category' => 'required|in:professional,social,industrial,project,research',
+            'title' => 'nullable|string|max:200',
+            'content' => 'required|string|min:2|max:10000',
+            'media_type' => 'nullable|in:none,image,video',
+            'media_file' => 'nullable|file|mimetypes:image/jpeg,image/png,image/webp,image/gif,image/avif,video/mp4,video/webm,video/quicktime|max:40960',
+            'video_url' => 'nullable|url|max:500',
+            'is_pinned' => 'nullable|boolean',
+        ];
+    }
+
+    private function messages(): array
+    {
+        return [
+            'content.required' => 'Please write something for the post.',
+            'content.min' => 'The post text is too short.',
+            'media_file.mimetypes' => 'This file type cannot be shown on a website. Please choose a JPG, PNG or WEBP photo, or an MP4 / WEBM video. (HEIC photos from iPhone or Samsung must be saved as JPG first.)',
+            'media_file.max' => 'The file is larger than 40 MB. Please choose a smaller photo or a shorter video.',
+            'media_file.uploaded' => 'The file could not be uploaded (it may be too large for the server, max 40 MB). Please try a smaller file.',
+            'video_url.url' => 'The video link must be a full web address starting with https://',
+        ];
+    }
+
+    /**
+     * Save an uploaded photo or video and return [path, type].
+     */
+    private function storeMedia(Request $request): array
+    {
+        $file = $request->file('media_file');
+        $isVideo = str_starts_with((string) $file->getMimeType(), 'video/');
+        $extension = strtolower($file->guessExtension() ?: ($isVideo ? 'mp4' : 'jpg'));
+        if ($extension === 'jpeg') {
+            $extension = 'jpg';
+        }
+        $fileName = 'post_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $extension;
+
+        File::ensureDirectoryExists(public_path('uploads/feed'));
+        $file->move(public_path('uploads/feed'), $fileName);
+
+        return ['/uploads/feed/' . $fileName, $isVideo ? 'video' : 'image'];
+    }
+
+    /**
      * Store a newly created feed post.
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'category' => 'required|in:professional,social,industrial,project,research',
-            'title' => 'nullable|string|max:200',
-            'content' => 'required|string|min:3|max:10000',
-            'media_type' => 'required|in:none,image,video',
-            'media_file' => 'nullable|file|mimes:jpeg,png,jpg,webp,gif,avif,mp4,webm,mov|max:51200',
-            'video_url' => 'nullable|url|max:500',
-            'is_pinned' => 'nullable|boolean',
-        ]);
+        $validated = $request->validate($this->rules(), $this->messages());
 
         $mediaPath = null;
-        $mediaType = $validated['media_type'];
+        $mediaType = 'none';
 
         if ($request->hasFile('media_file')) {
-            $file = $request->file('media_file');
-            $extension = strtolower($file->guessExtension() ?: 'bin');
-            $fileName = 'post_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $extension;
-
-            $file->move(public_path('uploads/feed'), $fileName);
-            $mediaPath = '/uploads/feed/' . $fileName;
-
-            // Automatically detect image vs video if needed
-            if (in_array($extension, ['mp4', 'webm', 'mov'])) {
-                $mediaType = 'video';
-            } elseif (in_array($extension, ['jpeg', 'png', 'jpg', 'webp', 'gif', 'avif'])) {
-                $mediaType = 'image';
-            }
+            [$mediaPath, $mediaType] = $this->storeMedia($request);
         } elseif (!empty($validated['video_url'])) {
             $mediaType = 'video';
         }
@@ -92,39 +120,21 @@ class FeedPostController extends Controller
      */
     public function update(Request $request, FeedPost $post)
     {
-        $validated = $request->validate([
-            'category' => 'required|in:professional,social,industrial,project,research',
-            'title' => 'nullable|string|max:200',
-            'content' => 'required|string|min:3|max:10000',
-            'media_type' => 'required|in:none,image,video',
-            'media_file' => 'nullable|file|mimes:jpeg,png,jpg,webp,gif,avif,mp4,webm,mov|max:51200',
-            'video_url' => 'nullable|url|max:500',
-            'is_pinned' => 'nullable|boolean',
-        ]);
+        $validated = $request->validate($this->rules(), $this->messages());
 
         $mediaPath = $post->media_path;
-        $mediaType = $validated['media_type'];
+        $mediaType = $post->media_type ?: 'none';
 
         if ($request->hasFile('media_file')) {
-            // Delete old file if present in uploads/feed
             if ($mediaPath && str_starts_with($mediaPath, '/uploads/feed/') && File::exists(public_path($mediaPath))) {
                 File::delete(public_path($mediaPath));
             }
-
-            $file = $request->file('media_file');
-            $extension = strtolower($file->guessExtension() ?: 'bin');
-            $fileName = 'post_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $extension;
-
-            $file->move(public_path('uploads/feed'), $fileName);
-            $mediaPath = '/uploads/feed/' . $fileName;
-
-            if (in_array($extension, ['mp4', 'webm', 'mov'])) {
-                $mediaType = 'video';
-            } else {
-                $mediaType = 'image';
-            }
+            [$mediaPath, $mediaType] = $this->storeMedia($request);
         } elseif (!empty($validated['video_url'])) {
             $mediaType = 'video';
+        } elseif (($validated['media_type'] ?? null) === 'none') {
+            $mediaType = 'none';
+            $mediaPath = null;
         }
 
         $post->update([
@@ -161,7 +171,8 @@ class FeedPostController extends Controller
     {
         $post->update(['is_pinned' => !$post->is_pinned]);
 
-        return redirect()->back()->with('status', $post->is_pinned ? 'Post pinned to top of feed.' : 'Post unpinned.');
+        return redirect()->route('admin.feed.index')
+            ->with('status', $post->is_pinned ? 'Post pinned to the top of the feed.' : 'Post unpinned.');
     }
 
     /**

@@ -705,6 +705,60 @@ class AdminPlatformTest extends TestCase
         $likeResponse->assertJson(['status' => 'success']);
     }
 
+    public function test_feed_post_with_photo_is_published_even_when_media_choice_says_none(): void
+    {
+        $admin = $this->getAdminUser();
+
+        $response = $this->actingAs($admin)->post('/admin/feed', [
+            'category' => 'social',
+            'content' => 'Photo post',
+            'media_type' => 'none',
+            'media_file' => \Illuminate\Http\UploadedFile::fake()->createWithContent('phone-photo.png', base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==')),
+        ]);
+        $response->assertRedirect('/admin/feed');
+        $response->assertSessionHasNoErrors();
+
+        $post = \App\Models\FeedPost::where('content', 'Photo post')->firstOrFail();
+        $this->assertSame('image', $post->media_type);
+        $this->assertStringStartsWith('/uploads/feed/', $post->media_path);
+        $this->assertFileExists(public_path($post->media_path));
+        @unlink(public_path($post->media_path));
+    }
+
+    public function test_feed_post_rejects_a_file_the_web_cannot_show_with_a_clear_message(): void
+    {
+        $admin = $this->getAdminUser();
+
+        $response = $this->actingAs($admin)->from('/admin/feed')->post('/admin/feed', [
+            'category' => 'social',
+            'content' => 'Kept text',
+            'media_type' => 'image',
+            'media_file' => \Illuminate\Http\UploadedFile::fake()->create('notes.txt', 10, 'text/plain'),
+        ]);
+        $response->assertRedirect('/admin/feed');
+        $response->assertSessionHasErrors(['media_file']);
+        $this->assertStringContainsString('JPG', session('errors')->first('media_file'));
+        $this->assertDatabaseMissing('feed_posts', ['content' => 'Kept text']);
+
+        $this->actingAs($admin)->get('/admin/feed')->assertSee('Kept text');
+    }
+
+    public function test_feed_pin_toggle_and_buttons(): void
+    {
+        $admin = $this->getAdminUser();
+        $post = \App\Models\FeedPost::create([
+            'author_name' => 'Hasnain Al Ifan', 'category' => 'professional', 'content' => 'Pin me',
+            'media_type' => 'none', 'is_pinned' => false, 'status' => 'published', 'published_at' => now(),
+        ]);
+
+        $this->actingAs($admin)->post("/admin/feed/{$post->id}/pin")->assertRedirect('/admin/feed');
+        $this->assertTrue($post->fresh()->is_pinned);
+        $this->actingAs($admin)->get('/admin/feed')->assertSee('Unpin')->assertSee('feed-card is-pinned', false);
+
+        $this->actingAs($admin)->post("/admin/feed/{$post->id}/pin")->assertRedirect('/admin/feed');
+        $this->assertFalse($post->fresh()->is_pinned);
+    }
+
     /**
      * 20. Feed Post Comments flow.
      */

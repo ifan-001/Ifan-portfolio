@@ -30,7 +30,7 @@
     @endif
 
     @if($errors->any())
-        <div style="background:rgba(239,68,68,0.15); border:1px solid #EF4444; color:#EF4444; padding:12px 16px; border-radius:8px; margin-bottom:20px; font-size:0.9rem;">
+        <div id="feed-errors" role="alert" style="background:rgba(239,68,68,0.15); border:1px solid #EF4444; color:#EF4444; padding:12px 16px; border-radius:8px; margin-bottom:20px; font-size:0.9rem;">
             <ul style="margin:0; padding-left:20px;">
                 @foreach($errors->all() as $err)
                     <li>{{ $err }}</li>
@@ -59,23 +59,23 @@
                 </label>
                 <div style="display:flex; gap:8px; flex-wrap:wrap;">
                     <label class="feed-cat-label" style="cursor:pointer;">
-                        <input type="radio" name="category" value="professional" checked style="display:none;">
+                        <input type="radio" name="category" value="professional" {{ old('category', 'professional') === 'professional' ? 'checked' : '' }} style="display:none;">
                         <span class="cat-pill">👔 Professional</span>
                     </label>
                     <label class="feed-cat-label" style="cursor:pointer;">
-                        <input type="radio" name="category" value="industrial" style="display:none;">
+                        <input type="radio" name="category" value="industrial" {{ old('category', 'professional') === 'industrial' ? 'checked' : '' }} style="display:none;">
                         <span class="cat-pill">🏭 Industrial</span>
                     </label>
                     <label class="feed-cat-label" style="cursor:pointer;">
-                        <input type="radio" name="category" value="project" style="display:none;">
+                        <input type="radio" name="category" value="project" {{ old('category', 'professional') === 'project' ? 'checked' : '' }} style="display:none;">
                         <span class="cat-pill">🚀 Project Update</span>
                     </label>
                     <label class="feed-cat-label" style="cursor:pointer;">
-                        <input type="radio" name="category" value="social" style="display:none;">
+                        <input type="radio" name="category" value="social" {{ old('category', 'professional') === 'social' ? 'checked' : '' }} style="display:none;">
                         <span class="cat-pill">👥 Social</span>
                     </label>
                     <label class="feed-cat-label" style="cursor:pointer;">
-                        <input type="radio" name="category" value="research" style="display:none;">
+                        <input type="radio" name="category" value="research" {{ old('category', 'professional') === 'research' ? 'checked' : '' }} style="display:none;">
                         <span class="cat-pill">🔬 Research &amp; Tech</span>
                     </label>
                 </div>
@@ -83,14 +83,14 @@
 
             {{-- Optional Title --}}
             <div style="margin-bottom:12px;">
-                <input type="text" name="title" placeholder="Post Headline / Title (Optional)"
+                <input type="text" name="title" value="{{ old('title') }}" placeholder="Post Headline / Title (Optional)"
                        style="width:100%; background:var(--bg-primary); border:1px solid var(--border-color); color:var(--text-primary); padding:10px 14px; border-radius:8px; font-size:0.9rem; font-weight:600;">
             </div>
 
             {{-- Post Content Textarea --}}
             <div style="margin-bottom:14px;">
                 <textarea name="content" rows="4" required placeholder="What's happening? Share a project breakthrough, technical learning, or industry insight..."
-                          style="width:100%; background:var(--bg-primary); border:1px solid var(--border-color); color:var(--text-primary); padding:14px; border-radius:8px; font-size:0.95rem; line-height:1.5; resize:vertical; font-family:inherit;"></textarea>
+                          style="width:100%; background:var(--bg-primary); border:1px solid var(--border-color); color:var(--text-primary); padding:14px; border-radius:8px; font-size:0.95rem; line-height:1.5; resize:vertical; font-family:inherit;">{{ old('content') }}</textarea>
             </div>
 
             {{-- Media Attachment Controls --}}
@@ -101,17 +101,17 @@
                         <span>Attach Media (Photo or Video):</span>
                     </span>
 
-                    <div style="display:flex; gap:8px;">
-                        <label class="btn btn-secondary btn-xs" style="cursor:pointer; display:inline-flex; align-items:center; gap:4px;">
-                            <input type="radio" name="media_type" value="none" checked style="display:none;" onchange="toggleMediaInputs('none')">
+                    <div class="media-opts">
+                        <label class="media-opt">
+                            <input type="radio" name="media_type" value="none" checked onchange="toggleMediaInputs('none')">
                             <span>No Media</span>
                         </label>
-                        <label class="btn btn-secondary btn-xs" style="cursor:pointer; display:inline-flex; align-items:center; gap:4px;">
-                            <input type="radio" name="media_type" value="image" style="display:none;" onchange="toggleMediaInputs('image')">
+                        <label class="media-opt">
+                            <input type="radio" name="media_type" value="image" onchange="toggleMediaInputs('image')">
                             <span>📷 Photo</span>
                         </label>
-                        <label class="btn btn-secondary btn-xs" style="cursor:pointer; display:inline-flex; align-items:center; gap:4px;">
-                            <input type="radio" name="media_type" value="video" style="display:none;" onchange="toggleMediaInputs('video')">
+                        <label class="media-opt">
+                            <input type="radio" name="media_type" value="video" onchange="toggleMediaInputs('video')">
                             <span>🎥 Video</span>
                         </label>
                     </div>
@@ -120,10 +120,12 @@
                 {{-- File upload input --}}
                 <div id="media-file-block" style="display:none; margin-top:10px;">
                     <label style="display:block; font-size:0.8rem; color:var(--text-secondary); margin-bottom:4px;">
-                        Upload File (Image: Max 20MB · Video: Max 50MB):
+                        Choose a photo (JPG, PNG, WEBP) or a video (MP4, WEBM, max 40 MB). Big photos are made smaller automatically.
                     </label>
                     <input type="file" name="media_file" id="media-file-input" accept="image/*,video/mp4,video/webm,video/quicktime"
                            style="width:100%; font-size:0.85rem; color:var(--text-primary);">
+                    <div id="media-note" class="media-note" hidden></div>
+                    <div id="media-preview" class="media-preview" hidden></div>
                 </div>
 
                 {{-- Video URL input (YouTube / external) --}}
@@ -139,12 +141,12 @@
             {{-- Bottom Toolbar --}}
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
                 <label style="display:inline-flex; align-items:center; gap:8px; font-size:0.85rem; color:var(--text-secondary); cursor:pointer;">
-                    <input type="checkbox" name="is_pinned" value="1" style="accent-color:var(--accent-blue);">
+                    <input type="checkbox" name="is_pinned" value="1" {{ old('is_pinned') ? 'checked' : '' }} style="accent-color:var(--accent-blue);">
                     <span>📌 Pin this post to the top of the feed</span>
                 </label>
 
-                <button type="submit" class="btn btn-primary" style="padding:9px 22px; font-weight:600; display:inline-flex; align-items:center; gap:6px;">
-                    <span>Publish Post</span>
+                <button type="submit" id="feed-submit" class="btn btn-primary" style="padding:9px 22px; font-weight:600; display:inline-flex; align-items:center; gap:6px;">
+                    <span id="feed-submit-label">Publish Post</span>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                 </button>
             </div>
@@ -168,22 +170,25 @@
         <a href="{{ route('admin.feed.index', ['category' => 'social']) }}" class="btn btn-sm {{ ($category ?? '') === 'social' ? 'btn-primary' : 'btn-secondary' }}" style="border-radius:20px;">
             👥 Social ({{ $counts['social'] }})
         </a>
+        <a href="{{ route('admin.feed.index', ['category' => 'research']) }}" class="btn btn-sm {{ ($category ?? '') === 'research' ? 'btn-primary' : 'btn-secondary' }}" style="border-radius:20px;">
+            🔬 Research ({{ $counts['research'] }})
+        </a>
     </div>
 
     {{-- Posts Stream --}}
     <div style="display:flex; flex-direction:column; gap:20px;">
         @forelse($posts as $post)
-            <div style="background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:12px; padding:20px; box-shadow:0 2px 4px rgba(0,0,0,0.05);">
+            <div id="post-{{ $post->id }}" class="feed-card {{ $post->is_pinned ? 'is-pinned' : '' }}">
                 {{-- Author Header --}}
-                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px;">
-                    <div style="display:flex; align-items:center; gap:12px;">
+                <div class="feed-card-head">
+                    <div class="feed-card-author">
                         <img src="/images/profile.jpg" alt="Author" style="width:42px; height:42px; border-radius:50%; object-fit:cover; border:2px solid var(--accent-blue);">
                         <div>
                             <div style="font-weight:700; color:var(--text-primary); font-size:0.95rem; display:flex; align-items:center; gap:6px;">
                                 <span>{{ $post->author_name }}</span>
                                 <span style="color:#3B82F6; font-size:0.8rem;" title="Verified Engineer">✓</span>
                             </div>
-                            <div style="font-size:0.75rem; color:var(--text-secondary); display:flex; align-items:center; gap:8px;">
+                            <div class="feed-card-meta">
                                 <span style="background:rgba(255,255,255,0.06); color:{{ $post->category_color }}; border:1px solid {{ $post->category_color }}; padding:1px 6px; border-radius:4px; font-weight:600;">
                                     {{ strtoupper($post->category) }}
                                 </span>
@@ -198,19 +203,19 @@
                     </div>
 
                     {{-- Actions --}}
-                    <div style="display:flex; align-items:center; gap:8px;">
-                        <form action="{{ route('admin.feed.pin', $post->id) }}" method="POST" style="display:inline;">
+                    <div class="feed-card-actions">
+                        <form action="{{ route('admin.feed.pin', $post->id) }}" method="POST">
                             @csrf
-                            <button type="submit" class="btn btn-secondary btn-xs" title="{{ $post->is_pinned ? 'Unpin post' : 'Pin to top' }}">
-                                {{ $post->is_pinned ? 'Unpin ✕' : 'Pin 📌' }}
+                            <button type="submit" class="feed-act {{ $post->is_pinned ? 'is-on' : '' }}" title="{{ $post->is_pinned ? 'Unpin this post' : 'Pin this post to the top of the feed' }}">
+                                <span aria-hidden="true">📌</span><span>{{ $post->is_pinned ? 'Unpin' : 'Pin' }}</span>
                             </button>
                         </form>
 
-                        <form action="{{ route('admin.feed.destroy', $post->id) }}" method="POST" onsubmit="return confirm('Delete this post?');" style="display:inline;">
+                        <form action="{{ route('admin.feed.destroy', $post->id) }}" method="POST" onsubmit="return confirm('Delete this post? This cannot be undone.');">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-secondary btn-xs" style="color:#EF4444;" title="Delete post">
-                                🗑️ Delete
+                            <button type="submit" class="feed-act feed-act-danger" title="Delete this post">
+                                <span aria-hidden="true">🗑️</span><span>Delete</span>
                             </button>
                         </form>
                     </div>
@@ -317,6 +322,36 @@
 </div>
 
 <style>
+.feed-card { background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:12px; padding:20px; box-shadow:0 2px 4px rgba(0,0,0,0.05); scroll-margin-top:90px; }
+.feed-card.is-pinned { border-color:rgba(245,158,11,.55); box-shadow:0 0 0 1px rgba(245,158,11,.25), 0 6px 18px -10px rgba(245,158,11,.5); }
+.feed-card-head { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:14px; }
+.feed-card-author { display:flex; align-items:center; gap:12px; min-width:0; flex:1 1 auto; }
+.feed-card-author > div { min-width:0; }
+.feed-card-meta { font-size:0.75rem; color:var(--text-secondary); display:flex; align-items:center; flex-wrap:wrap; gap:4px 8px; margin-top:2px; }
+.feed-card-meta span { white-space:nowrap; }
+.feed-card-actions { display:flex; align-items:center; gap:8px; flex:0 0 auto; }
+.feed-card-actions form { display:inline-flex; margin:0; }
+.feed-act { display:inline-flex; align-items:center; gap:6px; white-space:nowrap; padding:7px 12px; border-radius:999px; font-size:.8rem; font-weight:600; line-height:1; cursor:pointer; background:var(--bg-primary); color:var(--text-primary); border:1px solid var(--border-color); transition:border-color .15s, background .15s; }
+.feed-act:hover { border-color:var(--accent-blue); }
+.feed-act.is-on { background:rgba(245,158,11,.14); border-color:rgba(245,158,11,.55); color:#FBBF24; }
+.feed-act-danger { color:#F87171; }
+.feed-act-danger:hover { border-color:#EF4444; background:rgba(239,68,68,.1); }
+@media (max-width: 560px) {
+  .feed-card { padding:16px; }
+  .feed-card-head { flex-direction:column; align-items:stretch; }
+  .feed-card-actions { justify-content:flex-end; border-top:1px solid var(--border-color); padding-top:10px; }
+}
+.media-opts { display:flex; gap:8px; flex-wrap:wrap; }
+.media-opt { cursor:pointer; display:inline-flex; }
+.media-opt input { position:absolute; opacity:0; pointer-events:none; }
+.media-opt span { display:inline-flex; align-items:center; gap:4px; padding:6px 12px; border-radius:999px; font-size:.8rem; font-weight:600; background:var(--bg-primary); color:var(--text-secondary); border:1px solid var(--border-color); transition:all .15s; }
+.media-opt input:checked + span { background:var(--accent-blue); border-color:var(--accent-blue); color:#fff; }
+.media-opt input:focus-visible + span { outline:2px solid var(--accent-blue); outline-offset:2px; }
+.media-note { margin-top:8px; font-size:.8rem; color:var(--text-secondary); }
+.media-note.is-error { color:#F87171; font-weight:600; }
+.media-preview { margin-top:10px; border-radius:8px; overflow:hidden; background:#000; border:1px solid var(--border-color); display:flex; justify-content:center; }
+.media-preview img, .media-preview video { max-width:100%; max-height:280px; object-fit:contain; display:block; }
+#feed-submit[disabled] { opacity:.7; cursor:progress; }
 .feed-cat-label input:checked + .cat-pill {
     background: var(--accent-blue) !important;
     color: #fff !important;
@@ -343,16 +378,128 @@
 function toggleMediaInputs(type) {
     const fileBlock = document.getElementById('media-file-block');
     const urlBlock = document.getElementById('video-url-block');
-    if (type === 'image') {
-        fileBlock.style.display = 'block';
-        urlBlock.style.display = 'none';
-    } else if (type === 'video') {
-        fileBlock.style.display = 'block';
-        urlBlock.style.display = 'block';
-    } else {
-        fileBlock.style.display = 'none';
-        urlBlock.style.display = 'none';
-    }
+    fileBlock.style.display = (type === 'image' || type === 'video') ? 'block' : 'none';
+    urlBlock.style.display = type === 'video' ? 'block' : 'none';
 }
+
+(function () {
+    const errors = document.getElementById('feed-errors');
+    if (errors) errors.scrollIntoView({ block: 'center' });
+
+    const form = document.getElementById('post-composer-form');
+    const input = document.getElementById('media-file-input');
+    const note = document.getElementById('media-note');
+    const preview = document.getElementById('media-preview');
+    const submit = document.getElementById('feed-submit');
+    const label = document.getElementById('feed-submit-label');
+    if (!form || !input) return;
+
+    const MAX_BYTES = 40 * 1024 * 1024;
+    const MAX_SIDE = 2048;
+    let busy = false;      // a photo is still being prepared
+    let blocked = false;   // the chosen file cannot be posted
+
+    function say(text, isError) {
+        note.hidden = !text;
+        note.textContent = text || '';
+        note.classList.toggle('is-error', !!isError);
+    }
+    function showPreview(file) {
+        preview.innerHTML = '';
+        if (!file) { preview.hidden = true; return; }
+        const url = URL.createObjectURL(file);
+        const el = document.createElement(file.type.startsWith('video/') ? 'video' : 'img');
+        el.src = url;
+        if (el.tagName === 'VIDEO') { el.controls = true; el.muted = true; }
+        preview.appendChild(el);
+        preview.hidden = false;
+    }
+    function mb(n) { return (n / 1048576).toFixed(1) + ' MB'; }
+    function setType(type) {
+        const r = form.querySelector('input[name=media_type][value=' + type + ']');
+        if (r && !r.checked) { r.checked = true; toggleMediaInputs(type); }
+    }
+    function decode(file) {
+        return new Promise(function (resolve, reject) {
+            const img = new Image();
+            const url = URL.createObjectURL(file);
+            img.onload = function () { URL.revokeObjectURL(url); resolve(img); };
+            img.onerror = function () { URL.revokeObjectURL(url); reject(new Error('decode')); };
+            img.src = url;
+        });
+    }
+
+    input.addEventListener('change', async function () {
+        blocked = false;
+        const file = input.files && input.files[0];
+        if (!file) { say(''); showPreview(null); return; }
+
+        const isVideo = file.type.startsWith('video/') || /\.(mp4|webm|mov)$/i.test(file.name);
+        setType(isVideo ? 'video' : 'image');
+
+        if (isVideo) {
+            if (file.size > MAX_BYTES) {
+                blocked = true;
+                say('This video is ' + mb(file.size) + '. The limit is 40 MB, so please choose a shorter video or paste a YouTube link instead.', true);
+                showPreview(null);
+                return;
+            }
+            say('Video ready (' + mb(file.size) + ').');
+            showPreview(file);
+            return;
+        }
+
+        // Photos: animated GIFs stay as they are; everything else becomes a light JPG the website can show
+        if (file.type === 'image/gif') {
+            blocked = file.size > MAX_BYTES;
+            say(blocked ? 'This GIF is larger than 40 MB.' : 'Photo ready (' + mb(file.size) + ').', blocked);
+            showPreview(blocked ? null : file);
+            return;
+        }
+
+        busy = true;
+        say('Preparing photo…');
+        try {
+            const img = await decode(file);
+            const scale = Math.min(1, MAX_SIDE / Math.max(img.naturalWidth, img.naturalHeight));
+            const needsWork = scale < 1 || file.size > 1.5 * 1048576 || !/^image\/(jpeg|png|webp)$/.test(file.type);
+            let out = file;
+            if (needsWork) {
+                const c = document.createElement('canvas');
+                c.width = Math.round(img.naturalWidth * scale);
+                c.height = Math.round(img.naturalHeight * scale);
+                const g = c.getContext('2d');
+                g.fillStyle = '#fff';
+                g.fillRect(0, 0, c.width, c.height);
+                g.drawImage(img, 0, 0, c.width, c.height);
+                const blob = await new Promise(function (r) { c.toBlob(r, 'image/jpeg', 0.86); });
+                if (blob) {
+                    out = new File([blob], (file.name.replace(/\.[^.]+$/, '') || 'photo') + '.jpg', { type: 'image/jpeg' });
+                    const dt = new DataTransfer();
+                    dt.items.add(out);
+                    input.files = dt.files;
+                }
+            }
+            say('Photo ready (' + mb(out.size) + ').');
+            showPreview(out);
+        } catch (e) {
+            blocked = true;
+            say('This photo format cannot be opened here (often a HEIC photo). Please choose a JPG or PNG photo, or take a screenshot of it and post that.', true);
+            showPreview(null);
+        } finally {
+            busy = false;
+        }
+    });
+
+    form.addEventListener('submit', function (e) {
+        if (busy) { e.preventDefault(); say('Please wait a moment, the photo is still being prepared…'); return; }
+        if (blocked) { e.preventDefault(); note.scrollIntoView({ block: 'center' }); return; }
+        submit.disabled = true;
+        label.textContent = (input.files && input.files.length) ? 'Uploading…' : 'Publishing…';
+    });
+
+    // Coming back to this page from history: re-enable the button
+    window.addEventListener('pageshow', function () { submit.disabled = false; label.textContent = 'Publish Post'; });
+})();
 </script>
 @endsection

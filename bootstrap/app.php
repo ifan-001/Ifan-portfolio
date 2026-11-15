@@ -25,6 +25,15 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
+        // An upload bigger than the server allows: go back with a clear message
+        $exceptions->render(function (\Illuminate\Http\Exceptions\PostTooLargeException $e, \Illuminate\Http\Request $request) {
+            if ($request->expectsJson()) {
+                return null;
+            }
+
+            return redirect()->back()->withErrors(['media_file' => 'The file is too large for the server. Please choose a smaller photo or a shorter video (max 40 MB).']);
+        });
+
         // A page left open for a long time (or restored by the phone) carries an old form token.
         // Instead of the bare "419 Page Expired" screen, send people somewhere useful.
         $exceptions->render(function (\Illuminate\Session\TokenMismatchException $e, \Illuminate\Http\Request $request) {
